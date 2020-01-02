@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  gov.pbc.xjcloud.common.security.feign.XjcloudFeignConfiguration,\
+  gov.pbc.xjcloud.common.security.service.XjcloudUserDetailsServiceImpl

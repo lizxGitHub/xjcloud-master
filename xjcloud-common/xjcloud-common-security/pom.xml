@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>gov.pbc.xjcloud.common</groupId>
+		<artifactId>xjcloud-common</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<artifactId>xjcloud-common-security</artifactId>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring-security-oauth2-autoconfigure.version>2.1.0.RELEASE</spring-security-oauth2-autoconfigure.version>
+		<spring-cloud-starter-security.version>2.0</spring-cloud-starter-security.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-dependencies</artifactId>
+			<version>Greenwich.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.pbc.xjcloud.common</groupId>
+			<artifactId>xjcloud-common-core</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<!--安全模块 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-security</artifactId>
+			<version>2.1.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth.boot</groupId>
+			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+			<version>${spring-security-oauth2-autoconfigure.version}</version>
+		</dependency>
+		<!--UPMS API >
+		<dependency>
+			<groupId>gov.pbc.xjcloud.provider.api</groupId>
+			<artifactId>xjcloud-provider-usercenter-api</artifactId>
+		</dependency-->
+	</dependencies>
+</project>

@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>gov.pbc.xjcloud.common</groupId>
+		<artifactId>xjcloud-common</artifactId>
+		<version>0.0.1</version>
+	</parent>
+
+	<artifactId>xjcloud-common-log</artifactId>
+	<packaging>jar</packaging>
+	<description>xjcloud 日志服务</description>
+
+	<dependencies>
+		<!--工具类核心包 -->
+		<dependency>
+			<groupId>gov.pbc.xjcloud.common</groupId>
+			<artifactId>xjcloud-common-core</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<!--UserCenter接口模块>
+		<dependency>
+			<groupId>gov.pbc.xjcloud.provider.api</groupId>
+			<artifactId>xjcloud-provider-usercenter-api</artifactId>
+		</dependency-->
+		<!--安全依赖获取上下文信息 -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>5.1.7.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.1.0.RELEASE</version>
+		</dependency>
+	</dependencies>
+</project>

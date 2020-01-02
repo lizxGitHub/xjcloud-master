@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  gov.pbc.xjcloud.common.core.config.JacksonConfig,\
+  gov.pbc.xjcloud.common.core.config.MessageSourceConfig,\
+  gov.pbc.xjcloud.common.core.config.RestTemplateConfig,\
+  gov.pbc.xjcloud.common.core.util.SpringContextHolder
