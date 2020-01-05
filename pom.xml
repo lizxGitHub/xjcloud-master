@@ -38,7 +38,7 @@
 		<jasypt.version>2.1.0</jasypt.version>
 		<ttl.version>2.10.1</ttl.version>
 		<minio.version>3.0.12</minio.version>
-		<security.oauth.version>2.3.4.RELEASE</security.oauth.version>
+		<security.oauth.version>2.3.6.RELEASE</security.oauth.version>
 		<security.oauth.auto.version>2.1.2.RELEASE</security.oauth.auto.version>
 		<velocity.version>1.7</velocity.version>
 		<activiti.version>5.22.0</activiti.version>
