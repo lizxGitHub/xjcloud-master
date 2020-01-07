@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableEurekaClient
 @EnableFeignClients
 @SpringBootApplication
-@MapperScan("gov.pbc.xjcloud.contract.*.mapper")
+@MapperScan("gov.pbc.xjcloud.provider.contract.mapper")
 public class XjcloudProviderContractApplication {
 
     public static void main(String[] args) {
