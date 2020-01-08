@@ -33,9 +33,8 @@ public class EntryController {
     public IPage<EntryInfo> index(EntryInfo query, IPage ipage) {
         ipage = new Page<>(1,10);
         QueryWrapper<EntryInfo> wrapper = new QueryWrapper();
-        wrapper.eq("del_flag", "0");
         IPage<EntryInfo> page = entryService.page(ipage, wrapper);
-        page.getRecords().forEach(System.out::println);
+        entryService.removeById("1");
         return page;
     }
 }

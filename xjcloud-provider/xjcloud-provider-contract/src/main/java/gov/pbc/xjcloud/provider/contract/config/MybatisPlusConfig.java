@@ -27,6 +27,7 @@ public class MybatisPlusConfig {
     @Bean
     @ConditionalOnMissingBean
     public ISqlInjector sqlInjector() {
-        return new LogicSqlInjector();
+        LogicSqlInjector logicSqlInjector = new LogicSqlInjector();
+        return logicSqlInjector;
     }
 }
