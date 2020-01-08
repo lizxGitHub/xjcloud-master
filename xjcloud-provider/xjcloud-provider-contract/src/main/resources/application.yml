@@ -58,10 +58,19 @@ eureka:
     client:
         serviceUrl:
             defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+# 配置了mybatis-plus 其实也不用配置mybatis ，可以把该包去掉
 mybatis:
     basepackage: gov.xjcloud.provider.contract
     xmlLocation: classpath:mapper/**/*.xml
     mapper-locations: "classpath*:mapper/*.xml"
+# 配置slq打印日志
+    configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+# 配置slq打印日志
+mybatis-plus:
+    configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    mapper-locations: classpath*:mapper/*.xml
 # Mysql Database
 #driver  =   com.mysql.jdbc.Driver
 #url     =   jdbc:mysql://localhost:3306/testjdbc
