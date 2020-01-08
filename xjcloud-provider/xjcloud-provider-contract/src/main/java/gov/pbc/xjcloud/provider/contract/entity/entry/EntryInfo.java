@@ -1,5 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.entity.entry;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,8 +46,7 @@ public class EntryInfo implements Serializable,Cloneable{
     @Column(name="type_code")
     private String typeCode ;
     /** 主键 */
-    @Id
-    @GeneratedValue
+    @TableId(value = "id",type = IdType.AUTO)
     @Column(name="id")
     private Integer id ;
     /** 词条分类 */

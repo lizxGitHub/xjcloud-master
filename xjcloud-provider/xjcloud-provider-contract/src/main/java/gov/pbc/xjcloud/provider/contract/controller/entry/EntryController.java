@@ -2,6 +2,7 @@ package gov.pbc.xjcloud.provider.contract.controller.entry;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,12 @@ public class EntryController {
      * @return
      */
     @GetMapping(value = {"index", ""})
-    public IPage<List<EntryInfo>> index(EntryInfo query, IPage ipage) {
+    public IPage<EntryInfo> index(EntryInfo query, IPage ipage) {
+        ipage = new Page<>(1,10);
         QueryWrapper<EntryInfo> wrapper = new QueryWrapper();
 //        wrapper.like("name", query.getName());
-        IPage<List<EntryInfo>> page = entryService.page(ipage, wrapper);
+        IPage<EntryInfo> page = entryService.page(ipage, wrapper);
+        page.getRecords().forEach(System.out::println);
         return page;
     }
 }
