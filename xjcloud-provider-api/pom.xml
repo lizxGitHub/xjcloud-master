@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>xjcloud-provider-contract-api</module>
+		<module>xjcloud-provider-audit-api</module>
 	</modules>
 
 	<packaging>pom</packaging>
