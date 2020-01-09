@@ -1,6 +1,6 @@
 spring:
     application:
-        name: contract-server
+        name: xjcloud-provider-audit
     redis:
         database: 1
         host: 127.0.0.1
@@ -59,7 +59,7 @@ eureka:
             type: app_server
     client:
         serviceUrl:
-            defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+            defaultZone: http://root:root@${EUREKA_HOST:39.108.50.114}:${EUREKA_PORT:8761}/eureka/
 ## 配置了mybatis-plus 其实也不用配置mybatis ，可以把该包去掉
 #mybatis:
 #    basepackage: gov.pbc.xjcloud.provider.contract.mapper
