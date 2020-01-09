@@ -5,5 +5,5 @@ import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EntryCategoryService extends IBaseServiceImpl<EntryCategory> {
+public class EntryCategoryServiceImpl extends IBaseServiceImpl<EntryCategory> {
 }

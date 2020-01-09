@@ -14,9 +14,11 @@ spring:
                 max-wait: -1
     datasource:
         name: xj_cloud
-        url: jdbc:mysql://39.108.50.114:7089/xj_cloud?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=UTC
+#        url: jdbc:mysql://39.108.50.114:7089/xj_cloud?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=UTC
+        url: jdbc:mysql://202.115.36.210:3306/xj_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=UTC
         username: root
-        password: lrstmysql
+#        password: lrstmysql
+        password: root123
         type: com.alibaba.druid.pool.DruidDataSource
 #        driver-class-name: com.mysql.jdbc.Driver
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -58,25 +60,20 @@ eureka:
     client:
         serviceUrl:
             defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
-# 配置了mybatis-plus 其实也不用配置mybatis ，可以把该包去掉
-mybatis:
-    basepackage: gov.xjcloud.provider.contract
-    xmlLocation: classpath:mapper/**/*.xml
-    mapper-locations: "classpath*:mapper/*.xml"
-# 配置slq打印日志
-    configuration:
-        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+## 配置了mybatis-plus 其实也不用配置mybatis ，可以把该包去掉
+#mybatis:
+#    basepackage: gov.pbc.xjcloud.provider.contract.mapper
+#    xmlLocation: classpath*:mapper/**/*.xml
+#    mapper-locations: "classpath*:mapper/*.xml"
+## 配置slq打印日志
+#    configuration:
+#        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 # 配置slq打印日志
 mybatis-plus:
     configuration:
         log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    mapper-locations: classpath*:mapper/*.xml
+    mapper-locations: classpath*:mapper/**/*.xml
     global-config:
         db-config:
             logic-delete-value: 1 # 逻辑已删除值(默认为 1)
             logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
-# Mysql Database
-#driver  =   com.mysql.jdbc.Driver
-#url     =   jdbc:mysql://localhost:3306/testjdbc
-#user    =   root
-#password=   ruan

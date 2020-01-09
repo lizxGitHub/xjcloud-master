@@ -50,10 +50,14 @@ public class EntryInfo implements Serializable,Cloneable{
     @Column(name="id")
     private Integer id ;
     /** 词条分类 */
+    @Column(name="category_fk")
     private Integer categoryFk ;
     /** 词条说明 */
     @Column(name="remarks")
     private String remarks ;
+    /** 词条分级 */
+    @Column(name="level")
+    private int level ;
     @Column(name="audit_status")
     /** 审核状态;0-新建（待审核），1-审核通过，2-不通过 */
     private Integer auditStatus ;
