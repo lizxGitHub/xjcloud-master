@@ -7,11 +7,13 @@ import gov.pbc.xjcloud.provider.contract.mapper.entry.EntryMapper;
 import gov.pbc.xjcloud.provider.contract.service.entry.EntryService;
 import gov.pbc.xjcloud.provider.contract.vo.entry.EntryInfoVO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class EntryServiceImpl extends ServiceImpl<EntryMapper, EntryInfo> implements EntryService {
     @Resource
     private EntryMapper entryMapper;
