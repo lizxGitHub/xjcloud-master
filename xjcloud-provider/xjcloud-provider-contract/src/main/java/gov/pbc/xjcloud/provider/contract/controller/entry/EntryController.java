@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2020年1月6日21:53:24
  */
 @RestController
-@RequestMapping("/audit/entry")
+@RequestMapping("/audit-api/entry")
 public class EntryController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class EntryController {
      *
      * @return
      */
-    @GetMapping(value = {"index", ""})
+    @GetMapping(value = {"page", ""})
     public R<Page<EntryInfoVO>> index(EntryInfoVO query, Page<EntryInfoVO> page) {
         PageUtil.initPage(page);
         try {

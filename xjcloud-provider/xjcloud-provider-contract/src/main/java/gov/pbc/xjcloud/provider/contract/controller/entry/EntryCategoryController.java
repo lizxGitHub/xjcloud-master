@@ -15,7 +15,7 @@ import java.util.List;
  * @author paungmiao@163.com
  */
 @RestController
-@RequestMapping("/audit/entry/category")
+@RequestMapping("/audit-api/entry/category")
 public class EntryCategoryController {
 
     @Autowired
