@@ -14,12 +14,14 @@
         <result column="opt_type" property="optType"/>
         <result column="audit_status" property="auditStatus"/>
         <result column="instance_id" property="instanceId"/>
+        <result column="type_code" property="typeCode"/>
     </resultMap>
 
     <select id="selectEntryInfo" resultMap="EntryInfoVOMap">
         select
             a.id,
             a.name,
+            a.type_code,
             a.created_by,
             a.created_time,
             a.category_fk,
