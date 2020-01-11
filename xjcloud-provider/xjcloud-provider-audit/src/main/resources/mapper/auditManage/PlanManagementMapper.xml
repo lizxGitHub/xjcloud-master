@@ -25,8 +25,14 @@
         FROM
         `plan_check_list` a
         where a.del_flag='0'
+        <if test="query.projectName!=null and query.projectName!=''">
+            and a.project_name like concat('%',concat(#{query.projectName},'%'))
+        </if>
         <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
             and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
+        </if>
+        <if test="query.problemDescription!=null and query.problemDescription!=''">
+            and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
         </if>
 
     </select>
