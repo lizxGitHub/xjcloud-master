@@ -20,7 +20,7 @@
 	</properties>
 
 	<modules>
-		<module>xjcloud-provider-contract</module>
+<!--		<module>xjcloud-provider-contract</module>-->
 		<module>xjcloud-provider-audit</module>
 	</modules>
 

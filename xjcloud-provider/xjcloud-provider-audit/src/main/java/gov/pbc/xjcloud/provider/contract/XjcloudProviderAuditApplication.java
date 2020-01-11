@@ -10,10 +10,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @SpringBootApplication
 @MapperScan("gov.pbc.xjcloud.provider.contract.mapper")
-public class XjcloudProviderContractApplication {
+public class XjcloudProviderAuditApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(XjcloudProviderContractApplication.class, args);
+        SpringApplication.run(XjcloudProviderAuditApplication.class, args);
     }
 
 }

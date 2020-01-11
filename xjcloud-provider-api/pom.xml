@@ -15,7 +15,7 @@
 	<description>xjcloud-provider-api project</description>
 
 	<modules>
-		<module>xjcloud-provider-contract-api</module>
+<!--		<module>xjcloud-provider-contract-api</module>-->
 		<module>xjcloud-provider-audit-api</module>
 	</modules>
 
