@@ -6,22 +6,44 @@
         <result column="id" property="id"/>
         <result column="project_code" property="projectCode"/>
         <result column="project_name" property="projectName"/>
-        <result column="implementing_agency" property="implementingAgency"/>
-        <result column="audit_object" property="auditObject"/>
-        <result column="audit_nature" property="auditNature"/>
+        <result column="implementing_agency_id" property="implementingAgencyId"/>
+        <result column="audit_object_id" property="auditObjectId"/>
+        <result column="audit_nature_id" property="auditNatureId"/>
         <result column="audit_year" property="auditYear"/>
         <result column="status" property="status"/>
+        <result column="question_entry_id" property="questionEntryId"/>
+        <result column="problem_severity_id" property="problemSeverityId"/>
+        <result column="rectify_situation_id" property="rectifySituationId"/>
+        <result column="problem_characterization" property="problemCharacterization"/>
+        <result column="problem_description" property="problemDescription"/>
+        <result column="may_affect" property="mayAffect"/>
+        <result column="rectification_suggestions" property="rectificationSuggestions"/>
+        <result column="audit_basis" property="auditBasis"/>
+        <result column="audit_classification_id" property="auditClassificationId"/>
+        <result column="auditing_experience" property="auditingExperience"/>
+        <result column="risk_assessment_id" property="riskAssessmentId"/>
     </resultMap>
 
     <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
         SELECT
             a.project_code,
             a.project_name,
-            a.implementing_agency,
-            a.audit_object,
-            a.audit_nature,
+            a.implementing_agency_id,
+            a.audit_object_id,
+            a.audit_nature_id,
             a.audit_year,
-            a.`status`
+            a.`status`,
+            a.question_entry_id,
+            a.problem_severity_id,
+            a.rectify_situation_id,
+            a.problem_characterization,
+            a.problem_description,
+            a.may_affect,
+            a.rectification_suggestions,
+            a.audit_basis,
+            a.audit_classification_id,
+            a.auditing_experience,
+            a.risk_assessment_id
         FROM
         `plan_check_list` a
         where a.del_flag='0'
@@ -38,5 +60,9 @@
             and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
         </if>
 
+    </select>
+
+    <select id="selectEntryByCategoryId" resultType="java.util.HashMap">
+        SELECT id,`NAME` name FROM `entry_info` where category_fk = #{categoryId, jdbcType=VARCHAR}
     </select>
 </mapper>

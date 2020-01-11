@@ -1,5 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.entity.auditManage;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import lombok.Data;
@@ -31,25 +33,24 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "update_time")
     private Date updatedTime ;
     /** 主键 */
-    @Id
-    @GeneratedValue
+    @TableId(value = "id", type = IdType.UUID)
     @Column(name = "id")
-    private String id ;
+    private String id;
     /** 项目编号 */
     @Column(name = "project_code")
-    private Integer projectCode ;
+    private String projectCode ;
     /** 项目名称 */
     @Column(name = "project_name")
-    private Integer projectName ;
+    private String projectName ;
     /** 实施机构 */
-    @Column(name = "implementing_agency")
-    private String implementingAgency ;
+    @Column(name = "implementing_agency_id")
+    private String implementingAgencyId ;
     /** 审计对象 */
-    @Column(name = "audit_object")
-    private String auditObject ;
+    @Column(name = "audit_object_id")
+    private String auditObjectId ;
     /** 审计性质 */
-    @Column(name = "audit_nature")
-    private String auditNature ;
+    @Column(name = "audit_nature_id")
+    private String auditNatureId ;
     /** 审计年度 */
     @Column(name = "audit_year")
     private String auditYear ;
@@ -57,14 +58,14 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "status")
     private String status ;
     /** 问题词条 */
-    @Column(name = "question_entry")
-    private String questionEntry ;
+    @Column(name = "question_entry_id")
+    private String questionEntryId ;
     /** 问题严重程度 */
-    @Column(name = "problem_severity")
-    private String problemSeverity ;
+    @Column(name = "problem_severity_id")
+    private String problemSeverityId ;
     /** 整改情况 */
-    @Column(name = "rectify_situation")
-    private String rectifySituation ;
+    @Column(name = "rectify_situation_id")
+    private String rectifySituationId ;
     /** 问题定性 */
     @Column(name = "problem_characterization")
     private String problemCharacterization ;
@@ -81,14 +82,14 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "audit_basis")
     private String auditBasis ;
     /** 审计分类 */
-    @Column(name = "audit_classification")
-    private String auditClassification ;
+    @Column(name = "audit_classification_id")
+    private String auditClassificationId ;
     /** 审计经验 */
     @Column(name = "auditing_experience")
     private String auditingExperience ;
     /** 风险评估 */
-    @Column(name = "risk_assessment")
-    private String riskAssessment ;
+    @Column(name = "risk_assessment_id")
+    private String riskAssessmentId ;
     /** 逻辑删除;0-未删除，1-已删除 */
     @Column(name="del_flag")
     @TableLogic
