@@ -28,6 +28,9 @@
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
         </if>
+        <if test="query.status!=null and query.status!=''">
+            and a.`status` = #{query.status, jdbcType=VARCHAR}
+        </if>
         <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
             and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
         </if>

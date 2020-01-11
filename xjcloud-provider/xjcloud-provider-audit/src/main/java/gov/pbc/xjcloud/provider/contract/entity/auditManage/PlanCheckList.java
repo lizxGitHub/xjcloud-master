@@ -1,10 +1,8 @@
 package gov.pbc.xjcloud.provider.contract.entity.auditManage;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import lombok.AllArgsConstructor;
+import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -14,11 +12,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
-@EqualsAndHashCode
-@NoArgsConstructor
 @Table(name="plan_check_list")
 public class PlanCheckList implements Serializable,Cloneable{
+
     /** 乐观锁 */
     @Column(name = "revision")
     private Integer revision ;

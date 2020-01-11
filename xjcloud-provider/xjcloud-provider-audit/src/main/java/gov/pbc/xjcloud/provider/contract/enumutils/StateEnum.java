@@ -42,7 +42,7 @@ public enum StateEnum {
                 return state.getName();
             }
         }
-        return "null";
+        return "无";
     }
 
 }
