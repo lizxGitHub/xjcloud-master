@@ -68,7 +68,7 @@ public class EntryController {
             // todo 此处需要能够访问用户服务 引入common-security包调用 SecurityUtils.getUsername() 方法;
             entryInfo.setCreatedBy("admin");
             entryInfo.setAuditStatus(EntryOptEnum.ADD.getCode());
-            entryInfo.setCreatedTime(new Date());
+            entryInfo.setCreatedTime(DateTime.now().toDate());
             entryInfo.setAuditStatus(AuditStatusEnum.ADD.getCode());
             entryInfo.setDelFlag(DelConstants.EXITED);
             entryService.save(entryInfo);

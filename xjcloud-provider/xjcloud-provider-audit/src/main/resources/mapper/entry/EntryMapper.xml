@@ -39,6 +39,7 @@
         <if test="query.categoryFk!=null and query.categoryFk!=''">
             and a.category_fk=#{query.categoryFk}
         </if>
+        order by a.created_time desc
 
     </select>
 </mapper>
