@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper">
+
+    <resultMap id="PlanCheckListMapper" type="gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList">
+        <result column="id" property="id"/>
+        <result column="project_code" property="projectCode"/>
+        <result column="project_name" property="projectName"/>
+        <result column="implementing_agency" property="implementingAgency"/>
+        <result column="audit_object" property="auditObject"/>
+        <result column="audit_nature" property="auditNature"/>
+        <result column="audit_year" property="auditYear"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
+        SELECT
+            a.project_code,
+            a.project_name,
+            a.implementing_agency,
+            a.audit_object,
+            a.audit_nature,
+            a.audit_year,
+            a.`status`
+        FROM
+        `plan_check_list` a
+        where a.del_flag='0'
+        <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
+            and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
+        </if>
+
+    </select>
+</mapper>

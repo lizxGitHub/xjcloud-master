@@ -1,7 +1,9 @@
 package gov.pbc.xjcloud.provider.contract.entity.auditManage;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -12,6 +14,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
+@EqualsAndHashCode
 @NoArgsConstructor
 @Table(name="plan_check_list")
 public class PlanCheckList implements Serializable,Cloneable{
@@ -89,6 +93,9 @@ public class PlanCheckList implements Serializable,Cloneable{
     /** 风险评估 */
     @Column(name = "risk_assessment")
     private String riskAssessment ;
-
+    /** 逻辑删除;0-未删除，1-已删除 */
+    @Column(name="del_flag")
+    @TableLogic
+    private String delFlag ;
 
 }
