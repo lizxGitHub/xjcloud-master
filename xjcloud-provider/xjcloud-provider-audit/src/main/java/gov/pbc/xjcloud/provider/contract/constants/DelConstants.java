@@ -1,12 +1,13 @@
 package gov.pbc.xjcloud.provider.contract.constants;
 
 /**
- * 状态公共值
+ * 删除状态公共码
+ * @author paungmiao@163.com
  */
 public class DelConstants {
     //删除
     public static String DELETED="1";
     //存在
-    public static String EXITED="1";
+    public static String EXITED="0";
 
 }

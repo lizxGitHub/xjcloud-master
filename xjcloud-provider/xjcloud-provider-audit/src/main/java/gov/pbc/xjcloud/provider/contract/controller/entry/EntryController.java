@@ -12,6 +12,7 @@ import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.TimeUtil;
 import gov.pbc.xjcloud.provider.contract.vo.entry.EntryInfoVO;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.Date;
 
 /**
  * 审计系统-词条管理
@@ -66,7 +68,7 @@ public class EntryController {
             // todo 此处需要能够访问用户服务 引入common-security包调用 SecurityUtils.getUsername() 方法;
             entryInfo.setCreatedBy("admin");
             entryInfo.setAuditStatus(EntryOptEnum.ADD.getCode());
-            entryInfo.setCreatedTime(DateTime.now().toDate());
+            entryInfo.setCreatedTime(new Date());
             entryInfo.setAuditStatus(AuditStatusEnum.ADD.getCode());
             entryInfo.setDelFlag(DelConstants.EXITED);
             entryService.save(entryInfo);
