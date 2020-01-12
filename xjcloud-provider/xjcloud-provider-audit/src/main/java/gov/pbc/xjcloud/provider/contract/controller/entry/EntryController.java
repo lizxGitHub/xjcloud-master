@@ -91,7 +91,8 @@ public class EntryController {
             updateWrapper.set("remarks", entryInfo.getRemarks());
             updateWrapper.set("category_fk", entryInfo.getCategoryFk());
             updateWrapper.set("updated_time", new Date());
-            updateWrapper.set("update_by", "admin");
+            // todo
+            updateWrapper.set("updated_by", "admin");
             updateWrapper.eq("id", entryInfo.getId());
             entryService.update(entryInfo, updateWrapper);
             r.setData(true);
