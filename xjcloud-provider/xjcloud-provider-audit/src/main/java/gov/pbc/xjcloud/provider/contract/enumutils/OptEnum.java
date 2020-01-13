@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum EntryOptEnum {
+public enum OptEnum {
 
     ADD(1, "新增"),
     UPDATE(2, "修改"),

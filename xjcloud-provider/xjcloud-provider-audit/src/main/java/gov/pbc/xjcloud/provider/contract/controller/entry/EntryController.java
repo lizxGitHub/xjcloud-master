@@ -1,6 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.controller.entry;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
@@ -10,13 +9,11 @@ import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.OptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.AuditStatusEnum;
-import gov.pbc.xjcloud.provider.contract.enumutils.EntryOptEnum;
+import gov.pbc.xjcloud.provider.contract.enumutils.OptEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
-import gov.pbc.xjcloud.provider.contract.utils.TimeUtil;
 import gov.pbc.xjcloud.provider.contract.vo.entry.EntryInfoVO;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
@@ -129,12 +126,12 @@ public class EntryController {
         } else {
             UpdateWrapper<EntryInfo> updateWrapper = new UpdateWrapper<>();
             EntryInfo entryInfo = new EntryInfo();
-            entryInfo.setOptType(OptConstants.DEL);
-            entryInfo.setInstanceId(IdGenUtil.uuid());
+//            entryInfo.setOptType(OptConstants.DEL);
+//            entryInfo.setInstanceId(IdGenUtil.uuid());
             entryInfo.setId(id);
             updateWrapper.set("opt_type", OptConstants.DEL);
             // todo 启动流程 获取流程实例ID
-            updateWrapper.set("instance_id",entryInfo.getInstanceId());
+//            updateWrapper.set("instance_id",entryInfo.getInstanceId());
             updateWrapper.eq("id",id);
             b = entryService.update(entryInfo,updateWrapper);
         }
@@ -156,9 +153,9 @@ public class EntryController {
             entryInfo.setTypeCode(Instant.now().toString());
             // todo 此处需要能够访问用户服务 引入common-security包调用 SecurityUtils.getUsername() 方法;
             entryInfo.setCreatedBy("admin");
-            entryInfo.setAuditStatus(EntryOptEnum.ADD.getCode());
+//            entryInfo.setAuditStatus(OptEnum.ADD.getCode());
             entryInfo.setCreatedTime(DateTime.now().toDate());
-            entryInfo.setAuditStatus(AuditStatusEnum.ADD.getCode());
+//            entryInfo.setAuditStatus(AuditStatusEnum.ADD.getCode());
             entryInfo.setDelFlag(DelConstants.EXITED);
             entryService.save(entryInfo);
         } catch (Exception e) {

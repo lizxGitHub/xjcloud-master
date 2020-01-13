@@ -18,6 +18,11 @@ public class EntryCategory implements Serializable,Cloneable{
     /** 乐观锁 */
     @Column(name = "revision")
     private Integer revision ;
+
+    /** 乐观锁 */
+    @Column(name = "def_key")
+    private String defKey ;
+
     /** 创建人 */
     @Column(name = "created_by")
     private String createdBy ;

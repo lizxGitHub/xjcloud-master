@@ -2,4 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gov.pbc.xjcloud.provider.contract.mapper.entry.EntryFlowMapper">
 
+    <resultMap id="EntryFlowVOMap" type="gov.pbc.xjcloud.provider.contract.vo.entry.EntryFlowVO">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="update_by" property="updatedBy"/>
+        <result column="update_time" property="updatedTime"/>
+        <result column="category_fk" property="categoryFk"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="userOpt" property="userOpt"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="instance_id" property="instanceId"/>
+        <result column="type_code" property="typeCode"/>
+    </resultMap>
+
+    <select id="selectEntryInfo" resultMap="EntryFlowVOMap">
+        select
+            a.id,
+            a.name,
+            a.type_code,
+            a.created_by,
+            a.created_time,
+            a.category_fk,
+            b.name category_name,
+            a.user_opt,
+            a.audit_status,
+            a.instance_id
+            from entry_flow a
+            left join entry_category b on a.category_fk = b.id
+        where a.del_flag='0'
+        <if test="query.name!=null and query.name!=''">
+            and a.name like concat('%',concat(#{query.name},'%'))
+        </if>
+
+        <if test="query.categoryFk!=null and query.categoryFk!=''">
+            and a.category_fk=#{query.categoryFk}
+        </if>
+        order by a.created_time desc
+
+    </select>
 </mapper>
