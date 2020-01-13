@@ -1,9 +1,9 @@
 package gov.pbc.xjcloud.provider.contract.mapper.entry;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryFlow;
+import gov.pbc.xjcloud.provider.contract.mapper.IBaseMapper;
 
-public interface EntryFlowMapper extends BaseMapper<EntryFlow> {
+public interface EntryFlowMapper extends IBaseMapper<EntryFlow> {
 
 
 }
