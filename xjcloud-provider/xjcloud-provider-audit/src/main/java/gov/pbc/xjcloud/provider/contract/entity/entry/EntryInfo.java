@@ -32,22 +32,22 @@ public class EntryInfo implements Serializable, Cloneable {
     /**
      * 创建人;username
      */
-    @Column(name = "create_by")
+    @Column(name = "created_by")
     private String createdBy;
     /**
      * 创建时间;创建时间
      */
-    @Column(name = "create_time")
+    @Column(name = "created_time")
     private Date createdTime;
     /**
      * 更新人;username
      */
-    @Column(name = "update_by")
+    @Column(name = "updated_by")
     private String updatedBy;
     /**
      * 更新时间;更新时间
      */
-    @Column(name = "updateTime")
+    @Column(name = "updated_time")
     private Date updatedTime;
     /**
      * 词条名称;词条名称

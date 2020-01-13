@@ -15,13 +15,13 @@
 	<packaging>pom</packaging>
 	
 	<modules>
-		<module>xjcloud-common-bom</module>
-		<module>xjcloud-common-core</module>
+<!--		<module>xjcloud-common-bom</module>-->
+<!--		<module>xjcloud-common-core</module>-->
 		<module>xjcloud-common-swagger</module>
 		<!--module>xjcloud-common-log</module>
 		<module>xjcloud-common-security</module>
 		<module>xjcloud-common-data</module-->
-		<module>xjcloud-common-minio</module>
-		<module>xjcloud-common-gateway</module>
+<!--		<module>xjcloud-common-minio</module>-->
+<!--		<module>xjcloud-common-gateway</module>-->
 	</modules>
 </project>

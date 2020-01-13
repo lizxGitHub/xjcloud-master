@@ -16,7 +16,7 @@
 
 	<modules>
 		<module>xjcloud-config</module>
-		<!--module>xjcloud-common</module-->
+		<module>xjcloud-common</module>
 		<module>xjcloud-eureka</module>
 		<module>xjcloud-provider</module>
 		<module>xjcloud-provider-api</module>
