@@ -94,5 +94,10 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name="del_flag")
     @TableLogic
     private String delFlag ;
+    /**
+     * 流程实例 ACTIVITI 流程实例
+     */
+    @Column(name = "instance_id")
+    private String instanceId;
 
 }

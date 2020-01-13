@@ -22,10 +22,12 @@
         <result column="audit_classification_id" property="auditClassificationId"/>
         <result column="auditing_experience" property="auditingExperience"/>
         <result column="risk_assessment_id" property="riskAssessmentId"/>
+        <result column="instance_id" property="instanceId"/>
     </resultMap>
 
     <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
         SELECT
+            a.id,
             a.project_code,
             a.project_name,
             a.implementing_agency_id,
@@ -63,6 +65,6 @@
     </select>
 
     <select id="selectEntryByCategoryId" resultType="java.util.HashMap">
-        SELECT id,`NAME` name FROM `entry_info` where category_fk = #{categoryId, jdbcType=VARCHAR}
+        SELECT id,`NAME` name FROM `entry_info` where category_fk = #{categoryId, jdbcType=VARCHAR} and del_flag = '0'
     </select>
 </mapper>
