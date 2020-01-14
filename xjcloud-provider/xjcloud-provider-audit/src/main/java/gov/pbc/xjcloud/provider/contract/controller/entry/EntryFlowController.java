@@ -119,10 +119,10 @@ public class EntryFlowController {
         try {
             QueryWrapper<EntryFlow> wrapper = new QueryWrapper<>();
             QueryWrapper<EntryInfo> entryInfoQueryWrapper = new QueryWrapper<>();
-            wrapper.like("name", entryFlow.getName());
+            wrapper.eq("name", entryFlow.getName());
             wrapper.eq("category_fk", entryFlow.getCategoryFk());
 
-            entryInfoQueryWrapper.like("name", entryFlow.getName());
+            entryInfoQueryWrapper.eq("name", entryFlow.getName());
             entryInfoQueryWrapper.eq("category_fk", entryFlow.getCategoryFk());
             //若存在id表示是修改名称检验id重复
             if (StringUtils.isNotBlank(entryFlow.getId())) {
