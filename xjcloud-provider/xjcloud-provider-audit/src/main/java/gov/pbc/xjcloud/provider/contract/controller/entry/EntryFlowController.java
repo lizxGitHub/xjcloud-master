@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.constants.OptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryCategory;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryFlow;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
@@ -19,6 +20,7 @@ import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.entry.EntryFlowVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.web.bind.annotation.*;
@@ -52,17 +54,11 @@ public class EntryFlowController {
      */
     @ApiOperation("词条页面信息")
     @GetMapping(value = {"page", ""})
-    public R<IPage<EntryFlowVO>> index(EntryFlow query, IPage<EntryFlowVO> page) {
+    public R<IPage<EntryFlowVO>> index(EntryFlowVO query, IPage<EntryFlowVO> page) {
         PageUtil.initPage(page);
         try {
-            QueryWrapper<EntryFlow> queryWrapper = new QueryWrapper<>();
+            //查询参数设置
             if (null != query) {
-                if (StringUtils.isNotBlank(query.getName())) {
-                    queryWrapper.like("name", query.getName());
-                }
-                if (StringUtils.isNotBlank(query.getCategoryFk())) {
-                    queryWrapper.like("category_fk", query.getCategoryFk());
-                }
                 page = entryFlowService.selectEntryInfo(page, query);
             }
         } catch (Exception e) {
@@ -70,6 +66,33 @@ public class EntryFlowController {
             return R.failed(e.getMessage());
         }
         return R.ok(page);
+    }
+
+    /**
+     * 查询参数设置
+     * @param query
+     * @param queryWrapper
+     */
+    private void initQuery(EntryFlowVO query, QueryWrapper<EntryFlow> queryWrapper) {
+        if (StringUtils.isNotBlank(query.getName())) {
+            queryWrapper.like("name", query.getName());
+        }
+        if (StringUtils.isNotBlank(query.getCategoryFk())) {
+            queryWrapper.eq("category_fk", query.getCategoryFk());
+        }
+        if (StringUtils.isNotBlank(query.getUserOpt())) {
+            queryWrapper.eq("user_opt", query.getName());
+        }
+        if (StringUtils.isNotBlank(query.getAuditStatus())) {
+            queryWrapper.eq("audit_status", query.getAuditStatus());
+        }
+        if (null != query.getCreatedStart() && null != query.getCreatedEnd()) {
+            queryWrapper.between("created_time", query.getCreatedStart(), query.getCreatedEnd());
+        } else if (null != query.getCreatedStart() && null == query.getCreatedEnd()) {
+            queryWrapper.lt("created_time", query.getCreatedStart());
+        } else if (null == query.getCreatedStart() && null != query.getCreatedEnd()) {
+            queryWrapper.gt("created_time", query.getCreatedEnd());
+        }
     }
 
     /**
@@ -93,8 +116,9 @@ public class EntryFlowController {
             entryFlow.setCreatedBy("user01");
             entryFlow.setApplyUser("user01");
             entryFlow.setInstanceId(IdGenUtil.uuid());
+            entryFlow.setEntryFk(IdGenUtil.uuid());
             //新增
-            entryFlow.setAuditStatus(AuditStatusEnum.ADD.getCode()+"");
+            entryFlow.setAuditStatus(AuditStatusEnum.ADD.getCode() + "");
             entryFlow.setUserOpt(OptEnum.ADD.getCode().toString());
             entryFlow.setCreatedTime(DateTime.now().toDate());
             entryFlow.setDelFlag(DelConstants.EXITED);
@@ -104,6 +128,48 @@ public class EntryFlowController {
             r.failed(e.getMessage());
         }
         return r;
+    }
+
+
+    /**
+     * 流程数据接口：删除
+     *
+     * @param id
+     * @return
+     */
+    @ApiOperation("用户删除词条流程")
+    @DeleteMapping("user_delete/{id}")
+    public R<Boolean> delete(@PathVariable String id) {
+        R<Boolean> r = new R<>();
+        Boolean b = false;
+        if (StringUtils.isBlank(id)) {
+            throw new NullArgumentException("请求参数不存在");
+        } else {
+            try {
+                EntryFlow byId = entryFlowService.getById(id);
+                if (null == byId) {
+                    throw new NullPointerException("该词条信息不存在");
+                }
+                if (StringUtils.isNotBlank(byId.getInstanceId())) {
+                    throw new IllegalAccessException("该词条正在审核中");
+                }
+                UpdateWrapper<EntryFlow> updateWrapper = new UpdateWrapper<>();
+                EntryFlow entryFlow = new EntryFlow();
+                entryFlow.setUserOpt(OptConstants.DEL);
+                entryFlow.setInstanceId(IdGenUtil.uuid());
+                entryFlow.setId(id);
+                updateWrapper.set("user_opt", OptConstants.DEL);
+                // todo 启动流程 获取流程实例ID
+                updateWrapper.set("instance_id", entryFlow.getInstanceId());
+                updateWrapper.eq("id", id);
+                b = entryFlowService.update(entryFlow, updateWrapper);
+            } catch (Exception e) {
+                r.setMsg(e.getMessage());
+                r.setData(false);
+                e.printStackTrace();
+            }
+        }
+        return r.setData(b);
     }
 
     /**
@@ -153,18 +219,27 @@ public class EntryFlowController {
             entryFlowService.validate(entryFlow, r);
 
             EntryFlow beforeFlow = entryFlowService.getById(entryFlow.getId());
-            if(null == beforeFlow){
+            if (null == beforeFlow) {
                 r.setData(false);
-                throw new NullPointerException("该数据已被删除");
+                r.failed("该数据已被删除");
+                throw new NullPointerException(r.getMsg());
             }
-            if(entryFlow.getRevision()!=beforeFlow.getRevision()){
+            if (entryFlow.getRevision() != beforeFlow.getRevision()) {
                 r.setData(false);
-                throw new NullPointerException("该数据已被更改，请刷新重试！");
+                r.failed("该数据已被更改，请刷新重试！");
+                throw new IllegalArgumentException(r.getMsg());
+            }
+            if (StringUtils.isNotBlank(beforeFlow.getInstanceId())) {
+                r.failed("该词条正在审核中,无法修改");
+                r.setData(false);
+                throw new NullPointerException(r.getMsg());
             }
             UpdateWrapper<EntryFlow> updateWrapper = new UpdateWrapper<>();
             updateWrapper.set("name", entryFlow.getName());
-            updateWrapper.set("revision", beforeFlow.getRevision()+1);
+            updateWrapper.set("revision", beforeFlow.getRevision() + 1);
             updateWrapper.set("remarks", entryFlow.getRemarks());
+            //用户行为更改
+            updateWrapper.set("user_opt", OptConstants.update);
             updateWrapper.set("category_fk", entryFlow.getCategoryFk());
             updateWrapper.set("updated_time", new Date());
             // todo 启动修改流程

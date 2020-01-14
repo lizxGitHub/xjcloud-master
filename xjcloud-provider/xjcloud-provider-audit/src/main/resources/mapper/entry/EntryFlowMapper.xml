@@ -11,7 +11,7 @@
         <result column="update_time" property="updatedTime"/>
         <result column="category_fk" property="categoryFk"/>
         <result column="category_name" property="categoryName"/>
-        <result column="userOpt" property="userOpt"/>
+        <result column="user_opt" property="userOpt"/>
         <result column="audit_status" property="auditStatus"/>
         <result column="instance_id" property="instanceId"/>
         <result column="type_code" property="typeCode"/>
@@ -35,10 +35,25 @@
         <if test="query.name!=null and query.name!=''">
             and a.name like concat('%',concat(#{query.name},'%'))
         </if>
+        <if test="query.userOpt!=null and query.userOpt!=''">
+            and a.user_opt = #{query.userOpt}
+        </if>
+        <if test="query.auditStatus!=null and query.auditStatus!=''">
+            and a.audit_status = #{query.auditStatus}
+        </if>
 
         <if test="query.categoryFk!=null and query.categoryFk!=''">
-            and a.category_fk=#{query.categoryFk}
+            and a.user_opt = #{query.userOpt}
         </if>
+
+        <if test="query.createdStart!=null and query.createdStart!=''">
+            and a.created_time  &gt;= #{query.createdStart}
+        </if>
+
+        <if test="query.createdEnd!=null and query.createdEnd!=''">
+            and a.created_time  &lt;= #{query.createdEnd}
+        </if>
+
         order by a.created_time desc
 
     </select>
