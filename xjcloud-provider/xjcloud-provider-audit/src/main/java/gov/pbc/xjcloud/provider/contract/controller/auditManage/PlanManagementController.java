@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.OptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
@@ -64,8 +65,13 @@ public class PlanManagementController {
     public R<Boolean> saveOrEditPlan(PlanCheckList planCheckList){
         R<Boolean> r = new R<>();
         try {
+            if (StringUtils.isBlank(planCheckList.getId())) {
+                int code = (int) ((Math.random()*9+1)*1000);
+                planCheckList.setProjectCode("PROJECT" + String.valueOf(code));
+                planCheckList.setDelFlag(DelConstants.EXITED);
+                planCheckList.setStatus(StateEnum.NO_PRESENTATION.getCode());
+            }
             planManagementService.validate(planCheckList,r);
-            planCheckList.setDelFlag(DelConstants.EXITED);
             planManagementService.saveOrUpdate(planCheckList);
         }catch (Exception e){
             e.printStackTrace();

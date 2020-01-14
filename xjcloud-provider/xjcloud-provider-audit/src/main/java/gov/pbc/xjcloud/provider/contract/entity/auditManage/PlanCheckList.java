@@ -100,4 +100,6 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "instance_id")
     private String instanceId;
 
+
+
 }
