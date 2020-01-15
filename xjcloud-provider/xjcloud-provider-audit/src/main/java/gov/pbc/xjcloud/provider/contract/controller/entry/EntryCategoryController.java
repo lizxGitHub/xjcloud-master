@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryCategory;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryCategoryServiceImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/audit-api/entry/category")
+@Api("词条分类")
 public class EntryCategoryController {
 
     @Autowired
@@ -25,7 +27,8 @@ public class EntryCategoryController {
      * 获取词条分类信息
      * @return
      */
-    @RequestMapping("/list")
+    @ApiOperation("获取词条类别")
+    @RequestMapping(value = "/list",method = RequestMethod.GET)
     public R<List<EntryCategory>> listR() {
         List<EntryCategory> list = entryCategoryService.list();
         return R.ok(list);
