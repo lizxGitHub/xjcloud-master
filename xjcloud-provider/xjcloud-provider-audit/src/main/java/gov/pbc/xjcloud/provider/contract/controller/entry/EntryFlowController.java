@@ -290,7 +290,7 @@ public class EntryFlowController {
      * @param instanceId
      * @return
      */
-    @ApiOperation("获取词条流程信息")
+    @ApiOperation("通过词条审核")
     @PutMapping("/pass/{instanceId}")
     public R<Boolean> passInstance(@PathVariable String instanceId) {
         R<Boolean> r = new R<>();
@@ -313,7 +313,7 @@ public class EntryFlowController {
      * @param instanceId
      * @return
      */
-    @ApiOperation("获取词条流程信息")
+    @ApiOperation("驳回词条审核")
     @PutMapping("/reject/{instanceId}")
     public R<Boolean> rejectInstance(@PathVariable String instanceId) {
         R<Boolean> r = new R<>();
