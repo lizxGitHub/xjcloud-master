@@ -18,7 +18,7 @@
         SET
         revision=#{revision},
         created_by=#{createdBy},
-        created_time=#{createdBy},
+        created_time=#{createdTime},
         name=#{createdBy},
         type_code=#{typeCode},
         category_fk=#{categoryFk},
