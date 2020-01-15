@@ -3,6 +3,8 @@ package gov.pbc.xjcloud.provider.contract.entity.entry;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -122,6 +124,7 @@ public class EntryFlow implements Serializable, Cloneable {
         entryInfo.setName(this.getName());
         entryInfo.setRemarks(this.getRemarks());
         entryInfo.setRevision(this.getRevision());
+        entryInfo.setDelFlag(DelConstants.EXITED);
         return entryInfo;
     }
 }

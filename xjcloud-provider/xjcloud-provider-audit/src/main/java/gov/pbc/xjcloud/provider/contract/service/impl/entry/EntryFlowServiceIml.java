@@ -54,7 +54,6 @@ public class EntryFlowServiceIml extends IBaseServiceImpl<EntryFlowMapper, Entry
         flowQueryWrapper.eq("instance_id", instanceId);
         EntryFlow entryFlow = entryFlowMapper.selectOne(flowQueryWrapper);
         EntryInfo entryInfo = entryFlow.getEntryInfo();
-        EntryInfo existEntry = entryMapper.selectById(entryInfo.getId());
         String optCodeStr = entryFlow.getUserOpt();
         Integer optCode = null==optCodeStr?0:Integer.valueOf(optCodeStr);
         OptEnum optEnum = OptEnum.getOptByCode(optCode);
@@ -63,17 +62,11 @@ public class EntryFlowServiceIml extends IBaseServiceImpl<EntryFlowMapper, Entry
                 entryMapper.insert(entryInfo);
                 break;
             case DEL:
-                if(null != existEntry){
-                    entryMapper.deleteById(existEntry.getId());
-                }else {
-                    entryMapper.deleteById(entryInfo.getId());
-                }
+                entryMapper.deleteById(entryInfo.getId());
+                break;
             case UPDATE:
-                if(null == existEntry){
-                    entryMapper.insert(entryInfo);
-                }else {
-                    entryMapper.updateById(entryInfo);
-                }
+                entryMapper.updateById(entryInfo);
+                break;
         }
 
         // 更新词条审核流程信息
