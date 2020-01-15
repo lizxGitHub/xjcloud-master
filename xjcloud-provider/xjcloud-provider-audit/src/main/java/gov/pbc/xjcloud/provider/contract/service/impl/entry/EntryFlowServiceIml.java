@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryFlow;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.AuditStatusEnum;
+import gov.pbc.xjcloud.provider.contract.enumutils.OptEnum;
 import gov.pbc.xjcloud.provider.contract.mapper.entry.EntryFlowMapper;
 import gov.pbc.xjcloud.provider.contract.mapper.entry.EntryMapper;
 import gov.pbc.xjcloud.provider.contract.service.entry.EntryFlowService;
@@ -54,11 +55,27 @@ public class EntryFlowServiceIml extends IBaseServiceImpl<EntryFlowMapper, Entry
         EntryFlow entryFlow = entryFlowMapper.selectOne(flowQueryWrapper);
         EntryInfo entryInfo = entryFlow.getEntryInfo();
         EntryInfo existEntry = entryMapper.selectById(entryInfo.getId());
-        if(null != existEntry){
-            entryMapper.updateById(entryInfo);
-        }else {
-            entryMapper.insert(entryInfo);
+        String optCodeStr = entryFlow.getUserOpt();
+        Integer optCode = null==optCodeStr?0:Integer.valueOf(optCodeStr);
+        OptEnum optEnum = OptEnum.getOptByCode(optCode);
+        switch (optEnum){
+            case ADD:
+                entryMapper.insert(entryInfo);
+                break;
+            case DEL:
+                if(null != existEntry){
+                    entryMapper.deleteById(existEntry.getId());
+                }else {
+                    entryMapper.deleteById(entryInfo.getId());
+                }
+            case UPDATE:
+                if(null == existEntry){
+                    entryMapper.insert(entryInfo);
+                }else {
+                    entryMapper.updateById(entryInfo);
+                }
         }
+
         // 更新词条审核流程信息
         UpdateWrapper<EntryFlow> flowUpdateWrapper = new UpdateWrapper<>();
         flowUpdateWrapper.set("audit_status", AuditStatusEnum.PASS.getCode());

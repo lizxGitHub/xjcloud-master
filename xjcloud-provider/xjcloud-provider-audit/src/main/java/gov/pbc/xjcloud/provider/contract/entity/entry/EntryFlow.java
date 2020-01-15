@@ -114,7 +114,7 @@ public class EntryFlow implements Serializable, Cloneable {
 
     public EntryInfo getEntryInfo() {
         EntryInfo entryInfo = new EntryInfo();
-        entryInfo.setId(this.getId());
+        entryInfo.setId(this.getEntryFk());
         entryInfo.setCreatedTime(new Date());
         entryInfo.setCreatedBy(this.getCreatedBy());
         entryInfo.setTypeCode(this.getTypeCode());

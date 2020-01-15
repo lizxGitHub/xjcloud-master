@@ -15,5 +15,20 @@ public enum OptEnum {
 
     private String tip;
 
+    /**
+     *
+     * @param code
+     * @return
+     */
+    public static OptEnum getOptByCode(Integer code) {
+        OptEnum[] values = OptEnum.values();
+        for (OptEnum value : values) {
+            if (value.code == code) {
+                return value;
+            }
+        }
+        return ADD;
+    }
+
 
 }
