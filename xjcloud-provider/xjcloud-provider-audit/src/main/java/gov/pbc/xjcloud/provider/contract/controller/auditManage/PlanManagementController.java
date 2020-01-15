@@ -1,10 +1,8 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
-import gov.pbc.xjcloud.provider.contract.constants.OptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
@@ -69,7 +67,7 @@ public class PlanManagementController {
                 int code = (int) ((Math.random()*9+1)*1000);
                 planCheckList.setProjectCode("PROJECT" + String.valueOf(code));
                 planCheckList.setDelFlag(DelConstants.EXITED);
-                planCheckList.setStatus(StateEnum.NO_PRESENTATION.getCode());
+                planCheckList.setNormalStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
             }
             planManagementService.validate(planCheckList,r);
             planManagementService.saveOrUpdate(planCheckList);
