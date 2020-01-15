@@ -77,7 +77,7 @@ public class EntryFlowController {
         if (StringUtils.isNotBlank(query.getName())) {
             queryWrapper.like("name", query.getName());
         }
-        if (StringUtils.isNotBlank(query.getCategoryFk())) {
+        if (null !=query.getCategoryFk()) {
             queryWrapper.eq("category_fk", query.getCategoryFk());
         }
         if (StringUtils.isNotBlank(query.getUserOpt())) {
@@ -137,7 +137,7 @@ public class EntryFlowController {
      * @param id
      * @return
      */
-    @ApiOperation("用户删除词条流程")
+    @ApiOperation("用户删除词条并发起流程")
     @DeleteMapping("user_delete/{id}")
     public R<Boolean> delete(@PathVariable String id) {
         R<Boolean> r = new R<>();
@@ -161,6 +161,8 @@ public class EntryFlowController {
                 updateWrapper.set("user_opt", OptConstants.DEL);
                 // todo 启动流程 获取流程实例ID
                 updateWrapper.set("instance_id", entryFlow.getInstanceId());
+                // 更改审核状态
+                updateWrapper.set("audit_status", AuditStatusEnum.ADD.getCode());
                 updateWrapper.eq("id", id);
                 b = entryFlowService.update(entryFlow, updateWrapper);
             } catch (Exception e) {
@@ -211,7 +213,7 @@ public class EntryFlowController {
      * @param entryFlow
      * @return
      */
-    @ApiOperation("用户删除词条")
+    @ApiOperation("用户修改词条并发起流程")
     @PutMapping("/update")
     public R<Boolean> updateEntryFlow(EntryFlow entryFlow) {
         R<Boolean> r = new R<>();
@@ -221,16 +223,16 @@ public class EntryFlowController {
             EntryFlow beforeFlow = entryFlowService.getById(entryFlow.getId());
             if (null == beforeFlow) {
                 r.setData(false);
-                r.failed("该数据已被删除");
+                r.setMsg("该数据已被删除");
                 throw new NullPointerException(r.getMsg());
             }
             if (entryFlow.getRevision() != beforeFlow.getRevision()) {
                 r.setData(false);
-                r.failed("该数据已被更改，请刷新重试！");
+                r.setMsg("该数据已被更改，请刷新重试！");
                 throw new IllegalArgumentException(r.getMsg());
             }
             if (StringUtils.isNotBlank(beforeFlow.getInstanceId())) {
-                r.failed("该词条正在审核中,无法修改");
+                r.setMsg("该词条正在审核中,无法修改");
                 r.setData(false);
                 throw new NullPointerException(r.getMsg());
             }
@@ -246,13 +248,15 @@ public class EntryFlowController {
             updateWrapper.set("updated_by", "user02");
             // 词条审核时使用该字段验证
             updateWrapper.set("instance_id", IdGenUtil.uuid());
+            // 更改审核状态
+            updateWrapper.set("audit_status", AuditStatusEnum.ADD.getCode());
             updateWrapper.eq("id", entryFlow.getId());
             entryFlowService.update(entryFlow, updateWrapper);
             r.setData(true);
             r.setCode(ApiErrorCode.SUCCESS.getCode());
         } catch (ConstraintViolationException e) {
-            r.failed(e.getMessage());
             e.printStackTrace();
+            r.setCode(ApiErrorCode.FAILED.getCode());
         }
         return r;
     }
@@ -275,6 +279,52 @@ public class EntryFlowController {
             r.setData(byId);
         } catch (Exception e) {
             r.failed(e.getMessage());
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    /**
+     * 根据id获取词条信息
+     *
+     * @param instanceId
+     * @return
+     */
+    @ApiOperation("获取词条流程信息")
+    @PutMapping("/pass/{instanceId}")
+    public R<Boolean> passInstance(@PathVariable String instanceId) {
+        R<Boolean> r = new R<>();
+        try {
+            if (StringUtils.isBlank(instanceId)) {
+                return r.failed("参数错误，请检查");
+            }
+            entryFlowService.passEntryFlow(instanceId);
+        } catch (Exception e) {
+            r.setMsg(e.getMessage());
+            r.setData(false);
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    /**
+     * 根据id获取词条信息
+     *
+     * @param instanceId
+     * @return
+     */
+    @ApiOperation("获取词条流程信息")
+    @PutMapping("/reject/{instanceId}")
+    public R<Boolean> rejectInstance(@PathVariable String instanceId) {
+        R<Boolean> r = new R<>();
+        try {
+            if (StringUtils.isBlank(instanceId)) {
+                return r.failed("参数错误，请检查");
+            }
+            entryFlowService.rejectEntryFlow(instanceId);
+        } catch (Exception e) {
+            r.setMsg(e.getMessage());
+            r.setData(false);
             e.printStackTrace();
         }
         return r;

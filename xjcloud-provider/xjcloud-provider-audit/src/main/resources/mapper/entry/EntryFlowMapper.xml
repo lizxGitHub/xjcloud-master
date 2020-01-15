@@ -47,11 +47,11 @@
         </if>
 
         <if test="query.createdStart!=null and query.createdStart!=''">
-            and a.created_time  &gt;= #{query.createdStart}
+            and DATE_FORMAT(a.created_time,'%Y-%m-%d')  &gt;= #{query.createdStart}
         </if>
 
         <if test="query.createdEnd!=null and query.createdEnd!=''">
-            and a.created_time  &lt;= #{query.createdEnd}
+            and DATE_FORMAT(a.created_time,'%Y-%m-%d')  &lt;= #{query.createdEnd}
         </if>
 
         order by a.created_time desc

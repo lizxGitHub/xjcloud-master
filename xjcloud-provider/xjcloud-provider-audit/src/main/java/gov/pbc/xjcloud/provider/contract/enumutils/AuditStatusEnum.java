@@ -9,7 +9,7 @@ public enum AuditStatusEnum {
 
     //  0-新建（待审核），1-审核通过，2-不通过
 
-    ADD(0, "新建"),
+    ADD(0, "新建(待审核)"),
 
     PASS(1, "审核通过"),
 

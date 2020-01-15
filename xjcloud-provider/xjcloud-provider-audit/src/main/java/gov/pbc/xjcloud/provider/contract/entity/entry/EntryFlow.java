@@ -73,7 +73,7 @@ public class EntryFlow implements Serializable, Cloneable {
      */
     @Column(name = "category_Fk")
     @NotNull(message = "词条分类不能为空！")
-    private String categoryFk;
+    private Integer categoryFk;
     /**
      * 词条说明
      */
@@ -112,4 +112,16 @@ public class EntryFlow implements Serializable, Cloneable {
     @TableLogic
     private String delFlag;
 
+    public EntryInfo getEntryInfo() {
+        EntryInfo entryInfo = new EntryInfo();
+        entryInfo.setId(this.getId());
+        entryInfo.setCreatedTime(new Date());
+        entryInfo.setCreatedBy(this.getCreatedBy());
+        entryInfo.setTypeCode(this.getTypeCode());
+        entryInfo.setCategoryFk(this.getCategoryFk());
+        entryInfo.setName(this.getName());
+        entryInfo.setRemarks(this.getRemarks());
+        entryInfo.setRevision(this.getRevision());
+        return entryInfo;
+    }
 }
