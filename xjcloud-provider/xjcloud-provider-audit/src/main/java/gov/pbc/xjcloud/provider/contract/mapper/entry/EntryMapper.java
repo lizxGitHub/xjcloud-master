@@ -16,4 +16,9 @@ public interface EntryMapper extends IBaseMapper<EntryInfo> {
      */
     List<EntryInfoVO> selectEntryInfo(@Param("page") Page page, @Param("query") EntryInfoVO query);
 
+    /**
+     * 动态修改
+     * @param entryInfo
+     */
+    void updateBySql(EntryInfo entryInfo);
 }

@@ -65,7 +65,7 @@ public class EntryFlowServiceIml extends IBaseServiceImpl<EntryFlowMapper, Entry
                 entryMapper.deleteById(entryInfo.getId());
                 break;
             case UPDATE:
-                entryMapper.updateById(entryInfo);
+                entryMapper.updateBySql(entryInfo);
                 break;
         }
 

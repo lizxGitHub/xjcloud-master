@@ -11,24 +11,34 @@
         <result column="update_time" property="updatedTime"/>
         <result column="category_fk" property="categoryFk"/>
         <result column="category_name" property="categoryName"/>
-        <result column="opt_type" property="optType"/>
-        <result column="audit_status" property="auditStatus"/>
-        <result column="instance_id" property="instanceId"/>
         <result column="type_code" property="typeCode"/>
     </resultMap>
+    <update id="updateBySql">
+        UPDATE entry_info
+        SET
+        revision=#{revision},
+        created_by=#{createdBy},
+        created_time=#{createdBy},
+        name=#{createdBy},
+        type_code=#{typeCode},
+        category_fk=#{categoryFk},
+        remarks=#{remarks} ,
+        del_flag=#{delFlag}
+        WHERE id=#{id}
+    </update>
 
     <select id="selectEntryInfo" resultMap="EntryInfoVOMap">
         select
-            a.id,
-            a.name,
-            a.type_code,
-            a.created_by,
-            a.created_time,
-            a.category_fk,
-            b.name category_name,
-            a.opt_type,
-            a.audit_status,
-            a.instance_id
+        a.id,
+        a.name,
+        a.type_code,
+        a.created_by,
+        a.created_time,
+        a.category_fk,
+        b.name category_name,
+        a.opt_type,
+        a.audit_status,
+        a.instance_id
         from entry_info a
         left join entry_category b on a.category_fk = b.id
         where a.del_flag='0'
