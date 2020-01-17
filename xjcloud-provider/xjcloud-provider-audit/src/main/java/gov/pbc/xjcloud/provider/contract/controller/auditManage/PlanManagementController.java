@@ -1,5 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +48,23 @@ public class PlanManagementController {
         }
         return R.ok(page);
     }
-
+    /**
+     * 获取审计计划
+     * @return
+     */
+    @ApiOperation("审计查询")
+    @GetMapping(value = {"planList", ""})
+    public R planList(PlanCheckList query, Page<Map<String, Object>> page){
+        List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
+        try {
+            planList =  planManagementService.selectEntryByQuery(query, page.getCurrent()-1, page.getSize());
+            page.setRecords(planList);
+            page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(page);
+    }
     /**
      * 获取实施机构
      * @return

@@ -35,4 +35,15 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     public List<Map<String, Object>> selectEntryByCategoryId(String categoryId) {
         return planManagementMapper.selectEntryByCategoryId(categoryId);
     }
+
+    @Override
+    public List<Map<String, Object>> selectEntryByQuery(PlanCheckList query, Long pageStart, Long pageNo) {
+        return planManagementMapper.selectEntryByQuery(query,pageStart,pageNo);
+    }
+
+    @Override
+    public int countEntryByQuery(PlanCheckList query) {
+        return Integer.valueOf(planManagementMapper.countEntryByQuery(query).get(0).get("count").toString());
+    }
+
 }
