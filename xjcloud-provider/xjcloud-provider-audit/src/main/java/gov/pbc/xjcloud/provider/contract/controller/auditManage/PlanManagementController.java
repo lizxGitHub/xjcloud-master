@@ -1,11 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
-<<<<<<< HEAD
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-=======
->>>>>>> 82cce58de38089283494150af2781bb79cf6a526
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
