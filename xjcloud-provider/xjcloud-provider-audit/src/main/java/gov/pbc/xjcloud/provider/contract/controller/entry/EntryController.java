@@ -27,6 +27,9 @@ import java.util.List;
  * @date 2020年1月6日21:53:24
  */
 @RestController
+
+//audit-api 是我们模拟网关地址加的
+
 @RequestMapping("/audit-api/entry")
 public class EntryController {
 

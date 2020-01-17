@@ -2,7 +2,7 @@ package gov.pbc.xjcloud.provider.contract.service.auditManage;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList;
 
 import java.util.List;
 import java.util.Map;
