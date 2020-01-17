@@ -3,7 +3,7 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
-import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;

@@ -1,7 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.mapper.auditManage;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.mapper.IBaseMapper;
 import org.apache.ibatis.annotations.Param;
 

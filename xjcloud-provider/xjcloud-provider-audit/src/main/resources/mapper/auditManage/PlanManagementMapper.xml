@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper">
 
-    <resultMap id="PlanCheckListMapper" type="gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanCheckList">
+    <resultMap id="PlanCheckListMapper" type="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         <result column="id" property="id"/>
         <result column="project_code" property="projectCode"/>
         <result column="project_name" property="projectName"/>

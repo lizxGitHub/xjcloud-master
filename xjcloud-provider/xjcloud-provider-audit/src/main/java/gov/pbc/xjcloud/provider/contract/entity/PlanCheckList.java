@@ -1,4 +1,4 @@
-package gov.pbc.xjcloud.provider.contract.entity.auditManage;
+package gov.pbc.xjcloud.provider.contract.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
