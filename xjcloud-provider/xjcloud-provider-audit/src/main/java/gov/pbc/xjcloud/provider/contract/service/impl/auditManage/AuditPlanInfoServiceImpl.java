@@ -29,4 +29,19 @@ public class AuditPlanInfoServiceImpl extends IBaseServiceImpl<AuditPlanInfoMapp
     public AuditPlanInfo getById(String id, String roleId) {
         return auditPlanInfoMapper.getById(id, roleId);
     }
+
+    @Override
+    public void updateById(String id, String status) {
+        auditPlanInfoMapper.updateById(id, status);
+    }
+
+    @Override
+    public void updateByPlanId(String planId, String roleId, String status) {
+        auditPlanInfoMapper.updateByPlanId(planId, roleId, status);
+    }
+
+    @Override
+    public void insertA(AuditPlanInfo query) {
+        auditPlanInfoMapper.insertA(query);
+    }
 }

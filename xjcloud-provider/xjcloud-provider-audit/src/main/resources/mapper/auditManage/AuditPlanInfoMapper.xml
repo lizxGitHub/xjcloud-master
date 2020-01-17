@@ -6,6 +6,7 @@
     <select id="selectAuditPlanInfoList" resultMap="AuditPlanInfoMap">
         SELECT
             b.id,
+            a.id plan_id,
             a.project_code,
             a.project_name,
             en1.`name` implementing_agency_id,
@@ -39,6 +40,7 @@
     <select id="getById" resultMap="AuditPlanInfoMap">
         SELECT
             b.id,
+            a.id plan_id,
             a.project_code,
             a.project_name,
             en1.`name` implementing_agency_id,
@@ -71,6 +73,53 @@
         LIMIT 1
     </select>
 
+    <update id="updateById">
+        UPDATE audit_plan_info
+        SET
+         `status` = #{status}
+        WHERE
+            id = #{id}
+    </update>
+
+    <update id="updateByPlanId">
+        UPDATE audit_plan_info
+        SET
+         `status` = #{status}
+        WHERE
+            plan_id = #{planId}
+            and role_id = #{roleId}
+    </update>
+
+    <insert id="insertA">
+        <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+            select replace(uuid(),'-','') AS id
+        </selectKey>
+        INSERT INTO audit_plan_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `id`,
+            `plan_id`,
+            `status`,
+            `role_id`,
+            `opinion`
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id,jdbcType=VARCHAR},
+            <if test="query.planCheckList.id != null">
+                #{query.planCheckList.id,jdbcType=VARCHAR},
+            </if>
+            <if test="query.status != null">
+                #{query.status,jdbcType=VARCHAR},
+            </if>
+            <if test="query.roleId != null">
+                #{query.roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="query.opinion != null">
+                #{query.opinion,jdbcType=VARCHAR},
+            </if>
+        </trim>
+
+    </insert>
+
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
     <resultMap type="gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo" id="AuditPlanInfoMap">
         <id property="id" column="id"/>
@@ -78,7 +127,7 @@
         <result property="roleId" column="role_id"/>
         <result property="opinion" column="opinion"/>
         <association property="planCheckList" javaType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
-            <id column="id" property="id"/>
+            <id column="plan_id" property="id"/>
             <result column="project_code" property="projectCode"/>
             <result column="project_name" property="projectName"/>
             <result column="implementing_agency_id" property="implementingAgencyId"/>
