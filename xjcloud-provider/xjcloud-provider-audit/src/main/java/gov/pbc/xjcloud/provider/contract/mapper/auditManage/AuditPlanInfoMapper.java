@@ -15,4 +15,6 @@ public interface AuditPlanInfoMapper extends IBaseMapper<AuditPlanInfo> {
      * @return
      */
     List<AuditPlanInfo> selectAuditPlanInfoList(@Param("page") Page page, @Param("query") AuditPlanInfo query);
+
+    AuditPlanInfo getById(@Param("id") String id, @Param("roleId") String roleId);
 }

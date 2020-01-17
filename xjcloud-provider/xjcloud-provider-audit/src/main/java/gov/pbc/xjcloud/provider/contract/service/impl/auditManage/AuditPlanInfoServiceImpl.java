@@ -24,4 +24,9 @@ public class AuditPlanInfoServiceImpl extends IBaseServiceImpl<AuditPlanInfoMapp
         page.setRecords(list);
         return page;
     }
+
+    @Override
+    public AuditPlanInfo getById(String id, String roleId) {
+        return auditPlanInfoMapper.getById(id, roleId);
+    }
 }
