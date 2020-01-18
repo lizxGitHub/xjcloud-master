@@ -61,24 +61,15 @@ public class AuditProjectInfoController {
 
     }
 
-    @ApiOperation("获取问题信息")
-    @PostMapping("/reportPlan")
-    public R<Boolean> reportPlan(@RequestParam(name = "ids", required = true) String ids, @RequestParam(name = "roleId", required = true) String roleId) {
+    @ApiOperation("完善项目")
+    @PostMapping("/improvePlan")
+    public R<Boolean> improvePlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
         R<Boolean> r = new R<>();
-        String[] idArray = ids.split(",");
         try {
-            for (String id : idArray) {
-                AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
-                if ("1004".equals(auditPlanInfo.getStatus())) { //如果是被驳回 证明存在记录 不用新增
-                    String planId = auditPlanInfo.getPlanCheckList().getId();
-                    auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1005");
-                } else {
-                    auditPlanInfo.setRoleId("2");
-                    auditPlanInfo.setStatus("1005");
-                    auditProjectInfoServiceImpl.insertA(auditPlanInfo);
-                }
-                auditProjectInfoServiceImpl.updateById(id, "1002");
-            }
+            auditProjectInfoServiceImpl.updateById(id, "1001");
+            AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
+            String planId = auditPlanInfo.getPlanCheckList().getId();
+            auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1005");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,13 +78,28 @@ public class AuditProjectInfoController {
 
     @ApiOperation("获取问题信息")
     @PostMapping("/approvalPlan")
-    public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
+    public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId, String status) {
         R<Boolean> r = new R<>();
         try {
-            auditProjectInfoServiceImpl.updateById(id, "1007");
             AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
             String planId = auditPlanInfo.getPlanCheckList().getId();
-            auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1003");
+            if (StringUtils.isNotBlank(status) && "1005".equals(status) && "2".equals(roleId)) {
+                auditProjectInfoServiceImpl.updateById(id, "1006");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1002");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1001");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1005");
+            } else if (StringUtils.isNotBlank(status) && "1005".equals(status) && "4".equals(roleId)) {
+                auditProjectInfoServiceImpl.updateById(id, "1005");
+            } else if (StringUtils.isNotBlank(status) && "1001".equals(status) && "3".equals(roleId)) {
+                auditProjectInfoServiceImpl.updateById(id, "1002");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1008");
+            } else if (StringUtils.isNotBlank(status) && "1008".equals(status) && "1".equals(roleId)) {
+                auditProjectInfoServiceImpl.updateById(id, "1007");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1004");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1007");
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1006");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

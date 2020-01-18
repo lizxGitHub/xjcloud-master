@@ -105,11 +105,11 @@ public class AuditPlanInfoController {
             //审核部门一般员工
             AuditProjectInfo auditProjectInfo = auditProjectInfoServiceImpl.getById(id, "1");
             if (auditProjectInfo != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1011");
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1001");
             } else {
                 auditProjectInfo = new AuditProjectInfo();
                 auditProjectInfo.setRoleId("1");
-                auditProjectInfo.setStatus("1011");
+                auditProjectInfo.setStatus("1001");
                 auditProjectInfo.setPlanCheckList(planCheckList);
                 auditProjectInfo.setOpinion("");
                 auditProjectInfoServiceImpl.insertA(auditProjectInfo);
@@ -117,11 +117,11 @@ public class AuditPlanInfoController {
             //审核部门领导
             AuditProjectInfo auditProjectInfo2 = auditProjectInfoServiceImpl.getById(id, "2");
             if (auditProjectInfo2 != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1016");
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1004");
             } else {
                 auditProjectInfo2 = new AuditProjectInfo();
                 auditProjectInfo2.setRoleId("2");
-                auditProjectInfo2.setStatus("1016");
+                auditProjectInfo2.setStatus("1004");
                 auditProjectInfo2.setPlanCheckList(planCheckList);
                 auditProjectInfo2.setOpinion("");
                 auditProjectInfoServiceImpl.insertA(auditProjectInfo2);
@@ -130,11 +130,11 @@ public class AuditPlanInfoController {
             //被审核部门一般员工
             AuditProjectInfo auditProjectInfo3 = auditProjectInfoServiceImpl.getById(id, "3");
             if (auditProjectInfo3 != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "3", "1021");
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "3", "1006");
             } else {
                 auditProjectInfo3 = new AuditProjectInfo();
                 auditProjectInfo3.setRoleId("3");
-                auditProjectInfo3.setStatus("1021");
+                auditProjectInfo3.setStatus("1006");
                 auditProjectInfo3.setPlanCheckList(planCheckList);
                 auditProjectInfo3.setOpinion("");
                 auditProjectInfoServiceImpl.insertA(auditProjectInfo3);
@@ -142,11 +142,11 @@ public class AuditPlanInfoController {
             //被审核部门领导
             AuditProjectInfo auditProjectInfo4 = auditProjectInfoServiceImpl.getById(id, "4");
             if (auditProjectInfo4 != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "4", "1026");
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "4", "1004");
             } else {
                 auditProjectInfo4 = new AuditProjectInfo();
                 auditProjectInfo4.setRoleId("4");
-                auditProjectInfo4.setStatus("1026");
+                auditProjectInfo4.setStatus("1004");
                 auditProjectInfo4.setPlanCheckList(planCheckList);
                 auditProjectInfo4.setOpinion("");
                 auditProjectInfoServiceImpl.insertA(auditProjectInfo4);
