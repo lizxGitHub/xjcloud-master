@@ -3,9 +3,12 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +27,9 @@ public class AuditPlanInfoController {
 
     @Resource
     private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
+
+    @Resource
+    private AuditProjectInfoServiceImpl auditProjectInfoServiceImpl;
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
@@ -92,8 +98,60 @@ public class AuditPlanInfoController {
         try {
             auditPlanInfoServiceImpl.updateById(id, "1007");
             AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
-            String planId = auditPlanInfo.getPlanCheckList().getId();
+            PlanCheckList planCheckList = auditPlanInfo.getPlanCheckList();
+            String planId = planCheckList.getId();
             auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1003");
+
+            //审核部门一般员工
+            AuditProjectInfo auditProjectInfo = auditProjectInfoServiceImpl.getById(id, "1");
+            if (auditProjectInfo != null) {
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1011");
+            } else {
+                auditProjectInfo = new AuditProjectInfo();
+                auditProjectInfo.setRoleId("1");
+                auditProjectInfo.setStatus("1011");
+                auditProjectInfo.setPlanCheckList(planCheckList);
+                auditProjectInfo.setOpinion("");
+                auditProjectInfoServiceImpl.insertA(auditProjectInfo);
+            }
+            //审核部门领导
+            AuditProjectInfo auditProjectInfo2 = auditProjectInfoServiceImpl.getById(id, "2");
+            if (auditProjectInfo2 != null) {
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1016");
+            } else {
+                auditProjectInfo2 = new AuditProjectInfo();
+                auditProjectInfo2.setRoleId("2");
+                auditProjectInfo2.setStatus("1016");
+                auditProjectInfo2.setPlanCheckList(planCheckList);
+                auditProjectInfo2.setOpinion("");
+                auditProjectInfoServiceImpl.insertA(auditProjectInfo2);
+            }
+
+            //被审核部门一般员工
+            AuditProjectInfo auditProjectInfo3 = auditProjectInfoServiceImpl.getById(id, "3");
+            if (auditProjectInfo3 != null) {
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "3", "1021");
+            } else {
+                auditProjectInfo3 = new AuditProjectInfo();
+                auditProjectInfo3.setRoleId("3");
+                auditProjectInfo3.setStatus("1021");
+                auditProjectInfo3.setPlanCheckList(planCheckList);
+                auditProjectInfo3.setOpinion("");
+                auditProjectInfoServiceImpl.insertA(auditProjectInfo3);
+            }
+            //被审核部门领导
+            AuditProjectInfo auditProjectInfo4 = auditProjectInfoServiceImpl.getById(id, "4");
+            if (auditProjectInfo4 != null) {
+                auditPlanInfoServiceImpl.updateByPlanId(planId, "4", "1026");
+            } else {
+                auditProjectInfo4 = new AuditProjectInfo();
+                auditProjectInfo4.setRoleId("4");
+                auditProjectInfo4.setStatus("1026");
+                auditProjectInfo4.setPlanCheckList(planCheckList);
+                auditProjectInfo4.setOpinion("");
+                auditProjectInfoServiceImpl.insertA(auditProjectInfo4);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
