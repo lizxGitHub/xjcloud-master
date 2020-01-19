@@ -5,6 +5,7 @@ import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,24 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     @Override
     public List<Map<String, Object>> selectEntryByQuery(PlanCheckList query, Long pageStart, Long pageNo) {
+        String agencyId = query.getImplementingAgencyId();
+        if(StringUtils.contains(agencyId,"all")){
+            agencyId="";
+        }
+        query.setImplementingAgencyId(StringUtils.join(StringUtils.split(agencyId,","),"','"));
+        if(StringUtils.equals(query.getAuditNatureId(),"all")){
+            query.setAuditNatureId("");
+        }
+        if(StringUtils.equals(query.getAuditObjectId(),"all")){
+            query.setAuditObjectId("");
+        }
+        if(StringUtils.equals(query.getProblemSeverityId(),"all")){
+            query.setProblemSeverityId("");
+        }
+        if(StringUtils.equals(query.getRectifySituationId(),"all")){
+            query.setRectifySituationId("");
+        }
+
         return planManagementMapper.selectEntryByQuery(query,pageStart,pageNo);
     }
 
@@ -44,5 +63,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     public int countEntryByQuery(PlanCheckList query) {
         return Integer.valueOf(planManagementMapper.countEntryByQuery(query).get(0).get("count").toString());
     }
+
+    @Override
+    public List<Map<String, Object>> groupCountEntryByQuery(PlanCheckList query, String groupField, String groupName) {
+        return planManagementMapper.groupCountEntryByQuery(query, groupField, groupName);
+    }
+
 
 }

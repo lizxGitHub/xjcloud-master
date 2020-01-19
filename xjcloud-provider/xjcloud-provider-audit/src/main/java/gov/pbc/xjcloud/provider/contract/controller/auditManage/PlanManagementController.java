@@ -53,6 +53,7 @@ public class PlanManagementController {
     public R planList(PlanCheckList query, Page<Map<String, Object>> page){
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
+
             planList =  planManagementService.selectEntryByQuery(query, page.getCurrent()-1, page.getSize());
             page.setRecords(planList);
             page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));

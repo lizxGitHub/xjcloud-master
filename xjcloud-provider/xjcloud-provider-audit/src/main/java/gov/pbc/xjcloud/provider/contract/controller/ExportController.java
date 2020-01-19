@@ -64,6 +64,21 @@ public class ExportController {
             if(StringUtils.isNotBlank(query.getProblemDescription())){
                 filterListMap.add("问题清单：-"+query.getProblemDescription());
             }
+            if(StringUtils.isNotBlank(query.getImplementingAgencyId())&&!StringUtils.contains(query.getImplementingAgencyId(),"all")){
+                filterListMap.add("实施机构：-"+query.getImplementingAgencyId());
+            }
+            if(StringUtils.isNotBlank(query.getAuditNatureId())&&!StringUtils.equals(query.getAuditNatureId(),"all")){
+                filterListMap.add("审计性质：-"+query.getAuditNatureId());
+            }
+            if(StringUtils.isNotBlank(query.getAuditObjectId())&&!StringUtils.equals(query.getAuditObjectId(),"all")){
+                filterListMap.add("审计对象：-"+query.getAuditObjectId());
+            }
+            if(StringUtils.isNotBlank(query.getProblemSeverityId())&&!StringUtils.equals(query.getProblemSeverityId(),"all")){
+                filterListMap.add("严重程度：-"+query.getProblemSeverityId());
+            }
+            if(StringUtils.isNotBlank(query.getRectifySituationId())&&!StringUtils.equals(query.getRectifySituationId(),"all")){
+                filterListMap.add("整改情况：-"+query.getProblemSeverityId());
+            }
             //查询条件名：值
             ExcelUtils.getEXCELFileWithHeader(fileName, fileName, listMap, columns, keys, response,filterListMap);
         } catch (Exception e) {

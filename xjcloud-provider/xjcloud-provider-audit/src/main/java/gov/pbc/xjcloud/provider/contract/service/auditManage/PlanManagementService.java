@@ -3,6 +3,7 @@ package gov.pbc.xjcloud.provider.contract.service.auditManage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -16,4 +17,6 @@ public interface PlanManagementService extends IService<PlanCheckList> {
     List<Map<String, Object>>  selectEntryByQuery(PlanCheckList query, Long pageStart, Long pageNo);
 
     int  countEntryByQuery(PlanCheckList query);
+
+    List<Map<String, Object>> groupCountEntryByQuery(PlanCheckList query, String groupField, String groupName);
 }
