@@ -27,14 +27,16 @@
             a.auditing_experience,
             a.risk_assessment_id,
             b.id,
-            b.status,
+            b. STATUS,
             b.role_id,
             b.opinion
-        from audit_plan_info b, plan_check_list a
-        LEFT JOIN entry_info en1 on a.implementing_agency_id = en1.id
-        LEFT JOIN entry_info en2 on a.audit_object_id = en2.id
-        LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
-        where a.del_flag='0' and b.plan_id=a.id and b.role_id= #{query.roleId}
+        FROM
+            plan_check_list a
+        LEFT JOIN  audit_plan_info b ON b.plan_id = a.id
+        LEFT JOIN entry_info en1 ON a.implementing_agency_id = en1.id
+        LEFT JOIN entry_info en2 ON a.audit_object_id = en2.id
+        LEFT JOIN entry_info en3 ON a.audit_nature_id = en3.id
+        where a.del_flag='0' and b.role_id= #{query.roleId}
     </select>
 
     <select id="getById" resultMap="AuditPlanInfoMap">
@@ -43,9 +45,9 @@
             a.id plan_id,
             a.project_code,
             a.project_name,
-            en1.`name` implementing_agency_id,
-            en2.`name` audit_object_id,
-            en3.`name` audit_nature_id,
+            a.implementing_agency_id,
+            a.audit_object_id,
+            a.audit_nature_id,
             a.audit_year,
             a.normal_status,
             a.leader_status,
@@ -63,11 +65,8 @@
             b.status,
             b.role_id,
             b.opinion
-        from audit_plan_info b, plan_check_list a
-        LEFT JOIN entry_info en1 on a.implementing_agency_id = en1.id
-        LEFT JOIN entry_info en2 on a.audit_object_id = en2.id
-        LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
-        where a.del_flag='0' and b.plan_id=a.id
+        from   plan_check_list a left join audit_plan_info b on   b.plan_id=a.id
+        where a.del_flag='0'
         and b.role_id= #{roleId}
         and b.id= #{id}
         LIMIT 1
@@ -135,7 +134,7 @@
             <result column="audit_nature_id" property="auditNatureId"/>
             <result column="audit_year" property="auditYear"/>
             <result column="normal_status" property="normalStatus"/>
-            <result column="leader_status" property="LeaderStatus"/>
+            <result column="leader_status" property="leaderStatus"/>
             <result column="question_entry_id" property="questionEntryId"/>
             <result column="problem_severity_id" property="problemSeverityId"/>
             <result column="rectify_situation_id" property="rectifySituationId"/>

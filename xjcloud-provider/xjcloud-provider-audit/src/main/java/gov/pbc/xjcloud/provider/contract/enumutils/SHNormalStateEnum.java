@@ -17,7 +17,8 @@ public enum SHNormalStateEnum {
     SH_NORMAL_COMPLETE("1005", "已完成"),
     SH_NORMAL_REJECT("1006", "已驳回"),
     SH_NORMAL_HAVE_AUDIT("1007", "已批准"),
-    SH_NORMAL_WAIT_AUDIT("1008", "整改完成待审核");
+    SH_NORMAL_WAIT_AUDIT("1008", "整改完成待审核"),
+    SH_NORMAL_ARRAIGNMENT_ING("1009", "整改中");
 
     private String code;
     private String name;

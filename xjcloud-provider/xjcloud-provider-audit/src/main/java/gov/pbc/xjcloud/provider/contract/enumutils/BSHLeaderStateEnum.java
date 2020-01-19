@@ -15,7 +15,8 @@ public enum BSHLeaderStateEnum {
     BSH_LEADER_HAVE_AUDIT("1003", "已完成"),
     BSH_LEADER_RECTIFICATION("1004", "待完善"),
     BSH_LEADER_ARRAIGNMENT("1005", "批准待整改"),
-    BSH_LEADER_AWAITING_FILE("1006", "待归档");
+    BSH_LEADER_AWAITING_FILE("1006", "待归档"),
+    BSH_LEADER_ARRAIGNMENT_ING("1007", "整改中");
 
     private String code;
     private String name;
