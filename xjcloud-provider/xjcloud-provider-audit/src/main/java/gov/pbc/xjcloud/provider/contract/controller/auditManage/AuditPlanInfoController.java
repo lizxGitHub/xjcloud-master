@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
 import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
@@ -22,7 +23,7 @@ import javax.annotation.Resource;
  */
 @Api("审计计划管理")
 @RestController
-@RequestMapping("/audit-api/auditPlan")
+@RequestMapping("/audit-api/auditPlan/")
 public class AuditPlanInfoController {
 
     @Resource
@@ -189,12 +190,17 @@ public class AuditPlanInfoController {
                 auditPlanInfo.getPlanCheckList().setProjectCode("PROJECT" + String.valueOf(code));
                 auditPlanInfo.getPlanCheckList().setDelFlag(DelConstants.EXITED);
                 auditPlanInfo.setStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
+
+                auditPlanInfoServiceImpl.save(auditPlanInfo);
+            }else {
+                auditPlanInfoServiceImpl.validate(auditPlanInfo, r);
+                auditPlanInfoServiceImpl.updateById(auditPlanInfo);
             }
-            auditPlanInfoServiceImpl.validate(auditPlanInfo, r);
-            auditPlanInfoServiceImpl.saveOrUpdate(auditPlanInfo);
+
         } catch (Exception e) {
             e.printStackTrace();
-            r.failed(e.getMessage());
+           r.setMsg(e.getMessage());
+           r.setCode(ApiErrorCode.FAILED.getCode());
         }
         return r;
     }

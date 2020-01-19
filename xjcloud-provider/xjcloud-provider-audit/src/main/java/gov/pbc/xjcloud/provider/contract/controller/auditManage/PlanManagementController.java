@@ -6,6 +6,7 @@ import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -82,12 +83,16 @@ public class PlanManagementController {
         try {
             if (StringUtils.isBlank(planCheckList.getId())) {
                 int code = (int) ((Math.random()*9+1)*1000);
-                planCheckList.setProjectCode("PROJECT" + String.valueOf(code));
-                planCheckList.setDelFlag(DelConstants.EXITED);
+                planCheckList.setProjectCode("PROJECT-" + String.valueOf(code));
                 planCheckList.setNormalStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
             }
-            planManagementService.validate(planCheckList,r);
-            planManagementService.saveOrUpdate(planCheckList);
+            planManagementService.validate(planCheckList,r);//  此处没有对字段添加约束，所以不会生效
+            if(StringUtils.isBlank(planCheckList.getId())){
+                planCheckList.setDelFlag(DelConstants.EXITED);
+                planManagementService.save(planCheckList);
+            }else{
+                planManagementService.updateById(planCheckList);
+            }
         }catch (Exception e){
             e.printStackTrace();
             r.failed(e.getMessage());
