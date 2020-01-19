@@ -107,4 +107,27 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + " group by pcl.${groupField}",
             "</script>"})
     List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupField")String groupField, @Param("groupName")String groupName);
+
+    @Select({"<script>",
+            "select count(*) planSum,sum(case when status='1001' then 1 else 0 end) finishCount,sum(case when status='1002' then 1 else 0 end)  nofinishCount,"
+                    + "sum(case when status='1003' then 1 else 0 end) timeoutCount from plan_check_list where del_flag='0'" +
+                    "<if test='agencyId!=null and agencyId!=\"\"'> and implementing_agency_id='${agencyId}'</if>",
+            "</script>"})
+    List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId);
+
+    @Select({"<script>",
+            "select agency_entry.name,pcl.implementing_agency_id id,count(*) projectCount,sum(case when pcl.status='1001' then 1 else 0 end) finishCount,"
+                    +"sum(case when pcl.status='1002' then 1 else 0 end) noFinishCount,sum(case when pcl.status='1003' then 1 else 0 end) timeoutCount"
+                    +" from plan_check_list pcl left join entry_info agency_entry on pcl.implementing_agency_id=agency_entry.id and agency_entry.del_flag=0 and agency_entry.category_fk=1"
+                    +" where pcl.del_flag='0' group by pcl.implementing_agency_id "
+                    +" <if test='pageStart!=null and pageNo!=null'> limit ${pageStart},${pageNo}</if>",
+            "</script>"})
+    List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo);
+    @Select({"<script>",
+            "select count(*) from (select agency_entry.name,pcl.implementing_agency_id id,count(*) projectCount,sum(case when pcl.status='1001' then 1 else 0 end) finishCount,"
+                    +"sum(case when pcl.status='1002' then 1 else 0 end) noFinishCount,sum(case when pcl.status='1003' then 1 else 0 end) timeoutCount"
+                    +" from plan_check_list pcl left join entry_info agency_entry on pcl.implementing_agency_id=agency_entry.id and agency_entry.del_flag=0 and agency_entry.category_fk=1"
+                    +" where pcl.del_flag='0' group by pcl.implementing_agency_id ) a",
+            "</script>"})
+    List<Map<String, Object>> countStatisticPlanReport();
 }

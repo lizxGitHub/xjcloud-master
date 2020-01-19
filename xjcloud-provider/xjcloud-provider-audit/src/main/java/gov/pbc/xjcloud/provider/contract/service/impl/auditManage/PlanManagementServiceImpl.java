@@ -69,5 +69,18 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         return planManagementMapper.groupCountEntryByQuery(query, groupField, groupName);
     }
 
+    @Override
+    public List<Map<String, Object>> countPlan(String agencyId) {
+        return planManagementMapper.countPlan(agencyId);
+    }
 
+    @Override
+    public List<Map<String, Object>> statisticPlanReport(Long pageStart, Long pageNo) {
+        return planManagementMapper.statisticPlanReport(pageStart, pageNo);
+    }
+
+    @Override
+    public int countStatisticPlanReport() {
+        return Integer.valueOf(planManagementMapper.countStatisticPlanReport().get(0).get("count").toString());
+    }
 }

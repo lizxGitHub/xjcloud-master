@@ -7,9 +7,13 @@ package gov.pbc.xjcloud.provider.contract.controller.statistic;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +35,11 @@ public class PlanStatisticController {
     @Resource
     private PlanManagementService planManagementService;
 
+    /**
+     * 审计统计图表
+     * @return
+     */
+    @ApiOperation("审计统计图表")
     @RequestMapping("/questionStatistic")
     public R questionStatistic(PlanCheckList query, HttpServletResponse response) {
         R<JSONObject> r = new R<>();
@@ -123,10 +132,42 @@ public class PlanStatisticController {
             }
             r.setData(data);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return r;
+    }
+    /**
+     * 不同状态审计统计个数
+     * @return
+     */
+    @ApiOperation("不同状态审计统计个数")
+    @PostMapping("/countOfPlan")
+    public R countOfPlan(String agenceId, HttpServletResponse response) {
+        R<JSONObject> r = new R<>();
+        try {
+            JSONObject data = new JSONObject();
+            List<Map<String,Object>> resultList = planManagementService.countPlan(agenceId);
+            if(null!=resultList&&resultList.size()>0){
+                data = JSONObject.parseObject(JSONObject.toJSONString(resultList.get(0)));
+            }
+            r.setData(data);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return r;
     }
 
+    @ApiOperation("审计查询")
+    @GetMapping(value = {"report", ""})
+    public R planList(Page<Map<String, Object>> page){
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        try {
+            resultList =  planManagementService.statisticPlanReport(page.getCurrent()-1, page.getSize());
+            page.setRecords(resultList);
+            page.setTotal(Long.valueOf(planManagementService.countStatisticPlanReport()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(page);
+    }
 }
