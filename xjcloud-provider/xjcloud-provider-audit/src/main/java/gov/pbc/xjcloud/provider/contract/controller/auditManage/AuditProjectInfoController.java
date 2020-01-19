@@ -66,17 +66,44 @@ public class AuditProjectInfoController {
     public R<Boolean> improvePlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
         R<Boolean> r = new R<>();
         try {
-            auditProjectInfoServiceImpl.updateById(id, "1001");
+            auditProjectInfoServiceImpl.updateById(id, "1001"); // 完善项目之后 本身变为待审核
             AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
             String planId = auditPlanInfo.getPlanCheckList().getId();
-            auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1005");
+            auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1005"); //审核部门领导状态 完善待审核
         } catch (Exception e) {
             e.printStackTrace();
         }
         return r.setData(true);
     }
 
-    @ApiOperation("获取问题信息")
+    @ApiOperation("整改项目")
+    @PostMapping("/RectifyPlan")
+    public R<Boolean> RectifyPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
+        R<Boolean> r = new R<>();
+        try {
+            auditProjectInfoServiceImpl.updateById(id, "1001"); // 确认整改后，变成整改中
+            AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
+            String planId = auditPlanInfo.getPlanCheckList().getId();
+            auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1009"); //整改中
+            auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1008"); //整改中
+            auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1007"); //整改中
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return r.setData(true);
+    }
+
+    /**
+     * 角色1：审核部门一般员工
+     * 角色2：审核部门领导
+     * 角色3：被审核部门一般员工
+     * 角色4：被审核部门领导
+     * @param id
+     * @param roleId
+     * @param status
+     * @return
+     */
+    @ApiOperation("提交审核")
     @PostMapping("/approvalPlan")
     public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId, String status) {
         R<Boolean> r = new R<>();
@@ -84,10 +111,10 @@ public class AuditProjectInfoController {
             AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
             String planId = auditPlanInfo.getPlanCheckList().getId();
             if (StringUtils.isNotBlank(status) && "1005".equals(status) && "2".equals(roleId)) {
-                auditProjectInfoServiceImpl.updateById(id, "1006");
-                auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1002");
-                auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1001");
-                auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1005");
+                auditProjectInfoServiceImpl.updateById(id, "1006"); //待整改
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1002"); //待整改
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1007"); //待整改
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1005"); //批准待整改
             } else if (StringUtils.isNotBlank(status) && "1005".equals(status) && "4".equals(roleId)) {
                 auditProjectInfoServiceImpl.updateById(id, "1005");
             } else if (StringUtils.isNotBlank(status) && "1001".equals(status) && "3".equals(roleId)) {
@@ -98,6 +125,11 @@ public class AuditProjectInfoController {
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1004");
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1007");
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1006");
+            } else if (StringUtils.isNotBlank(status) && "1007".equals(status) && "2".equals(roleId)) {
+                auditProjectInfoServiceImpl.updateById(id, "1009"); //已完成
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1005"); //已完成
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1005"); //已完成
+                auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1003"); //已完成
             }
 
         } catch (Exception e) {

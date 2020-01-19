@@ -15,7 +15,8 @@ public enum BSHNormalStateEnum {
     BSH_NORMAL_REJECT("1003", "被驳回"),
     BSH_NORMAL_APPROVAL("1004", "已批准"),
     BSH_NORMAL_COMPLETE("1005", "已完成"),
-    BSH_NORMAL_RECTIFICATION("1006", "待完善");
+    BSH_NORMAL_RECTIFICATION("1006", "待完善"),
+    BSH_NORMAL_RECTIFY("1007", "待整改");
 
     private String code;
     private String name;

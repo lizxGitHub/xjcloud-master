@@ -16,7 +16,9 @@ public enum SHLeaderStateEnum {
     SH_LEADER_RECTIFICATION("1004", "待完善"),
     SH_LEADER_RECTIFICATION_AUDIT("1005", "完善待审核"),
     SH_LEADER_AWAITING_RECTIFY("1006", "待整改"),
-    SH_LEADER_AWAITING_FILE("1007", "待归档");
+    SH_LEADER_AWAITING_FILE("1007", "待归档"),
+    SH_LEADER_ARRAIGNMENT_ING("1008", "整改中"),
+    SH_LEADER_COMPLETE("1009", "已完成");
 
     private String code;
     private String name;

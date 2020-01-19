@@ -78,7 +78,8 @@ public class AuditPlanInfoController {
                 AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
                 if ("1004".equals(auditPlanInfo.getStatus())) { //如果是被驳回 证明存在记录 不用新增
                     String planId = auditPlanInfo.getPlanCheckList().getId();
-                    auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1005");
+                    auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1002"); //待审核
+                    auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1005"); //待审核
                 } else {
                     auditPlanInfo.setRoleId("2");
                     auditPlanInfo.setStatus("1005");
@@ -92,7 +93,7 @@ public class AuditPlanInfoController {
         return r.setData(true);
     }
 
-    @ApiOperation("获取问题信息")
+    @ApiOperation("批准问题信息")
     @PostMapping("/approvalPlan")
     public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
         R<Boolean> r = new R<>();
