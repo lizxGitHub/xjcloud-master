@@ -30,10 +30,10 @@
             <version>2.7.0</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-amqp</artifactId>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>joda-time</groupId>
@@ -73,17 +73,17 @@
             <version>3.11</version>
         </dependency>
         <!-- 通用mapper -->
-<!--        <dependency>-->
-<!--            <groupId>tk.mybatis</groupId>-->
-<!--            <artifactId>mapper-spring-boot-starter</artifactId>-->
-<!--            <version>1.1.2</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>javax.persistence</groupId>-->
-<!--                    <artifactId>persistence-api</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>tk.mybatis</groupId>-->
+        <!--            <artifactId>mapper-spring-boot-starter</artifactId>-->
+        <!--            <version>1.1.2</version>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>javax.persistence</groupId>-->
+        <!--                    <artifactId>persistence-api</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -162,11 +162,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.amqp</groupId>-->
-<!--            <artifactId>spring-rabbit-test</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.amqp</groupId>-->
+        <!--            <artifactId>spring-rabbit-test</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -181,11 +181,32 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>gov.pbc.xjcloud.common</groupId>
+            <artifactId>xjcloud-common-core</artifactId>
+        </dependency>
         <!--        <dependency>-->
         <!--            <groupId>gov.pbc.xjcloud.common</groupId>-->
         <!--            <artifactId>xjcloud-common-data</artifactId>-->
         <!--            <version>0.0.1</version>-->
         <!--        </dependency>-->
+
+        <dependency>
+            <groupId>gov.pbc.xjcloud.provider.api</groupId>
+            <artifactId>xjcloud-provider-api</artifactId>
+            <version>0.0.1</version>
+            <systemPath>${project.basedir}/src/lib/xjcloud-provider-usercenter-api.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>gov.pbc.xjcloud.provider.api</groupId>
+            <artifactId>xjcloud-provider-api</artifactId>
+            <version>0.0.1</version>
+            <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -207,6 +228,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
+
+                    <includeSystemScope>true</includeSystemScope>
+
                 </configuration>
             </plugin>
         </plugins>

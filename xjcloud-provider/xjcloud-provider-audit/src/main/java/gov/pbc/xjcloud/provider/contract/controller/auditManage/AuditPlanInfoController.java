@@ -3,6 +3,7 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.activiti.api.feign.RemoteProcessService;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
@@ -15,6 +16,7 @@ import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,6 +37,9 @@ public class AuditPlanInfoController {
 
     @Resource
     private AuditActivitiService auditActivitiService;
+
+    RemoteProcessService remoteProcessService;
+
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
@@ -159,7 +164,8 @@ public class AuditPlanInfoController {
             }
 
             //activity import gov.pbc.xjcloud.common.core.util.R;
-            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
+//            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
+            gov.pbc.xjcloud.common.core.util.R a = remoteProcessService.start("auditPlan", 1, "");
             System.out.println(a);
 
         } catch (Exception e) {
