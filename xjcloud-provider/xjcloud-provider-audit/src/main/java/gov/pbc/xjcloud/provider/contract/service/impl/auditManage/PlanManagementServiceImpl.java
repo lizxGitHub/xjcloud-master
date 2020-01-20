@@ -65,8 +65,8 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
-    public List<Map<String, Object>> groupCountEntryByQuery(PlanCheckList query, String groupField, String groupName) {
-        return planManagementMapper.groupCountEntryByQuery(query, groupField, groupName);
+    public List<Map<String, Object>> groupCountEntryByQuery(PlanCheckList query, String groupName, String groupField) {
+        return planManagementMapper.groupCountEntryByQuery(query, groupName, groupField);
     }
 
     @Override

@@ -82,8 +82,8 @@ public class PlanStatisticController {
             if(null!=groupFilters){
                 if(groupFilters.size()==1){ //一维生成扇形图
                     data.put("type",0);
-                    String groupName = groupFilters.get(0);
-                    String groupField = groupFieldFilters.get(0);
+                    String groupField = groupFilters.get(0);
+                    String groupName = groupFieldFilters.get(0);
                     data.put("subtitle", subtitles.get(0));
                     //根据groupName统计问题数
                     List<Map<String,Object>> groupList = planManagementService.groupCountEntryByQuery(query, groupName, groupField);
@@ -156,7 +156,6 @@ public class PlanStatisticController {
         }
         return r;
     }
-
     @ApiOperation("审计查询")
     @GetMapping(value = {"report", ""})
     public R planList(Page<Map<String, Object>> page){

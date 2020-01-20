@@ -159,8 +159,8 @@ public class AuditPlanInfoController {
             }
 
             //activity import gov.pbc.xjcloud.common.core.util.R;
-            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
-            System.out.println(a);
+//            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
+//            System.out.println(a);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +68,24 @@ public class PlanManagementController {
             e.printStackTrace();
         }
         return R.ok(page);
+    }
+    /**
+     * 删除项目
+     *
+     * @param ids
+     * @return
+     */
+    @ApiOperation("项目删除")
+    @PostMapping("/deletePlan")
+    public R<Boolean> deletePlan(String ids) {
+        R<Boolean> r = new R<>();
+        Boolean b;
+        if (StringUtils.isBlank(ids)) {
+            throw new NullArgumentException("请求参数不存在");
+        } else {
+            b = planManagementService.removeByIds(Arrays.asList(StringUtils.split(ids, ",")));
+        }
+        return r.setData(b);
     }
     /**
      * 获取实施机构

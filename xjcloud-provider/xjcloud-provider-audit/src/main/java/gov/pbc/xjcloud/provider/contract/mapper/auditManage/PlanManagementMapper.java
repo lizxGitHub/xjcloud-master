@@ -32,7 +32,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     @Select({"<script>",
-            "select audit_year,agency_entry.name agency_name,audit_entry.name audit_object_name,pcl.project_name,"
+            "select audit_year,agency_entry.name agency_name,audit_entry.name audit_object_name,pcl.id,pcl.project_code,pcl.project_name,pcl.status,"
                     + " audit_nature_entry.name audit_nature_name,problem_severity_entry.name problem_severity_name,"
                     + "rectify_situation_entry.name rectify_situation_name,risk_assessment_entry.name risk_assessment_name,"
                     + "pcl.problem_characterization,pcl.problem_description"
@@ -106,7 +106,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + " <if test='query.rectifySituationId!=null and query.rectifySituationId!=\"\"'> and (pcl.rectify_situation_id = '${query.rectifySituationId}')</if>"
                     + " group by pcl.${groupField}",
             "</script>"})
-    List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupField")String groupField, @Param("groupName")String groupName);
+    List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupName")String groupName, @Param("groupField")String groupField);
 
     @Select({"<script>",
             "select count(*) planSum,sum(case when status='1001' then 1 else 0 end) finishCount,sum(case when status='1002' then 1 else 0 end)  nofinishCount,"
@@ -124,7 +124,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "</script>"})
     List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo);
     @Select({"<script>",
-            "select count(*) from (select agency_entry.name,pcl.implementing_agency_id id,count(*) projectCount,sum(case when pcl.status='1001' then 1 else 0 end) finishCount,"
+            "select count(*) count from (select agency_entry.name,pcl.implementing_agency_id id,count(*) projectCount,sum(case when pcl.status='1001' then 1 else 0 end) finishCount,"
                     +"sum(case when pcl.status='1002' then 1 else 0 end) noFinishCount,sum(case when pcl.status='1003' then 1 else 0 end) timeoutCount"
                     +" from plan_check_list pcl left join entry_info agency_entry on pcl.implementing_agency_id=agency_entry.id and agency_entry.del_flag=0 and agency_entry.category_fk=1"
                     +" where pcl.del_flag='0' group by pcl.implementing_agency_id ) a",

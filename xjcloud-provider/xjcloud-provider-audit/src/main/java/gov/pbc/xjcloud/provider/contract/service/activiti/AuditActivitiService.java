@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.service.activiti;
 
-import gov.pbc.xjcloud.common.core.util.R;
+
+import com.baomidou.mybatisplus.extension.api.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
