@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
+import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
@@ -29,6 +31,9 @@ public class PlanManagementController {
 
     @Resource
     private PlanManagementServiceImpl planManagementService;
+
+    @Resource
+    private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
 
     /**
      * 获取审计计划
@@ -91,6 +96,12 @@ public class PlanManagementController {
             if(StringUtils.isBlank(planCheckList.getId())){
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planManagementService.save(planCheckList);
+                AuditPlanInfo auditPlanInfo = new AuditPlanInfo();
+                auditPlanInfo.setRoleId("1");
+                auditPlanInfo.setStatus("1001");
+                auditPlanInfo.setPlanCheckList(planCheckList);
+                auditPlanInfo.setOpinion("");
+                auditPlanInfoServiceImpl.insertA(auditPlanInfo);
             }else{
                 planManagementService.updateById(planCheckList);
             }

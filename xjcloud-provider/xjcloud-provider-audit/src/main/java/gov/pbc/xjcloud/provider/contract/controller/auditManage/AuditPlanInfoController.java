@@ -8,6 +8,7 @@ import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
+import gov.pbc.xjcloud.provider.contract.service.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
@@ -31,6 +32,9 @@ public class AuditPlanInfoController {
 
     @Resource
     private AuditProjectInfoServiceImpl auditProjectInfoServiceImpl;
+
+    @Resource
+    private AuditActivitiService auditActivitiService;
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
@@ -153,6 +157,10 @@ public class AuditPlanInfoController {
                 auditProjectInfo4.setOpinion("");
                 auditProjectInfoServiceImpl.insertA(auditProjectInfo4);
             }
+
+            //activity import gov.pbc.xjcloud.common.core.util.R;
+            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
+            System.out.println(a);
 
         } catch (Exception e) {
             e.printStackTrace();

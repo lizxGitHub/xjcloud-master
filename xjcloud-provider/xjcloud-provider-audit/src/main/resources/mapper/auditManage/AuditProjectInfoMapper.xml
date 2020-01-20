@@ -90,10 +90,13 @@
             and role_id = #{roleId}
     </update>
 
-    <insert id="insertA">
+    <insert id="insertA" useGeneratedKeys="true" keyProperty="id">
         <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
             select replace(uuid(),'-','') AS id
         </selectKey>
+<!--        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">-->
+<!--            SELECT LAST_INSERT_ID() AS id-->
+<!--        </selectKey>-->
         INSERT INTO audit_project_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             `id`,

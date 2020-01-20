@@ -3,9 +3,12 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +27,9 @@ public class AuditProjectInfoController {
 
     @Resource
     private AuditProjectInfoServiceImpl auditProjectInfoServiceImpl;
+
+    @Resource
+    private PlanInfoServiceImpl planInfoServiceImpl;
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
@@ -83,10 +89,18 @@ public class AuditProjectInfoController {
         try {
             auditProjectInfoServiceImpl.updateById(id, "1001"); // 确认整改后，变成整改中
             AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
+            PlanCheckList planCheckList = auditPlanInfo.getPlanCheckList();
             String planId = auditPlanInfo.getPlanCheckList().getId();
             auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1009"); //整改中
             auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1008"); //整改中
             auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1007"); //整改中
+
+            //归档操作
+            PlanInfo planInfo = new PlanInfo();
+            planInfo.setStatus("1001"); //正在实施
+            planInfo.setPlanCheckList(planCheckList);
+            planInfo.setOpinion("");
+            planInfoServiceImpl.insertA(planInfo);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +123,8 @@ public class AuditProjectInfoController {
         R<Boolean> r = new R<>();
         try {
             AuditProjectInfo auditPlanInfo = auditProjectInfoServiceImpl.getById(id, roleId);
-            String planId = auditPlanInfo.getPlanCheckList().getId();
+            PlanCheckList planCheckList = auditPlanInfo.getPlanCheckList();
+            String planId = planCheckList.getId();
             if (StringUtils.isNotBlank(status) && "1005".equals(status) && "2".equals(roleId)) {
                 auditProjectInfoServiceImpl.updateById(id, "1006"); //待整改
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1002"); //待整改
@@ -125,11 +140,17 @@ public class AuditProjectInfoController {
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1004");
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "2", "1007");
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1006");
+
+                //归档操作
+                planInfoServiceImpl.updateByPlanId(planId, "1002"); //实施结束
             } else if (StringUtils.isNotBlank(status) && "1007".equals(status) && "2".equals(roleId)) {
                 auditProjectInfoServiceImpl.updateById(id, "1009"); //已完成
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "1", "1005"); //已完成
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "3", "1005"); //已完成
                 auditProjectInfoServiceImpl.updateByPlanId(planId, "4", "1003"); //已完成
+
+                //归档
+                planInfoServiceImpl.updateByPlanId(planId, "1003"); //归档
             }
 
         } catch (Exception e) {
