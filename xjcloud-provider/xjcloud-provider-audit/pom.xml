@@ -51,6 +51,7 @@
             <artifactId>xjcloud-common-swagger</artifactId>
             <version>0.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
@@ -193,7 +194,7 @@
 
         <dependency>
             <groupId>gov.pbc.xjcloud.provider.api</groupId>
-            <artifactId>xjcloud-provider-api</artifactId>
+            <artifactId>xjcloud-provider-usercenter-api</artifactId>
             <version>0.0.1</version>
             <systemPath>${project.basedir}/src/lib/xjcloud-provider-usercenter-api.jar</systemPath>
             <scope>system</scope>
@@ -201,7 +202,7 @@
 
         <dependency>
             <groupId>gov.pbc.xjcloud.provider.api</groupId>
-            <artifactId>xjcloud-provider-api</artifactId>
+            <artifactId>xjcloud-provider-activiti-api</artifactId>
             <version>0.0.1</version>
             <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>
             <scope>system</scope>
