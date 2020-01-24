@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * 远程调用
  */
-@FeignClient(value = "xjcloud-provider-activiti")
+@FeignClient(value = "xjcloud-provider-activiti",configuration =FeignClientConfig.class )
 public interface AuditActivitiService {
 
     @PutMapping("/process/start/{processDefKey}/{businessId}")
