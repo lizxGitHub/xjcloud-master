@@ -1,6 +1,8 @@
 package gov.pbc.xjcloud.provider.contract.controller.login;
 
+import cn.hutool.system.UserInfo;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
+import com.google.common.collect.Maps;
 import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
 import lombok.val;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -26,8 +29,14 @@ public class LoginController {
     @Value("${audit.auth-url}")
     private String authUrl;
 
+    @Value("${audit.user-url}")
+    private String userUrl;
+
     @Value("${audit.Authorization}")
     private String authorization;
+
+    @Value("${audit.token-name:Authorization}")
+    private String tokenName;
 
     @Autowired
     RestTemplate restTemplate;
@@ -53,6 +62,20 @@ public class LoginController {
             e.printStackTrace();
         }
         return r;
+    }
+    @RequestMapping("user/info")
+    public R<String> getUserInfo(HttpServletRequest request) {
+        Map<String, String> headers = Maps.newHashMap();
+        String tokenValue = request.getHeader(tokenName);
+        headers.put(tokenName, tokenValue);
+        String s = null;
+        try {
+            s = HttpRequestUtil.sendGet(userUrl, new String(), headers);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new R<String>().setData(s);
     }
 
     public String getParams(Map<String, String> map) {

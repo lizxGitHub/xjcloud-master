@@ -82,5 +82,8 @@ mybatis-plus:
 audit:
     gate-way:
         service-id: xjcloud-gateway
-    auth-url: http://39.108.50.114:9999/auth/oauth/token
+        url: http://39.108.50.114:9999
+    auth-url: ${audit.gate-way.url}/auth/oauth/token
+    user-url: ${audit.gate-way.url}/admin/users/info
     Authorization: Basic eGpjbG91ZDp4amNsb3Vk
+    token-name: Authorization

@@ -1,5 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -11,18 +13,23 @@ import java.util.Optional;
 public class HttpRequestUtil {
     /**
      * 向指定URL发送GET方法的请求
-     * 
-     * @param url
-     *            发送请求的URL
-     * @param param
-     *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+     *
+     * @param url   发送请求的URL
+     * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return URL 所代表远程资源的响应结果
      */
     public static String sendGet(String url, String param) {
+       return sendGet(url,param,null);
+    }
+
+    public static String sendGet(String url, String param, Map<String, String> headers) {
         String result = "";
         BufferedReader in = null;
         try {
-            String urlNameString = url + "?" + param;
+            String urlNameString = url ;
+            if(StringUtils.isNotBlank(param)){
+                urlNameString=url  + "?" + param;
+            }
             URL realUrl = new URL(urlNameString);
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();
@@ -31,6 +38,11 @@ public class HttpRequestUtil {
             connection.setRequestProperty("connection", "Keep-Alive");
             connection.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            Optional.of(headers).ifPresent(e -> {
+                e.entrySet().stream().filter(Objects::nonNull).forEach(x -> {
+                    connection.setRequestProperty(x.getKey(), x.getValue());
+                });
+            });
             // 建立实际的连接
             connection.connect();
             // 获取所有响应头字段
@@ -64,18 +76,17 @@ public class HttpRequestUtil {
     }
 
     public static String sendPost(String url, String param) {
-        return sendPost(url,param,null);
+        return sendPost(url, param, null);
     }
+
     /**
      * 向指定 URL 发送POST方法的请求
-     * 
-     * @param url
-     *            发送请求的 URL
-     * @param param
-     *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+     *
+     * @param url   发送请求的 URL
+     * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return 所代表远程资源的响应结果
      */
-    public static String sendPost(String url, String param,Map<String,String> header) {
+    public static String sendPost(String url, String param, Map<String, String> header) {
         OutputStreamWriter out = null;
         BufferedReader in = null;
         String result = "";
@@ -88,16 +99,16 @@ public class HttpRequestUtil {
             conn.setRequestProperty("connection", "Keep-Alive");
             conn.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            Optional.of(header).ifPresent(e->{
-                e.entrySet().stream().filter(Objects::nonNull).forEach(x->{
-                    conn.setRequestProperty(x.getKey(),x.getValue());
+            Optional.of(header).ifPresent(e -> {
+                e.entrySet().stream().filter(Objects::nonNull).forEach(x -> {
+                    conn.setRequestProperty(x.getKey(), x.getValue());
                 });
             });
             // 发送POST请求必须设置如下两行
             conn.setDoOutput(true);
             conn.setDoInput(true);
             // 获取URLConnection对象对应的输出流
-            out =new OutputStreamWriter(conn.getOutputStream(), "utf-8");
+            out = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
             // 发送请求参数
             out.write(param);
             // flush输出流的缓冲
@@ -110,23 +121,22 @@ public class HttpRequestUtil {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送 POST 请求出现异常！"+e);
+            System.out.println("发送 POST 请求出现异常！" + e);
             e.printStackTrace();
         }
         //使用finally块来关闭输出流、输入流
-        finally{
-            try{
-                if(out!=null){
+        finally {
+            try {
+                if (out != null) {
                     out.close();
                 }
-                if(in!=null){
+                if (in != null) {
                     in.close();
                 }
-            }
-            catch(IOException ex){
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
         return result;
-    }    
+    }
 }
