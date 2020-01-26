@@ -1,4 +1,4 @@
-package gov.pbc.xjcloud.provider.contract.service.activiti;
+package gov.pbc.xjcloud.provider.contract.feign.activiti;
 
 import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.config.FeignClientConfig;

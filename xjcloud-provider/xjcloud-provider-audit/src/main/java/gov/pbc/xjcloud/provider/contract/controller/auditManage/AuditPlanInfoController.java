@@ -9,14 +9,13 @@ import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
-import gov.pbc.xjcloud.provider.contract.service.activiti.AuditActivitiService;
+import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
