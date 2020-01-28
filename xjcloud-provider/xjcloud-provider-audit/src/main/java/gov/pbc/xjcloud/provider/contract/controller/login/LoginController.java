@@ -1,15 +1,12 @@
 package gov.pbc.xjcloud.provider.contract.controller.login;
 
-import cn.hutool.system.UserInfo;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.google.common.collect.Maps;
 import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
-import lombok.val;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.netflix.ribbon.apache.HttpClientUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,7 +61,7 @@ public class LoginController {
         return r;
     }
     @RequestMapping("user/info")
-    public R<String> getUserInfo(HttpServletRequest request) {
+    public JSONObject getUserInfo(HttpServletRequest request) {
         Map<String, String> headers = Maps.newHashMap();
         String tokenValue = request.getHeader(tokenName);
         headers.put(tokenName, tokenValue);
@@ -74,8 +71,8 @@ public class LoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return new R<String>().setData(s);
+        JSONObject jsStr = JSONObject.parseObject(s);
+        return jsStr;
     }
 
     public String getParams(Map<String, String> map) {
