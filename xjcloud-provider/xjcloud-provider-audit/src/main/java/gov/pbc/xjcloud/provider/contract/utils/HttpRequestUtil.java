@@ -3,6 +3,7 @@ package gov.pbc.xjcloud.provider.contract.utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -32,7 +33,7 @@ public class HttpRequestUtil {
             }
             URL realUrl = new URL(urlNameString);
             // 打开和URL之间的连接
-            URLConnection connection = realUrl.openConnection();
+            HttpURLConnection connection =(HttpURLConnection) realUrl.openConnection();
             // 设置通用的请求属性
             connection.setRequestProperty("accept", "*/*");
             connection.setRequestProperty("connection", "Keep-Alive");
@@ -93,7 +94,7 @@ public class HttpRequestUtil {
         try {
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
+            HttpURLConnection conn =(HttpURLConnection) realUrl.openConnection();
             // 设置通用的请求属性
             conn.setRequestProperty("accept", "*/*");
             conn.setRequestProperty("connection", "Keep-Alive");
