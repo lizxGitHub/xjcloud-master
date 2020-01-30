@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
@@ -100,6 +101,7 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "instance_id")
     private String instanceId;
 
-
+    @TableField(exist = false)
+    private String attentionId;
 
 }

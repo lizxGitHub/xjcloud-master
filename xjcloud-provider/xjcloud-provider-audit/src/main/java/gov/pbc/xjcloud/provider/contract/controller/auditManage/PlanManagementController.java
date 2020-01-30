@@ -37,6 +37,7 @@ public class PlanManagementController {
 
     /**
      * 获取审计计划
+     *
      * @return
      */
     @ApiOperation("审计页面信息")
@@ -50,16 +51,60 @@ public class PlanManagementController {
         }
         return R.ok(page);
     }
+
+    @ApiOperation("计划完成分类分页")
+    @GetMapping(value = {"{type}/page", ""})
+    public R<Page<PlanCheckList>> typePage(@PathVariable("type") String type, @RequestParam Map<String, String> query) {
+        Page<PlanCheckList> page = new Page<>();
+        try {
+            String current = query.getOrDefault("current", "1");
+            String size = query.getOrDefault("size", "10");
+            page.setCurrent(Long.parseLong(current));
+            page.setSize(Long.parseLong(size));
+            query.put("type", type);
+            page = planManagementService.selectTypePage(page, query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(page);
+    }
+
+    @ApiOperation("关注计划")
+    @PutMapping(value = {"check/attention"})
+    public R<Boolean> check(String userId, String checkStr) {
+
+        if (StringUtils.isBlank(checkStr)) {
+            return R.failed("关注列数为空");
+        }
+        if (StringUtils.isBlank(userId)) {
+            return R.failed("用户不存在");
+        }
+        try {
+            planManagementService.addCheckAttention(userId,checkStr);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return R.ok(Boolean.TRUE);
+    }
+
+    @ApiOperation("取消关注")
+    @PutMapping(value = {"uncheck/attention"})
+    public R<Boolean> uncheck(@RequestBody List<Map<String, String>> uncheckList) {
+
+        return R.ok(Boolean.TRUE);
+    }
+
     /**
      * 获取审计计划
+     *
      * @return
      */
     @ApiOperation("审计查询")
     @GetMapping(value = {"planList", ""})
-    public R planList(PlanCheckList query, Page<Map<String, Object>> page){
+    public R planList(PlanCheckList query, Page<Map<String, Object>> page) {
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
-            planList =  planManagementService.selectEntryByQuery(query, page.getCurrent()-1, page.getSize());
+            planList = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             page.setRecords(planList);
             page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));
         } catch (Exception e) {
@@ -67,8 +112,10 @@ public class PlanManagementController {
         }
         return R.ok(page);
     }
+
     /**
      * 获取实施机构
+     *
      * @return
      */
     @ApiOperation("获取实施机构")
@@ -79,19 +126,20 @@ public class PlanManagementController {
 
     /**
      * 创建问题
+     *
      * @return
      */
     @ApiOperation("保存问题")
     @PostMapping("/saveOrEditPlan")
-    public R<Boolean> saveOrEditPlan(PlanCheckList planCheckList){
+    public R<Boolean> saveOrEditPlan(PlanCheckList planCheckList) {
         R<Boolean> r = new R<>();
         try {
             if (StringUtils.isBlank(planCheckList.getId())) {
-                int code = (int) ((Math.random()*9+1)*1000);
+                int code = (int) ((Math.random() * 9 + 1) * 1000);
                 planCheckList.setProjectCode("PROJECT-" + String.valueOf(code));
             }
-            planManagementService.validate(planCheckList,r);//  此处没有对字段添加约束，所以不会生效
-            if(StringUtils.isBlank(planCheckList.getId())){
+            planManagementService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
+            if (StringUtils.isBlank(planCheckList.getId())) {
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planManagementService.save(planCheckList);
                 AuditPlanInfo auditPlanInfo = new AuditPlanInfo();
@@ -100,10 +148,10 @@ public class PlanManagementController {
                 auditPlanInfo.setPlanCheckList(planCheckList);
                 auditPlanInfo.setOpinion("");
                 auditPlanInfoServiceImpl.insertA(auditPlanInfo);
-            }else{
+            } else {
                 planManagementService.updateById(planCheckList);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             r.failed(e.getMessage());
         }

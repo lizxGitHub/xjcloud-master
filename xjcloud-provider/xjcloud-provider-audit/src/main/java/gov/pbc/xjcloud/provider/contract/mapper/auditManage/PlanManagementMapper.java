@@ -83,4 +83,16 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + "",
             "</script>"})
     List<Map<String, Object>> countEntryByQuery(@Param("query") PlanCheckList query);
+
+    /**
+     * 分页查询（ByType）
+     * @param page
+     * @param query
+     * @return
+     */
+    List<PlanCheckList> selectTypePage(@Param("page") Page<PlanCheckList> page, @Param("query") Map<String, String> query);
+
+    void cancelCheckAttention(@Param("userId") String userId, @Param("checkArr") String[] checkArr);
+
+    void addCheckAttention(@Param("userId") String userId, @Param("checkArr") String[] checkArr);
 }

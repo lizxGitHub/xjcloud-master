@@ -45,4 +45,21 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         return Integer.valueOf(planManagementMapper.countEntryByQuery(query).get(0).get("count").toString());
     }
 
+    /**
+     * 按计划完成类型查询分页数据
+     * @param page
+     * @param query
+     * @return
+     */
+    public Page<PlanCheckList> selectTypePage(Page<PlanCheckList> page, Map<String, String> query) {
+        List<PlanCheckList> list = planManagementMapper.selectTypePage(page,query);
+        page.setRecords(list);
+        return page;
+    }
+
+    public void addCheckAttention(String userId, String checkStr) {
+        String[] checkArr = checkStr.split(",");
+        planManagementMapper.cancelCheckAttention(userId,checkArr);
+        planManagementMapper.addCheckAttention(userId,checkArr);
+    }
 }
