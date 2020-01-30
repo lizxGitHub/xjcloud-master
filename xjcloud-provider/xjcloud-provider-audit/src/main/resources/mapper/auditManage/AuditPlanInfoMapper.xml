@@ -13,8 +13,7 @@
             en2.`name` audit_object_id,
             en3.`name` audit_nature_id,
             a.audit_year,
-            a.normal_status,
-            a.leader_status,
+            a.status,
             a.question_entry_id,
             a.problem_severity_id,
             a.rectify_situation_id,
@@ -49,8 +48,7 @@
             a.audit_object_id,
             a.audit_nature_id,
             a.audit_year,
-            a.normal_status,
-            a.leader_status,
+            a.status,
             a.question_entry_id,
             a.problem_severity_id,
             a.rectify_situation_id,
@@ -137,8 +135,7 @@
             <result column="audit_object_id" property="auditObjectId"/>
             <result column="audit_nature_id" property="auditNatureId"/>
             <result column="audit_year" property="auditYear"/>
-            <result column="normal_status" property="normalStatus"/>
-            <result column="leader_status" property="leaderStatus"/>
+            <result column="status" property="status"/>
             <result column="question_entry_id" property="questionEntryId"/>
             <result column="problem_severity_id" property="problemSeverityId"/>
             <result column="rectify_situation_id" property="rectifySituationId"/>

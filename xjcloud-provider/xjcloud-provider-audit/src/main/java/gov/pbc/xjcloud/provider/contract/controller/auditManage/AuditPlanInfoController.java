@@ -1,10 +1,13 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.activiti.api.feign.RemoteProcessService;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.constants.DeptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
@@ -19,6 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  *
@@ -217,6 +224,37 @@ public class AuditPlanInfoController {
            r.setCode(ApiErrorCode.FAILED.getCode());
         }
         return r;
+    }
+
+    /**
+     */
+    @GetMapping("/XJInfo")
+    public JSONObject getXJInfo() {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jSONArray = new JSONArray();
+        Iterator<Map.Entry<String,String>> iter = DeptConstants.deptMap.entrySet().iterator(); //遍历地区
+        Map.Entry<String,String> entry;
+        while (iter.hasNext()){
+            JSONObject jsonObjectIn = new JSONObject();
+            entry = iter.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            //按dept查询问题数 key
+            //返回的结果是所有问题的list 根据code来判断是未完成
+
+            int total = 30; //问题总个数
+            int notRectified = 17; //未整改问题个数
+            double percentage = new BigDecimal((float)total/notRectified).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            jsonObjectIn.put("name", value); //地区名称
+            jsonObjectIn.put("dept", key); //地区id
+            jsonObjectIn.put("total", total); //总问题数
+            jsonObjectIn.put("notRectified", notRectified); //未整改问题数
+            jsonObjectIn.put("value", percentage); //未整改占比
+            jSONArray.add(jsonObjectIn);
+        }
+        jsonObject.put("data", jSONArray);
+        return jsonObject;
+
     }
 
 }

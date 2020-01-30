@@ -54,12 +54,9 @@ public class PlanCheckList implements Serializable,Cloneable{
     /** 审计年度 */
     @Column(name = "audit_year")
     private String auditYear ;
-    /** 员工状态 */
-    @Column(name = "normal_status")
-    private String normalStatus ;
-    /** 领导状态 */
-    @Column(name = "leader_status")
-    private String leaderStatus ;
+    /** 状态 */
+    @Column(name = "status")
+    private String status ;
     /** 问题词条 */
     @Column(name = "question_entry_id")
     private String questionEntryId ;

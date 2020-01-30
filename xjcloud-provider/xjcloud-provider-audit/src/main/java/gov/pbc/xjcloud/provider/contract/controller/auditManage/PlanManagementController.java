@@ -89,7 +89,6 @@ public class PlanManagementController {
             if (StringUtils.isBlank(planCheckList.getId())) {
                 int code = (int) ((Math.random()*9+1)*1000);
                 planCheckList.setProjectCode("PROJECT-" + String.valueOf(code));
-                planCheckList.setNormalStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
             }
             planManagementService.validate(planCheckList,r);//  此处没有对字段添加约束，所以不会生效
             if(StringUtils.isBlank(planCheckList.getId())){
