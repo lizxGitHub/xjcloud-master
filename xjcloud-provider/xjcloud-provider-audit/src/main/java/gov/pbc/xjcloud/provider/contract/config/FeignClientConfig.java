@@ -1,8 +1,8 @@
 package gov.pbc.xjcloud.provider.contract.config;
 
-import com.sun.jersey.api.ParamException;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import gov.pbc.xjcloud.provider.contract.constants.SecurityConstants;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +39,7 @@ public class FeignClientConfig implements RequestInterceptor {
             throw new NullArgumentException("无法获取认证信息");
         }
         template.header(tokenName, headerValue);
+        template.header(SecurityConstants.FROM,SecurityConstants.FROM_IN);
 //        Enumeration<String> headerNames = request.getHeaderNames();
 //        if (headerNames != null) {
 //            while (headerNames.hasMoreElements()) {

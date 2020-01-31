@@ -90,6 +90,25 @@ audit:
 feign:
   hystrix:
     enabled: false
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
 ribbon:
-  ReadTimeout: 100000000   #负载均衡超时时间，默认值5000
-  ConnectTimeout: 100000000 #ribbon请求连接的超时时间，默认值2000
+  ReadTimeout: 120000   #负载均衡超时时间，默认值5000
+  ConnectTimeout: 120000 #ribbon请求连接的超时时间，默认值2000
+  maxAutoRetries: 0
+
+#  hystrix 熔断机制
+hystrix:
+  command:
+    default:
+      circuitBreaker:
+        sleepWindowInMilliseconds: 100000
+        forceClosed: true
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+  shareSecurityContext: true
