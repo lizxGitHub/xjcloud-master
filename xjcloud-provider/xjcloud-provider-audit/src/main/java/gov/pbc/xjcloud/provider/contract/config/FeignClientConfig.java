@@ -2,7 +2,7 @@ package gov.pbc.xjcloud.provider.contract.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import gov.pbc.xjcloud.provider.contract.constants.SecurityConstants;
+import gov.pbc.xjcloud.common.core.constant.SecurityConstants;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
