@@ -1,81 +1,114 @@
 spring:
-    application:
-        name: xjcloud-provider-audit
-    redis:
-        database: 1
-        host: 127.0.0.1
-        port: 6379
-        timeout: 5000
-        jedis:
-            pool:
-                max-active: 20
-                max-idle: 10
-                min-idle: 0
-                max-wait: -1
-    datasource:
-        name: xj_cloud
-#        url: jdbc:mysql://39.108.50.114:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=UTC
-        url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
-        username: root
-        password: root123
-        #        username: lrst
-        #        password: lrst7089
-        type: com.alibaba.druid.pool.DruidDataSource
-#        driver-class-name: com.mysql.jdbc.Driver
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        filters: stat
-        maxActive: 20
-        initialSize: 1
-        maxWait: 60000
-        minIdle: 1
-        timeBetweenEvictionRunsMillis: 60000
-        minEvictableIdleTimeMillis: 300000
-        validationQuery: select 'x'
-        testWhileIdle: true
-        testOnBorrow: false
-        testOnReturn: false
-        poolPreparedStatements: true
-        maxOpenPreparedStatements: 20
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: xjcloud-provider-audit
+  # 配置中心
+  cloud:
+    config:
+      fail-fast: true
+      name: ${spring.application.name}
+      uri: http://172.18.47.232:8888
+      discovery:
+        enabled: true
+        service-id: xjcloud-config
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    timeout: 5000
+    jedis:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 0
+        max-wait: -1
+  datasource:
+    name: xj_cloud
+    url: jdbc:mysql://39.108.50.114:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=UTC
+    #        url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT
+    #        username: root
+    #        password: root123
+    username: lrst
+    password: lrst7089
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver  #mysql-connector 5
+    #        driver-class-name: com.mysql.cj.jdbc.Driver  #mysql-connector 6  需要指定时区
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
 #    rabbitmq:
 #        host: 127.0.0.1
 #        port: 5672
 #        username: test
 #        password: 123456
 server:
-    port: 18080
-    undertow:
-        max-http-post-size: 0
-        io-threads: 4
-        worker-threads: 20
-        buffer-size: 1024
-        direct-buffers: true
+  port: 18080
+  undertow:
+    max-http-post-size: 0
+    io-threads: 4
+    worker-threads: 20
+    buffer-size: 1024
+    direct-buffers: true
+# 注册中心配置
 eureka:
-    instance:
-        statusPageUrlPath: /actuator/info
-        healthCheckUrlPath: /actuator/health
-        prefer-ip-address: true
-        #ip-address: localhost
-        metadata-map:
-            cname: 词条服务后台服务
-            type: app_server
-    client:
-        serviceUrl:
-#            defaultZone: http://root:root@${EUREKA_HOST:39.108.50.114}:${EUREKA_PORT:8761}/eureka/
-            defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
-## 配置了mybatis-plus 其实也不用配置mybatis ，可以把该包去掉
-#mybatis:
-#    basepackage: gov.pbc.xjcloud.provider.contract.mapper
-#    xmlLocation: classpath*:mapper/**/*.xml
-#    mapper-locations: "classpath*:mapper/*.xml"
-## 配置slq打印日志
-#    configuration:
-#        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-# 配置slq打印日志
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    service-url:
+      defaultZone: http://root:root@${EUREKA_HOST:39.108.50.114}:${EUREKA_PORT:8761}/eureka/
+#      defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
 mybatis-plus:
-    configuration:
-        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    mapper-locations: classpath*:mapper/**/*.xml
-    global-config:
-        db-config:
-            logic-delete-value: 1 # 逻辑已删除值(默认为 1)
-            logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapper/**/*.xml
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+audit:
+  gate-way:
+    service-id: xjcloud-gateway
+    url: http://39.108.50.114:9999
+  auth-url: ${audit.gate-way.url}/auth/oauth/token
+  user-url: ${audit.gate-way.url}/admin/users/info
+  users-url: ${audit.gate-way.url}/admin/users
+  Authorization: Basic eGpjbG91ZDp4amNsb3Vk
+  token-name: Authorization
+
+feign:
+  hystrix:
+    enabled: false
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+ribbon:
+  ReadTimeout: 120000   #负载均衡超时时间，默认值5000
+  ConnectTimeout: 120000 #ribbon请求连接的超时时间，默认值2000
+  maxAutoRetries: 0
+
+#  hystrix 熔断机制
+hystrix:
+  command:
+    default:
+      circuitBreaker:
+        sleepWindowInMilliseconds: 100000
+        forceClosed: true
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+  shareSecurityContext: true

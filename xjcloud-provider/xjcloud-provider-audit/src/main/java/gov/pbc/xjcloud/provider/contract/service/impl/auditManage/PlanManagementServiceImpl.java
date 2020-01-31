@@ -5,7 +5,6 @@ import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,5 +81,22 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     @Override
     public int countStatisticPlanReport() {
         return Integer.valueOf(planManagementMapper.countStatisticPlanReport().get(0).get("count").toString());
+    }
+    /**
+     * 按计划完成类型查询分页数据
+     * @param page
+     * @param query
+     * @return
+     */
+    public Page<PlanCheckList> selectTypePage(Page<PlanCheckList> page, Map<String, String> query) {
+        List<PlanCheckList> list = planManagementMapper.selectTypePage(page,query);
+        page.setRecords(list);
+        return page;
+    }
+
+    public void addCheckAttention(String userId, String checkStr) {
+        String[] checkArr = checkStr.split(",");
+        planManagementMapper.cancelCheckAttention(userId,checkArr);
+        planManagementMapper.addCheckAttention(userId,checkArr);
     }
 }

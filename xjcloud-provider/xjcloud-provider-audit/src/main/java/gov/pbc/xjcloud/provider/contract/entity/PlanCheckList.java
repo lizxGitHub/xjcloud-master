@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
@@ -54,12 +55,9 @@ public class PlanCheckList implements Serializable,Cloneable{
     /** 审计年度 */
     @Column(name = "audit_year")
     private String auditYear ;
-    /** 员工状态 */
-    @Column(name = "normal_status")
-    private String normalStatus ;
-    /** 领导状态 */
-    @Column(name = "leader_status")
-    private String leaderStatus ;
+    /** 状态 */
+    @Column(name = "status")
+    private String status ;
     /** 问题词条 */
     @Column(name = "question_entry_id")
     private String questionEntryId ;
@@ -103,6 +101,7 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "instance_id")
     private String instanceId;
 
-
+    @TableField(exist = false)
+    private String attentionId;
 
 }

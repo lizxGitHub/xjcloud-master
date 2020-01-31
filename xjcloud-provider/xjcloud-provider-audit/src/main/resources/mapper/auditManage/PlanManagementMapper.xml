@@ -10,8 +10,7 @@
         <result column="audit_object_id" property="auditObjectId"/>
         <result column="audit_nature_id" property="auditNatureId"/>
         <result column="audit_year" property="auditYear"/>
-        <result column="normal_status" property="normalStatus"/>
-        <result column="leader_status" property="LeaderStatus"/>
+        <result column="status" property="status"/>
         <result column="question_entry_id" property="questionEntryId"/>
         <result column="problem_severity_id" property="problemSeverityId"/>
         <result column="rectify_situation_id" property="rectifySituationId"/>
@@ -25,6 +24,19 @@
         <result column="risk_assessment_id" property="riskAssessmentId"/>
         <result column="instance_id" property="instanceId"/>
     </resultMap>
+    <insert id="addCheckAttention">
+        insert into user_attention_check (user_id,check_id) values
+        <foreach collection="checkArr" item="checkId" separator="," >
+           (#{userId},#{checkId})
+        </foreach>
+    </insert>
+    <delete id="cancelCheckAttention">
+        delete from user_attention_check where user_id=#{userId}
+        and check_id in
+        <foreach collection="checkArr" close=")" item="checkId" separator="," open="(">
+            #{checkId}
+        </foreach>
+    </delete>
 
     <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
         SELECT
@@ -35,8 +47,7 @@
             en2.`name` audit_object_id,
             en3.`name` audit_nature_id,
             a.audit_year,
-            a.normal_status,
-            a.leader_status,
+            a.status,
             a.question_entry_id,
             a.problem_severity_id,
             a.rectify_situation_id,
@@ -57,11 +68,8 @@
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
         </if>
-        <if test="query.normalStatus!=null and query.normalStatus!=''">
-            and a.`normal_status` = #{query.normalStatus, jdbcType=VARCHAR}
-        </if>
-        <if test="query.leaderStatus!=null and query.leaderStatus!=''">
-            and a.`leader_status` = #{query.leaderStatus, jdbcType=VARCHAR}
+        <if test="query.status!=null and query.status!=''">
+            and a.`status` = #{query.status, jdbcType=VARCHAR}
         </if>
         <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
             and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
@@ -74,5 +82,55 @@
 
     <select id="selectEntryByCategoryId" resultType="java.util.HashMap">
         SELECT id,`NAME` name FROM `entry_info` where category_fk = #{categoryId, jdbcType=VARCHAR} and del_flag = '0'
+    </select>
+    <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
+        SELECT
+        a.id,
+        a.project_code,
+        a.project_name,
+        a.implementing_agency_id,
+        a.audit_object_id,
+        a.audit_nature_id,
+        a.audit_year,
+        a.status,
+        a.question_entry_id,
+        a.problem_severity_id,
+        a.rectify_situation_id,
+        a.problem_characterization,
+        a.problem_description,
+        a.may_affect,
+        a.rectification_suggestions,
+        a.audit_basis,
+        a.audit_classification_id,
+        a.auditing_experience,
+        a.risk_assessment_id
+        FROM
+        `plan_check_list` a
+        where a.del_flag='0'
+        <if test="query.projectName!=null and query.projectName!=''">
+            and a.project_name like concat('%',concat(#{query.projectName},'%'))
+        </if>
+        <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
+            and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
+        </if>
+        <if test="query.problemDescription!=null and query.problemDescription!=''">
+            and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
+        </if>
+        <choose>
+            <when test="query.type=='all'">
+
+            </when>
+            <when test="query.type=='todo'">
+                and a.`status` !='1003'
+            </when>
+            <when test="query.type=='done'">
+                and a.`status` =='1003'
+            </when>
+            <when test="query.type=='delay'">
+                and a.delay_date is not null
+            </when>
+
+        </choose>
+
     </select>
 </mapper>

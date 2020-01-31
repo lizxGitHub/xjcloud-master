@@ -1,13 +1,15 @@
 package gov.pbc.xjcloud.provider.contract.service.activiti;
 
-
-import com.baomidou.mybatisplus.extension.api.R;
+import gov.pbc.xjcloud.common.core.util.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "xjcloud-provider-activiti")
+/**
+ * 远程调用
+ */
+@FeignClient(value = "xjcloud-provider-activiti",configuration =FeignClientConfig.class )
 public interface AuditActivitiService {
 
     @PutMapping("/process/start/{processDefKey}/{businessId}")
