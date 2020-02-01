@@ -138,4 +138,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     +" where pcl.del_flag='0' group by pcl.implementing_agency_id ) a",
             "</script>"})
     List<Map<String, Object>> countStatisticPlanReport();
+
+    List<Map<String, Object>> getShortPlans(@Param("deptChild") List deptChild, @Param("status") String status);
 }

@@ -83,6 +83,12 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     public int countStatisticPlanReport() {
         return Integer.valueOf(planManagementMapper.countStatisticPlanReport().get(0).get("count").toString());
     }
+
+    @Override
+    public List<Map<String, Object>> getShortPlans(List deptChild, String status) {
+        return planManagementMapper.getShortPlans(deptChild, status);
+    }
+
     /**
      * 按计划完成类型查询分页数据
      * @param page

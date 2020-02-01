@@ -25,4 +25,6 @@ public interface PlanManagementService extends IService<PlanCheckList> {
     List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo);
 
     int countStatisticPlanReport();
+
+    List<Map<String, Object>> getShortPlans(List deptChild, String status);
 }
