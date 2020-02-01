@@ -245,6 +245,7 @@ public class AuditPlanInfoController {
             int total = 30; //问题总个数
             int notRectified = 17; //未整改问题个数
             double percentage = new BigDecimal((float)total/notRectified).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            jsonObjectIn.put("deptId", key); //地区id
             jsonObjectIn.put("name", value); //地区名称
             jsonObjectIn.put("dept", key); //地区id
             jsonObjectIn.put("total", total); //总问题数

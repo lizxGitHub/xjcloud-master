@@ -9,12 +9,14 @@ import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -56,16 +58,24 @@ public class PlanManagementController {
         return R.ok(page);
     }
 
+    @Autowired
+    DeptUtil deptUtil;
+
     @ApiOperation("计划完成分类分页")
     @GetMapping(value = {"{type}/page", ""})
-    public R<Page<PlanCheckList>> typePage(@PathVariable("type") String type, @RequestParam Map<String, String> query) {
+    public R<Page<PlanCheckList>> typePage(@PathVariable("type") String type, @RequestParam Map<String, Object> query) {
         Page<PlanCheckList> page = new Page<>();
         try {
-            String current = query.getOrDefault("current", "1");
-            String size = query.getOrDefault("size", "10");
+            String current = query.getOrDefault("current", "1").toString();
+            String size = query.getOrDefault("size", "10").toString();
             page.setCurrent(Long.parseLong(current));
             page.setSize(Long.parseLong(size));
             query.put("type", type);
+            if(StringUtils.isNotBlank(query.get("deptId").toString())){
+                List deptChild = deptUtil.findChildBank(Integer.parseInt(query.get("deptId").toString()),"支行");
+                query.put("auditObj", deptChild);
+            }
+
             page = planManagementService.selectTypePage(page, query);
         } catch (Exception e) {
             e.printStackTrace();
