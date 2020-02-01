@@ -89,7 +89,7 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param query
      * @return
      */
-    public Page<PlanCheckList> selectTypePage(Page<PlanCheckList> page, Map<String, String> query) {
+    public Page<PlanCheckList> selectTypePage(Page<PlanCheckList> page, Map<String, Object> query) {
         List<PlanCheckList> list = planManagementMapper.selectTypePage(page,query);
         page.setRecords(list);
         return page;

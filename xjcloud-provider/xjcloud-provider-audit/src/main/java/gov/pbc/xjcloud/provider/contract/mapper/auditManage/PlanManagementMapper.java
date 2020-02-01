@@ -90,7 +90,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @param query
      * @return
      */
-    List<PlanCheckList> selectTypePage(@Param("page") Page<PlanCheckList> page, @Param("query") Map<String, String> query);
+    List<PlanCheckList> selectTypePage(@Param("page") Page<PlanCheckList> page, @Param("query") Map<String, Object> query);
 
     void cancelCheckAttention(@Param("userId") String userId, @Param("checkArr") String[] checkArr);
 
