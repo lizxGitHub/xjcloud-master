@@ -1,0 +1,2 @@
+ALTER TABLE `plan_check_list`
+ADD COLUMN `delay_remarks`  varchar(400) NULL COMMENT '延期意见（不超过200个字符）' AFTER `rectify_result`;

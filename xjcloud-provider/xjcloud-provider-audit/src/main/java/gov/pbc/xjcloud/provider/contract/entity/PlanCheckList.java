@@ -103,5 +103,9 @@ public class PlanCheckList implements Serializable,Cloneable{
 
     @TableField(exist = false)
     private String attentionId;
+    /**
+     * 延期意见（领导填写）
+     */
+    private String delayRemarks;
 
 }
