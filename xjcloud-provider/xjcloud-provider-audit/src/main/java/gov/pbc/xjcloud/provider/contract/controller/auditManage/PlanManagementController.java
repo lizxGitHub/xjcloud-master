@@ -4,14 +4,12 @@ import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
-import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
-import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
-import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
+import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.NullArgumentException;
@@ -38,6 +36,9 @@ public class PlanManagementController {
     @Resource
     private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
 
+    @Autowired
+    private DeptUtil deptUtil;
+
     /**
      * 获取审计计划
      *
@@ -57,9 +58,6 @@ public class PlanManagementController {
         }
         return R.ok(page);
     }
-
-    @Autowired
-    DeptUtil deptUtil;
 
     @ApiOperation("计划完成分类分页")
     @GetMapping(value = {"{type}/page", ""})
@@ -130,14 +128,26 @@ public class PlanManagementController {
     }
 
     /**
-     * 获取实施机构
-     *
      * @return
      */
-    @ApiOperation("获取实施机构")
+    @ApiOperation("获取类别")
     @GetMapping("/selectEntryByCategoryId")
     public R<List<Map<String, Object>>> selectEntryByCategoryId(@RequestParam(name = "categoryId", required = true) String categoryId) {
         return R.ok(planManagementService.selectEntryByCategoryId(categoryId));
+    }
+
+    /**
+     * 审计对象
+     * @return
+     */
+    @ApiOperation("审计对象")
+    @GetMapping("/getAuditObject")
+    public R<List<DeptVO>> getAuditObject(@RequestParam(name = "deptId", required = true) Integer deptId, String lastFilter) {
+        if (StringUtils.isBlank(lastFilter)) {
+            lastFilter = "支行";
+        }
+        List<DeptVO> deptList = deptUtil.findChildBank(deptId, lastFilter);
+        return R.ok(deptList);
     }
 
     /**
