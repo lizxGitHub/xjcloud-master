@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
+import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
@@ -43,6 +44,9 @@ public class PlanManagementController {
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
     public R<Page<PlanCheckList>> index(PlanCheckList query, Page<PlanCheckList> page) {
+        if (query.getCreatedBy() == 0) {
+            return R.ok(page);
+        }
         PageUtil.initPage(page);
         try {
             page = planManagementService.selectPlanCheckList(page, query);
@@ -138,18 +142,13 @@ public class PlanManagementController {
         try {
             if (StringUtils.isBlank(planCheckList.getId())) {
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
-                planCheckList.setProjectCode("PROJECT-" + String.valueOf(code));
+                planCheckList.setProjectCode("PROJECT-" + code);
             }
             planManagementService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
             if (StringUtils.isBlank(planCheckList.getId())) {
+                planCheckList.setStatus(String.valueOf(PlanStatusEnum.PLAN_UN_SUBMIT.getCode()));
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planManagementService.save(planCheckList);
-                AuditPlanInfo auditPlanInfo = new AuditPlanInfo();
-                auditPlanInfo.setRoleId("1");
-                auditPlanInfo.setStatus("1001");
-                auditPlanInfo.setPlanCheckList(planCheckList);
-                auditPlanInfo.setOpinion("");
-                auditPlanInfoServiceImpl.insertA(auditPlanInfo);
             } else {
                 planManagementService.updateById(planCheckList);
             }

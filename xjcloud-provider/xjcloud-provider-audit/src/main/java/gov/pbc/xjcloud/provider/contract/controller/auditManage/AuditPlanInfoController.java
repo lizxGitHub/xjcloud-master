@@ -67,13 +67,13 @@ public class AuditPlanInfoController {
      */
     @ApiOperation("获取问题信息")
     @GetMapping("/{id}")
-    public R<AuditPlanInfo> getPLanInfoById(@PathVariable String id, @RequestParam(name = "roleId", required = true) String roleId) {
+    public R<AuditPlanInfo> getPLanInfoById(@PathVariable String id) {
         R<AuditPlanInfo> r = new R<>();
         try {
             if (StringUtils.isBlank(id)) {
                 return r.failed("参数错误，请检查");
             }
-            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
+            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id);
             r.setData(auditPlanInfo);
         } catch (Exception e) {
             r.failed(e.getMessage());

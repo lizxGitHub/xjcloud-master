@@ -39,8 +39,7 @@
 
     <select id="getById" resultMap="PlanInfoMap">
         SELECT
-            b.id,
-            a.id plan_id,
+            a.id,
             a.project_code,
             a.project_name,
             a.implementing_agency_id,
@@ -58,12 +57,10 @@
             a.audit_basis,
             a.audit_classification_id,
             a.auditing_experience,
-            a.risk_assessment_id,
-            b.status,
-            b.opinion
-        from   plan_check_list a join plan_info b on   b.plan_id=a.id
+            a.risk_assessment_id
+        from   plan_check_list a
         where a.del_flag='0'
-        and b.id= #{id}
+        and a.id= #{id}
         LIMIT 1
     </select>
 

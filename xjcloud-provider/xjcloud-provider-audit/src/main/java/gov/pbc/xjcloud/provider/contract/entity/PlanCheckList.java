@@ -18,18 +18,15 @@ import java.util.Date;
 @Table(name="plan_check_list")
 public class PlanCheckList implements Serializable,Cloneable{
 
-    /** 乐观锁 */
-    @Column(name = "revision")
-    private Integer revision ;
     /** 创建人 */
     @Column(name = "created_by")
-    private String createdBy ;
+    private int createdBy ;
     /** 创建时间 */
     @Column(name = "created_time")
     private Date createdTime ;
     /** 更新人 */
     @Column(name = "update_by")
-    private String updatedBy ;
+    private int updatedBy ;
     /** 更新时间 */
     @Column(name = "update_time")
     private Date updatedTime ;
