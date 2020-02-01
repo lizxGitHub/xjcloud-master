@@ -19,7 +19,7 @@ public enum PlanStatusEnum {
     IMP_AUDIT(10010,"已整改待审核"),
     IMP_PASS(1011,"已整改待审核"),
     IMP_REJECT(1012,"已整改待审核"),
-    FILE(1013,"未批呈");
+    FILE(1013,"已归档");
 
     private int code;
 
