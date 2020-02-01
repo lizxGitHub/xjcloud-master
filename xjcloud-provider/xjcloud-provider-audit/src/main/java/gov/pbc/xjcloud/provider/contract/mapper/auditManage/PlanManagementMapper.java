@@ -120,11 +120,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "</script>"})
     List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupName")String groupName, @Param("groupField")String groupField);
 
-    @Select({"<script>",
-            "select count(*) planSum,sum(case when status='1001' then 1 else 0 end) finishCount,sum(case when status='1002' then 1 else 0 end)  nofinishCount,"
-                    + "sum(case when status='1003' then 1 else 0 end) timeoutCount from plan_check_list where del_flag='0'" +
-                    "<if test='agencyId!=null and agencyId!=\"\"'> and implementing_agency_id='${agencyId}'</if>",
-            "</script>"})
+
     List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId);
 
     @Select({"<script>",

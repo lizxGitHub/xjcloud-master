@@ -26,8 +26,8 @@
     </resultMap>
     <insert id="addCheckAttention">
         insert into user_attention_check (user_id,check_id) values
-        <foreach collection="checkArr" item="checkId" separator="," >
-           (#{userId},#{checkId})
+        <foreach collection="checkArr" item="checkId" separator=",">
+            (#{userId},#{checkId})
         </foreach>
     </insert>
     <delete id="cancelCheckAttention">
@@ -40,25 +40,25 @@
 
     <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
         SELECT
-            a.id,
-            a.project_code,
-            a.project_name,
-            en1.`name` implementing_agency_id,
-            en2.`name` audit_object_id,
-            en3.`name` audit_nature_id,
-            a.audit_year,
-            a.status,
-            a.question_entry_id,
-            a.problem_severity_id,
-            a.rectify_situation_id,
-            a.problem_characterization,
-            a.problem_description,
-            a.may_affect,
-            a.rectification_suggestions,
-            a.audit_basis,
-            a.audit_classification_id,
-            a.auditing_experience,
-            a.risk_assessment_id
+        a.id,
+        a.project_code,
+        a.project_name,
+        en1.`name` implementing_agency_id,
+        en2.`name` audit_object_id,
+        en3.`name` audit_nature_id,
+        a.audit_year,
+        a.status,
+        a.question_entry_id,
+        a.problem_severity_id,
+        a.rectify_situation_id,
+        a.problem_characterization,
+        a.problem_description,
+        a.may_affect,
+        a.rectification_suggestions,
+        a.audit_basis,
+        a.audit_classification_id,
+        a.auditing_experience,
+        a.risk_assessment_id
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en1 on a.implementing_agency_id = en1.id
@@ -132,5 +132,17 @@
 
         </choose>
 
+    </select>
+    <select id="countPlan" resultType="java.util.Map">
+        select count(1) planSum,
+            sum(case when status='1013' then 1 else 0 end) finishCount,
+            sum(case when status!='1013'
+            then 1 else 0 end) nofinishCount,
+            sum(case when delay_dateis not null then 1 else 0 end) timeoutCount
+        from
+            plan_check_list where del_flag='0'
+        <if test='agencyId!=null and agencyId!=""'>
+            and implementing_agency_id='${agencyId}'
+        </if>
     </select>
 </mapper>
