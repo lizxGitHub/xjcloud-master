@@ -30,7 +30,7 @@ public interface UserCenterService {
     @GetMapping({"/users/ancestor/{username}"})
     R ancestorUsers(@PathVariable("username") String paramString);
 
-    @GetMapping({"/depts/{deptId}/role/{roleName}"})
+    @GetMapping({"/users/dept/{deptId}/role/{roleName}"})
     R getUsersByRoleNameAndDept(@PathVariable("deptId") Integer paramInteger, @PathVariable("roleName") String paramString);
 
     @GetMapping({"/users/minDeptId/{minDeptId}/maxDeptId/{maxDeptId}/role/{roleName}"})
