@@ -100,4 +100,14 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         planManagementMapper.cancelCheckAttention(userId,checkArr);
         planManagementMapper.addCheckAttention(userId,checkArr);
     }
+
+    /**
+     * 关注列表
+     * @param page
+     * @param query
+     * @return
+     */
+    public Page<PlanCheckList> selectAttentionPage(Page<PlanCheckList> page, Map<String, Object> query) {
+        return planManagementMapper.selectAttentionPage(page,query);
+    }
 }

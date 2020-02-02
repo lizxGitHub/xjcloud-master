@@ -1,16 +1,17 @@
 package gov.pbc.xjcloud.provider.contract.utils;
 
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import gov.pbc.xjcloud.common.core.util.R;
+import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
-import gov.pbc.xjcloud.provider.usercenter.api.feign.RemoteDeptService;
-import org.springframework.beans.BeanUtils;
+import gov.pbc.xjcloud.provider.contract.vo.TreeVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,6 +19,10 @@ public class DeptUtil {
 
     @Autowired
     RemoteDeptService remoteDeptService;
+
+    private Map<Integer, TreeVO> deptMap;
+
+    private Lock lock = new ReentrantLock(false);
 
     public List<DeptVO> findChildBank(Integer deptId, String lastFilter) {
         if (null == deptId) {
@@ -32,4 +37,37 @@ public class DeptUtil {
         return collect;
     }
 
+    public Map<Integer, TreeVO> getDeptMap() {
+        try {
+            if(null== this.deptMap || this.deptMap.size()==0 ){
+                this.deptMap = new HashMap<>();
+                R<List<LinkedHashMap<String, Object>>> tree = remoteDeptService.tree();
+                tree.getData().stream().filter(Objects::nonNull).forEach(e -> {
+                    TreeVO treeVO = JSONUtil.toBean(JSONUtil.toJsonStr(e), TreeVO.class);
+                    if (null != treeVO && !treeVO.getChildren().isEmpty()) {
+                        treeVO.getChildren().forEach(c -> {
+                            this.deptMap.put(c.getValue(), c);
+                        });
+                    }
+                    TreeVO vo = TreeVONoChildren(treeVO);
+                    this.deptMap.put(treeVO.getValue(), treeVO);
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return this.deptMap;
+    }
+
+    private TreeVO TreeVONoChildren(TreeVO treeVO) {
+        TreeVO vo = new TreeVO();
+        vo.setValue(treeVO.getValue());
+        vo.setLabel(treeVO.getLabel());
+        return vo;
+    }
+    @Scheduled(cron="0 0/10 * * * * ?")
+    public void cleanDeptMap(){
+        System.out.println("已清理部门数据");
+        this.deptMap=new HashMap<>();
+    }
 }

@@ -3,6 +3,7 @@ package gov.pbc.xjcloud.provider.contract.vo;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class DeptVO {
@@ -16,4 +17,6 @@ public class DeptVO {
     private String region;
     private int sort;
     private Date updateTime;
+
+    private List<DeptVO> children;
 }

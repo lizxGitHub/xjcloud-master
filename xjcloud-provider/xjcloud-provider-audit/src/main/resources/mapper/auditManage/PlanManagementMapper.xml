@@ -157,4 +157,51 @@
             and implementing_agency_id='${agencyId}'
         </if>
     </select>
+    <select id="selectAttentionPage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
+        SELECT
+        a.id,
+        a.project_code,
+        a.project_name,
+        a.implementing_agency_id,
+        a.audit_object_id,
+        a.audit_nature_id,
+        a.audit_year,
+        a.status,
+        a.question_entry_id,
+        a.problem_severity_id,
+        a.rectify_situation_id,
+        a.problem_characterization,
+        a.problem_description,
+        a.may_affect,
+        a.rectification_suggestions,
+        a.audit_basis,
+        a.audit_classification_id,
+        a.auditing_experience,
+        a.risk_assessment_id
+        FROM
+        user_attention_check b
+        left join `plan_check_list` a on a.id = b.check_id
+        where a.del_flag='0'
+        <if test="query.projectName!=null and query.projectName!=''">
+            and a.project_name like concat('%',concat(#{query.projectName},'%'))
+        </if>
+        <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
+            and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
+        </if>
+        <if test="query.problemDescription!=null and query.problemDescription!=''">
+            and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
+        </if>
+        <if test="query.deptId!=null and query.deptId!=''">
+            and a.implementing_agency_id =#{query.deptId}
+        </if>
+        <if test="query.normalStatus!=null and query.normalStatus!=''">
+            and a.status = #{query.normalStatus}
+        </if>
+        <if test="query.auditObj!=null and query.auditObj!=''">
+            and a.audit_object_id = #{query.auditObj}
+        </if>
+        <if test="query.userId!=null and query.userId!=''">
+            and b.user_id = #{query.userId}
+        </if>
+    </select>
 </mapper>

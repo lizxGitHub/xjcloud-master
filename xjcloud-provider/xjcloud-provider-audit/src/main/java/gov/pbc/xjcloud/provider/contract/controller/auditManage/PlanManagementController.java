@@ -10,6 +10,7 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagement
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
+import gov.pbc.xjcloud.provider.contract.vo.TreeVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.NullArgumentException;
@@ -77,6 +78,28 @@ public class PlanManagementController {
             page = planManagementService.selectTypePage(page, query);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return R.ok(page);
+    }
+
+    @ApiOperation("关注列表分页")
+    @GetMapping(value = {"/attention/page", ""})
+    public R<Page<PlanCheckList>> attentionPage(@RequestParam Map<String, Object> query) {
+        Page<PlanCheckList> page = new Page<>();
+        try {
+            String current = query.getOrDefault("current", "1").toString();
+            String size = query.getOrDefault("size", "10").toString();
+            page.setCurrent(Long.parseLong(current));
+            page.setSize(Long.parseLong(size));
+            Map<Integer, TreeVO> deptMap = deptUtil.getDeptMap();
+            page = planManagementService.selectAttentionPage(page, query);
+            page.getRecords().stream().filter(e->e.getImplementingAgencyId()!=null&&e.getAuditObjectId()!=null).forEach(e->{
+                e.setImplementingAgencyId(deptMap.get(Integer.valueOf(e.getImplementingAgencyId())).getLabel());
+                e.setAuditObjectId(deptMap.get(Integer.parseInt(e.getAuditObjectId())).getLabel());
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.failed(e.getMessage());
         }
         return R.ok(page);
     }
