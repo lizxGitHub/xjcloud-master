@@ -146,4 +146,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     Page<PlanCheckList> selectAttentionPage(@Param("page") Page<PlanCheckList> page, @Param("query") Map<String, Object> query);
+
+    List<Map<String, Object>> getShortPlans(@Param("deptChild") List deptChild, @Param("status") String status);
 }

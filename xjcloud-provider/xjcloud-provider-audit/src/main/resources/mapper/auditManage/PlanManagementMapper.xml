@@ -82,6 +82,23 @@
     <select id="selectEntryByCategoryId" resultType="java.util.HashMap">
         SELECT id,`NAME` name FROM `entry_info` where category_fk = #{categoryId, jdbcType=VARCHAR} and del_flag = '0'
     </select>
+    <select id="getShortPlans" resultType="java.util.HashMap">
+        SELECT a.id, a.status FROM `plan_check_list` a where a.del_flag='0'
+        <if test="status!=null and status!=''">
+            and a.status =#{status}
+        </if>
+        <choose>
+            <when test="deptChild!=null and deptChild.size()>0">
+                and a.audit_object_id in
+                <foreach collection="deptChild" separator="," open="(" close=")" item="auditObj">
+                    #{auditObj.deptId}
+                </foreach>
+            </when>
+            <otherwise>
+                and a.audit_object_id = 0
+            </otherwise>
+        </choose>
+    </select>
     <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
         a.id,

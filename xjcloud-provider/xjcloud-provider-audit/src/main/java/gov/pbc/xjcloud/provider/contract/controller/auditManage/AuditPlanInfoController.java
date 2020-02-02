@@ -11,20 +11,24 @@ import gov.pbc.xjcloud.provider.contract.constants.DeptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
+import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
+import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,8 +48,13 @@ public class AuditPlanInfoController {
     @Resource
     private AuditActivitiService auditActivitiService;
 
+    @Resource
+    private PlanManagementService planManagementService;
+
     RemoteProcessService remoteProcessService;
 
+    @Autowired
+    private DeptUtil deptUtil;
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
@@ -213,38 +222,53 @@ public class AuditPlanInfoController {
                 auditPlanInfo.setStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
 
                 auditPlanInfoServiceImpl.save(auditPlanInfo);
-            }else {
+            } else {
                 auditPlanInfoServiceImpl.validate(auditPlanInfo, r);
                 auditPlanInfoServiceImpl.updateById(auditPlanInfo);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-           r.setMsg(e.getMessage());
-           r.setCode(ApiErrorCode.FAILED.getCode());
+            r.setMsg(e.getMessage());
+            r.setCode(ApiErrorCode.FAILED.getCode());
         }
         return r;
     }
 
     /**
+     *
      */
     @GetMapping("/XJInfo")
     public JSONObject getXJInfo() {
         JSONObject jsonObject = new JSONObject();
         JSONArray jSONArray = new JSONArray();
-        Iterator<Map.Entry<String,String>> iter = DeptConstants.deptMap.entrySet().iterator(); //遍历地区
-        Map.Entry<String,String> entry;
-        while (iter.hasNext()){
+        Iterator<Map.Entry<String, String>> iter = DeptConstants.deptMap.entrySet().iterator(); //遍历地区
+        Map.Entry<String, String> entry;
+        while (iter.hasNext()) {
             JSONObject jsonObjectIn = new JSONObject();
             entry = iter.next();
             String key = entry.getKey();
             String value = entry.getValue();
             //按dept查询问题数 key
+            List deptChild = deptUtil.findChildBank(Integer.parseInt(key), "支行");
+            List<Map<String, Object>> shortPlans = planManagementService.getShortPlans(deptChild, "");
             //返回的结果是所有问题的list 根据code来判断是未完成
 
-            int total = 30; //问题总个数
-            int notRectified = 17; //未整改问题个数
-            double percentage = new BigDecimal((float)total/notRectified).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            int total = 0;
+            int notRectified = 0; //未整改问题个数
+            for (Map<String, Object> shortPlan : shortPlans) {
+                int status = Integer.valueOf(shortPlan.get("status").toString());
+                if (PlanStatusEnum.PLAN_UN_SUBMIT.getCode() != status) {
+                    total += 1;
+                    if (PlanStatusEnum.FILE.getCode() != status) {
+                        notRectified += 1;
+                    }
+                }
+            }
+            double percentage = 0;
+            if (total != 0) {
+                percentage = new BigDecimal((float)notRectified / total).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            }
             jsonObjectIn.put("deptId", key); //地区id
             jsonObjectIn.put("name", value); //地区名称
             jsonObjectIn.put("dept", key); //地区id
