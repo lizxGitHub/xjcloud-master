@@ -183,12 +183,12 @@ public class PlanManagementController {
     public R<Boolean> saveOrEditPlan(PlanCheckList planCheckList) {
         R<Boolean> r = new R<>();
         try {
-            if (StringUtils.isBlank(planCheckList.getId())) {
+            if (planCheckList.getId() == 0) {
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
                 planCheckList.setProjectCode("PROJECT-" + code);
             }
             planManagementService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
-            if (StringUtils.isBlank(planCheckList.getId())) {
+            if (planCheckList.getId() == 0) {
                 planCheckList.setStatus(String.valueOf(PlanStatusEnum.PLAN_UN_SUBMIT.getCode()));
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planManagementService.save(planCheckList);

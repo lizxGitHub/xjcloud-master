@@ -92,24 +92,21 @@ public class AuditPlanInfoController {
 
     }
 
-    @ApiOperation("获取问题信息")
+    /**
+     * 上报计划
+     * @param ids
+     * @param
+     * @return
+     */
     @PostMapping("/reportPlan")
-    public R<Boolean> reportPlan(@RequestParam(name = "ids", required = true) String ids, @RequestParam(name = "roleId", required = true) String roleId) {
+    public R<Boolean> reportPlan(@RequestParam(name = "ids", required = true) String ids) {
         R<Boolean> r = new R<>();
         String[] idArray = ids.split(",");
         try {
             for (String id : idArray) {
-                AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
-                if ("1004".equals(auditPlanInfo.getStatus())) { //如果是被驳回 证明存在记录 不用新增
-                    String planId = auditPlanInfo.getPlanCheckList().getId();
-                    auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1002"); //待审核
-                    auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1005"); //待审核
-                } else {
-                    auditPlanInfo.setRoleId("2");
-                    auditPlanInfo.setStatus("1005");
-                    auditPlanInfoServiceImpl.insertA(auditPlanInfo);
-                }
-                auditPlanInfoServiceImpl.updateById(id, "1002");
+
+                auditActivitiService.start("auditApply", Integer.valueOf(id), "");
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,92 +114,92 @@ public class AuditPlanInfoController {
         return r.setData(true);
     }
 
-    @ApiOperation("批准问题信息")
-    @PostMapping("/approvalPlan")
-    public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
-        R<Boolean> r = new R<>();
-        try {
-            auditPlanInfoServiceImpl.updateById(id, "1007");
-            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
-            PlanCheckList planCheckList = auditPlanInfo.getPlanCheckList();
-            String planId = planCheckList.getId();
-            auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1003");
+//    @ApiOperation("批准问题信息")
+//    @PostMapping("/approvalPlan")
+//    public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
+//        R<Boolean> r = new R<>();
+//        try {
+//            auditPlanInfoServiceImpl.updateById(id, "1007");
+//            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
+//            PlanCheckList planCheckList = auditPlanInfo.getPlanCheckList();
+//            String planId = planCheckList.getId();
+//            auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1003");
+//
+//            //审核部门一般员工
+//            AuditProjectInfo auditProjectInfo = auditProjectInfoServiceImpl.getById(id, "1");
+//            if (auditProjectInfo != null) {
+//                auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1001");
+//            } else {
+//                auditProjectInfo = new AuditProjectInfo();
+//                auditProjectInfo.setRoleId("1");
+//                auditProjectInfo.setStatus("1001");
+//                auditProjectInfo.setPlanCheckList(planCheckList);
+//                auditProjectInfo.setOpinion("");
+//                auditProjectInfoServiceImpl.insertA(auditProjectInfo);
+//            }
+//            //审核部门领导
+//            AuditProjectInfo auditProjectInfo2 = auditProjectInfoServiceImpl.getById(id, "2");
+//            if (auditProjectInfo2 != null) {
+//                auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1004");
+//            } else {
+//                auditProjectInfo2 = new AuditProjectInfo();
+//                auditProjectInfo2.setRoleId("2");
+//                auditProjectInfo2.setStatus("1004");
+//                auditProjectInfo2.setPlanCheckList(planCheckList);
+//                auditProjectInfo2.setOpinion("");
+//                auditProjectInfoServiceImpl.insertA(auditProjectInfo2);
+//            }
+//
+//            //被审核部门一般员工
+//            AuditProjectInfo auditProjectInfo3 = auditProjectInfoServiceImpl.getById(id, "3");
+//            if (auditProjectInfo3 != null) {
+//                auditPlanInfoServiceImpl.updateByPlanId(planId, "3", "1006");
+//            } else {
+//                auditProjectInfo3 = new AuditProjectInfo();
+//                auditProjectInfo3.setRoleId("3");
+//                auditProjectInfo3.setStatus("1006");
+//                auditProjectInfo3.setPlanCheckList(planCheckList);
+//                auditProjectInfo3.setOpinion("");
+//                auditProjectInfoServiceImpl.insertA(auditProjectInfo3);
+//            }
+//            //被审核部门领导
+//            AuditProjectInfo auditProjectInfo4 = auditProjectInfoServiceImpl.getById(id, "4");
+//            if (auditProjectInfo4 != null) {
+//                auditPlanInfoServiceImpl.updateByPlanId(planId, "4", "1004");
+//            } else {
+//                auditProjectInfo4 = new AuditProjectInfo();
+//                auditProjectInfo4.setRoleId("4");
+//                auditProjectInfo4.setStatus("1004");
+//                auditProjectInfo4.setPlanCheckList(planCheckList);
+//                auditProjectInfo4.setOpinion("");
+//                auditProjectInfoServiceImpl.insertA(auditProjectInfo4);
+//            }
+//
+//            //activity import gov.pbc.xjcloud.common.core.util.R;
+////            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
+//            gov.pbc.xjcloud.common.core.util.R a = remoteProcessService.start("auditPlan", 1, "");
+//            System.out.println(a);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return r.setData(true);
+//    }
 
-            //审核部门一般员工
-            AuditProjectInfo auditProjectInfo = auditProjectInfoServiceImpl.getById(id, "1");
-            if (auditProjectInfo != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1001");
-            } else {
-                auditProjectInfo = new AuditProjectInfo();
-                auditProjectInfo.setRoleId("1");
-                auditProjectInfo.setStatus("1001");
-                auditProjectInfo.setPlanCheckList(planCheckList);
-                auditProjectInfo.setOpinion("");
-                auditProjectInfoServiceImpl.insertA(auditProjectInfo);
-            }
-            //审核部门领导
-            AuditProjectInfo auditProjectInfo2 = auditProjectInfoServiceImpl.getById(id, "2");
-            if (auditProjectInfo2 != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1004");
-            } else {
-                auditProjectInfo2 = new AuditProjectInfo();
-                auditProjectInfo2.setRoleId("2");
-                auditProjectInfo2.setStatus("1004");
-                auditProjectInfo2.setPlanCheckList(planCheckList);
-                auditProjectInfo2.setOpinion("");
-                auditProjectInfoServiceImpl.insertA(auditProjectInfo2);
-            }
-
-            //被审核部门一般员工
-            AuditProjectInfo auditProjectInfo3 = auditProjectInfoServiceImpl.getById(id, "3");
-            if (auditProjectInfo3 != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "3", "1006");
-            } else {
-                auditProjectInfo3 = new AuditProjectInfo();
-                auditProjectInfo3.setRoleId("3");
-                auditProjectInfo3.setStatus("1006");
-                auditProjectInfo3.setPlanCheckList(planCheckList);
-                auditProjectInfo3.setOpinion("");
-                auditProjectInfoServiceImpl.insertA(auditProjectInfo3);
-            }
-            //被审核部门领导
-            AuditProjectInfo auditProjectInfo4 = auditProjectInfoServiceImpl.getById(id, "4");
-            if (auditProjectInfo4 != null) {
-                auditPlanInfoServiceImpl.updateByPlanId(planId, "4", "1004");
-            } else {
-                auditProjectInfo4 = new AuditProjectInfo();
-                auditProjectInfo4.setRoleId("4");
-                auditProjectInfo4.setStatus("1004");
-                auditProjectInfo4.setPlanCheckList(planCheckList);
-                auditProjectInfo4.setOpinion("");
-                auditProjectInfoServiceImpl.insertA(auditProjectInfo4);
-            }
-
-            //activity import gov.pbc.xjcloud.common.core.util.R;
-//            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
-            gov.pbc.xjcloud.common.core.util.R a = remoteProcessService.start("auditPlan", 1, "");
-            System.out.println(a);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return r.setData(true);
-    }
-
-    @ApiOperation("获取问题信息")
-    @PostMapping("/rejectPlan")
-    public R<Boolean> rejectPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
-        R<Boolean> r = new R<>();
-        try {
-            auditPlanInfoServiceImpl.updateById(id, "1006");
-            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
-            String planId = auditPlanInfo.getPlanCheckList().getId();
-            auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1004");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return r.setData(true);
-    }
+//    @ApiOperation("获取问题信息")
+//    @PostMapping("/rejectPlan")
+//    public R<Boolean> rejectPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
+//        R<Boolean> r = new R<>();
+//        try {
+//            auditPlanInfoServiceImpl.updateById(id, "1006");
+//            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
+//            String planId = auditPlanInfo.getPlanCheckList().getId();
+//            auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1004");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return r.setData(true);
+//    }
 
 
     /**

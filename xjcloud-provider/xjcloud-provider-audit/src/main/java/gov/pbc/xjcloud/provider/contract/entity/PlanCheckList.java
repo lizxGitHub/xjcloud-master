@@ -1,16 +1,10 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -31,9 +25,10 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "update_time")
     private Date updatedTime ;
     /** 主键 */
-    @TableId(value = "id", type = IdType.UUID)
-    @Column(name = "id")
-    private String id;
+    @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="id")
+    @SequenceGenerator(name="id",sequenceName="S_QUENSE",allocationSize=1)
+    private int id;
     /** 项目编号 */
     @Column(name = "project_code")
     private String projectCode ;
