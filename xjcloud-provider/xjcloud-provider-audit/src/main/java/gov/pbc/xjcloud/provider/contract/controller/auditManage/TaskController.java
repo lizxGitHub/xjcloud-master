@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 接口审核
@@ -43,7 +44,7 @@ public class TaskController {
      * @return
      */
     @GetMapping("todo")
-    public R<List<ActAuditVO>> LustToDo(Map<String, Object> params) {
+    public R<Map<String,Object>> LustToDo(Map<String, Object> params) {
         try {
             if (!params.containsKey("size")) {
                 params.put("size", 10);
@@ -51,17 +52,17 @@ public class TaskController {
             if (!params.containsKey("current")) {
                 params.put("current", 1);
             }
-            R<ModelMap> actTaskMap = activitiService.todo(auditFlowDefKey, params);
-            List<ActAuditVO> resultList = new ArrayList<>();
+            R<LinkedHashMap<String,Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
             LinkedHashMap<String,Object> actTaskMapData = actTaskMap.getData();
-            ((List<Map>)actTaskMapData.get("records")).stream().filter(Objects::nonNull).forEach(actVO -> {
+            List<ActAuditVO> resultList = ((List<Map>)actTaskMapData.get("records")).stream().filter(Objects::nonNull).map(actVO -> {
                 String actJsonStr = JSONObject.toJSONString(actVO);
                 ActAuditVO actAuditVO = JSONUtil.toBean(actJsonStr, ActAuditVO.class);
                 R<Integer> auditStatus = activitiService.getTaskVariable(actAuditVO.getTaskId(), "auditStatus");
                 actAuditVO.setAuditStatus(auditStatus.getData());
-                resultList.add(actAuditVO);
-            });
-            return new R().setData(resultList);
+                return actAuditVO;
+            }).collect(Collectors.toList());
+            actTaskMap.getData().put("records",resultList);
+            return new R().setData(actTaskMap);
         } catch (Exception e) {
             e.printStackTrace();
             return new R().setData(new ArrayList<>());
