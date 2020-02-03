@@ -159,7 +159,10 @@ public class AuditPlanInfoController {
 
                 String vars = varsJSONObject.toJSONString();
                 //启动流程
-                auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                gov.pbc.xjcloud.common.core.util.R<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                if(!auditApply.getData()){
+                    return r.setMsg("流程启动失败:"+auditApply.getMsg());
+                }
                 //修改状态
                 plan.setStatus(String.valueOf(PlanStatusEnum.PLAN_TOBE_AUDITED.getCode()));
                 planManagementService.updateById(plan);
