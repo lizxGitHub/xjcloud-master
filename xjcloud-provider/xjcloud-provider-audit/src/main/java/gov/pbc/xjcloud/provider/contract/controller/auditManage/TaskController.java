@@ -3,17 +3,13 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import gov.pbc.xjcloud.common.core.util.R;
-import gov.pbc.xjcloud.provider.activiti.api.vo.ActVO;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
 import gov.pbc.xjcloud.provider.usercenter.api.feign.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,6 +75,17 @@ public class TaskController {
     public R complete(String taskId, Map<String, Object> params) {
         R complete = activitiService.complete(taskId, String.valueOf(params));
         return complete;
+    }
+
+    /**
+     * 获取流程图
+     * @param processDefKey
+     * @param businessId
+     * @return
+     */
+    @GetMapping("getTaskView")
+    public ResponseEntity taskView(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
+        return activitiService.getTaskView(processDefKey, businessId);
     }
 
 }
