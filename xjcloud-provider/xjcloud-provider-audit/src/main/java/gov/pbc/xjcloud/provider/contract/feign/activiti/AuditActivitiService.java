@@ -28,6 +28,9 @@ public interface AuditActivitiService {
     @GetMapping({"/task/history/{processDefKey}/{businessId}"})
     R history(@PathVariable("processDefKey") String paramString1, @PathVariable("businessId") String paramString2);
 
+    @GetMapping({"/task/{taskId}/var/{varName}"})
+    R getTaskVariable(@PathVariable("taskId") String taskId, @PathVariable("varName") String varName);
+
     @GetMapping({"/process/var/{processDefKey}/{businessId}/{varName}"})
     R getVariable(@PathVariable("processDefKey") String paramString1, @PathVariable("businessId") String paramString2, @PathVariable("varName") String paramString3);
 
