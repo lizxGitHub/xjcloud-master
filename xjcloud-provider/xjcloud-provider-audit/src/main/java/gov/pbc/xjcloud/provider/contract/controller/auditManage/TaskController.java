@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,14 @@ public class TaskController {
      */
     @GetMapping("todo")
     public R<List<ActVO>> LustToDo(Map<String, Object> params) {
-        R r = remoteProcessService.todo(auditFlowDefKey, params);
+        R r = null;
+        try {
+            r = remoteProcessService.todo(auditFlowDefKey, params);
+        } catch (Exception e) {
+            r=new R().setData(new ArrayList<>());
+            e.printStackTrace();
+        }
+
         return r;
     }
 

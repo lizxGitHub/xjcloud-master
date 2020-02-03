@@ -6,6 +6,7 @@ import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
 import gov.pbc.xjcloud.provider.contract.vo.TreeVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Component
+@EnableScheduling
 public class DeptUtil {
 
     @Autowired
@@ -65,7 +67,7 @@ public class DeptUtil {
         vo.setLabel(treeVO.getLabel());
         return vo;
     }
-    @Scheduled(cron="0 0/10 * * * * ?")
+    @Scheduled(fixedRate=1000*60)
     public void cleanDeptMap(){
         System.out.println("已清理部门数据");
         this.deptMap=new HashMap<>();

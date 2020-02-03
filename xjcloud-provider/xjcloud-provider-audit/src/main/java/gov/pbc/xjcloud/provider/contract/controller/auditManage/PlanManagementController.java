@@ -66,7 +66,7 @@ public class PlanManagementController {
         try {
             page = planManagementService.selectPlanCheckList(page, query);
             page.getRecords().stream().forEach(e->{
-                TreeVO treeVO = deptUtil.getDeptMap().get(e.getAuditObjectId());
+                TreeVO treeVO = deptUtil.getDeptMap().get(Integer.parseInt(e.getAuditObjectId()));
                 if(null != treeVO){
                     e.setAuditObjectId(treeVO.getLabel());
                 }else {

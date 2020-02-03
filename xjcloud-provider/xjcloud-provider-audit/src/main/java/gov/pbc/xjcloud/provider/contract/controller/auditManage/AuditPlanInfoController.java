@@ -113,36 +113,6 @@ public class AuditPlanInfoController {
                 String auditObjectId = plan.getAuditObjectId(); //审计对象id
                 int createdBy = plan.getCreatedBy(); //创建人
 
-//                gov.pbc.xjcloud.common.core.util.R impUserAssignee = userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(implementingAgencyId), "一般用户");
-//                gov.pbc.xjcloud.common.core.util.R implLeaderAssignee = userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(implementingAgencyId), "管理员");
-//                gov.pbc.xjcloud.common.core.util.R auditUserAssignee = userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(auditObjectId), "一般用户");
-//                gov.pbc.xjcloud.common.core.util.R auditLeaderAssignee = userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(auditObjectId), "管理员");
-
-//                //实施机构一般员工
-//                JSONArray impUserAssigneeArray = new JSONArray();
-//                List<Map<String, String>> impUserAssigneeList = (List) impUserAssignee.getData();
-//                for (Map<String, String> impUserAssigneeMap : impUserAssigneeList) {
-//                    impUserAssigneeArray.add(impUserAssigneeMap.get("userId"));
-//                }
-//                //实施机构领导
-//                JSONArray implLeaderAssigneeArray = new JSONArray();
-//                List<Map<String, String>> implLeaderAssigneeList = (List) implLeaderAssignee.getData();
-//                for (Map<String, String> implLeaderAssigneeMap : implLeaderAssigneeList) {
-//                    implLeaderAssigneeArray.add(implLeaderAssigneeMap.get("userId"));
-//                }
-//                //审计对象一般员工
-//                JSONArray auditUserAssigneeArray = new JSONArray();
-//                List<Map<String, String>> auditUserAssigneeList = (List) auditUserAssignee.getData();
-//                for (Map<String, String> auditUserAssigneeMap : auditUserAssigneeList) {
-//                    auditUserAssigneeArray.add(auditUserAssigneeMap.get("userId"));
-//                }
-//                //审计对象领导
-//                JSONArray auditLeaderAssigneeArray = new JSONArray();
-//                List<Map<String, String>> auditLeaderAssigneeList = (List) auditLeaderAssignee.getData();
-//                for (Map<String, String> auditLeaderAssigneeMap : auditLeaderAssigneeList) {
-//                    auditLeaderAssigneeArray.add(auditLeaderAssigneeMap.get("userId"));
-//                }
-
                 int impUserAssignee = plan.getImpUserId(); //
                 int implLeaderAssignee = plan.getImpAdminId(); //
                 int auditUserAssignee = plan.getAuditUserId(); //
