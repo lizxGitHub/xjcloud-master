@@ -1,10 +1,14 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.vo.PlanCheckListVO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
+import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
@@ -44,6 +48,9 @@ public class PlanManagementController {
     @Autowired
     private UserCenterService userCenterService;
 
+    @Autowired
+    private RemoteDeptService remoteDeptService;
+
     /**
      * 获取审计计划
      *
@@ -58,6 +65,14 @@ public class PlanManagementController {
         PageUtil.initPage(page);
         try {
             page = planManagementService.selectPlanCheckList(page, query);
+            page.getRecords().stream().forEach(e->{
+                TreeVO treeVO = deptUtil.getDeptMap().get(e.getAuditObjectId());
+                if(null != treeVO){
+                    e.setAuditObjectId(treeVO.getLabel());
+                }else {
+                    e.setAuditObjectId("其他");
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,8 +89,8 @@ public class PlanManagementController {
             page.setCurrent(Long.parseLong(current));
             page.setSize(Long.parseLong(size));
             query.put("type", type);
-            if(StringUtils.isNotBlank(query.get("deptId").toString())){
-                List deptChild = deptUtil.findChildBank(Integer.parseInt(query.get("deptId").toString()),"支行");
+            if (StringUtils.isNotBlank(query.get("deptId").toString())) {
+                List deptChild = deptUtil.findChildBank(Integer.parseInt(query.get("deptId").toString()), "支行");
                 query.put("auditObj", deptChild);
             }
 
@@ -97,7 +112,7 @@ public class PlanManagementController {
             page.setSize(Long.parseLong(size));
             Map<Integer, TreeVO> deptMap = deptUtil.getDeptMap();
             page = planManagementService.selectAttentionPage(page, query);
-            page.getRecords().stream().filter(e->e.getImplementingAgencyId()!=null&&e.getAuditObjectId()!=null).forEach(e->{
+            page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
                 e.setImplementingAgencyId(deptMap.get(Integer.valueOf(e.getImplementingAgencyId())).getLabel());
                 e.setAuditObjectId(deptMap.get(Integer.parseInt(e.getAuditObjectId())).getLabel());
             });
@@ -119,8 +134,8 @@ public class PlanManagementController {
             return R.failed("用户不存在");
         }
         try {
-            planManagementService.addCheckAttention(userId,checkStr);
-        }catch (Exception e){
+            planManagementService.addCheckAttention(userId, checkStr);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return R.ok(Boolean.TRUE);
@@ -144,7 +159,7 @@ public class PlanManagementController {
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
 
-            planList =  planManagementService.selectEntryByQuery(query, page.getCurrent()-1, page.getSize());
+            planList = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             planList = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             page.setRecords(planList);
             page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));
@@ -174,6 +189,7 @@ public class PlanManagementController {
 
     /**
      * 审计对象
+     *
      * @return
      */
     @ApiOperation("审计对象")
@@ -242,18 +258,29 @@ public class PlanManagementController {
      */
     @ApiOperation("获取问题信息")
     @GetMapping("/{id}")
-    public R<PlanCheckList> getPLanInfoById(@PathVariable String id) {
-        R<PlanCheckList> r = new R<>();
+    public R<PlanCheckListVO> getPLanInfoById(@PathVariable String id) {
+        R<PlanCheckListVO> r = new R<>();
         try {
             if (StringUtils.isBlank(id)) {
                 return r.failed("参数错误，请检查");
             }
             PlanCheckList planOne = planManagementService.getById(id);
-            r.setData(planOne);
+            gov.pbc.xjcloud.common.core.util.R<Map<String,Object>> dept = remoteDeptService.dept(Integer.parseInt(planOne.getImplementingAgencyId()));
+            PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
+            planCheckListDTO.setImplementingAgencyName(dept.getData().get("name").toString());
+            r.setData(planCheckListDTO);
         } catch (Exception e) {
             r.failed(e.getMessage());
             e.printStackTrace();
         }
         return r;
+    }
+
+    private PlanCheckListVO changeToDTO(PlanCheckList checkList) {
+        if (null == checkList) {
+            return new PlanCheckListVO();
+        }
+        String s = JSONObject.toJSONString(checkList);
+        return JSONUtil.toBean(s, PlanCheckListVO.class);
     }
 }
