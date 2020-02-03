@@ -99,5 +99,20 @@ public class PlanCheckList implements Serializable,Cloneable{
      * 延期意见（领导填写）
      */
     private String delayRemarks;
-
+    /**
+     * 实施机构一般员工
+     */
+    private int impUserId;
+    /**
+     * 实施机构管理员
+     */
+    private int impAdminId;
+    /**
+     * 审计对象一般员工
+     */
+    private int auditUserId;
+    /**
+     * 审计对象管理员
+     */
+    private int auditAdminId;
 }

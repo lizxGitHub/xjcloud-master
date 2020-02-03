@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
+import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
@@ -39,6 +40,9 @@ public class PlanManagementController {
 
     @Autowired
     private DeptUtil deptUtil;
+
+    @Autowired
+    private UserCenterService userCenterService;
 
     /**
      * 获取审计计划
@@ -157,6 +161,15 @@ public class PlanManagementController {
     @GetMapping("/selectEntryByCategoryId")
     public R<List<Map<String, Object>>> selectEntryByCategoryId(@RequestParam(name = "categoryId", required = true) String categoryId) {
         return R.ok(planManagementService.selectEntryByCategoryId(categoryId));
+    }
+
+    /**
+     * @return
+     */
+    @ApiOperation("获取部门角色")
+    @GetMapping("/getUsersByRoleNameAndDept")
+    public R getUsersByRoleNameAndDept(@RequestParam(name = "deptId", required = true) int deptId, @RequestParam(name = "roleName", required = true) String roleName) {
+        return R.ok(userCenterService.getUsersByRoleNameAndDept(deptId, roleName).getData());
     }
 
     /**
