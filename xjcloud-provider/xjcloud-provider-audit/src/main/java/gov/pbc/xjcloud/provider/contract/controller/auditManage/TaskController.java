@@ -33,7 +33,7 @@ public class TaskController {
     RemoteUserService remoteUserService;
 
     @Value("${audit.flow-key:auditApply}")
-    private String auditFlowDefKey = "auditPlan";
+    private String auditFlowDefKey;
 
 
     /**
