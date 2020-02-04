@@ -250,7 +250,7 @@ public class PlanManagementController {
                 planCheckListOld.setRectifyWay(planCheckList.getRectifyWay());
                 planCheckListOld.setPlanTime(planCheckList.getPlanTime());
                 planCheckListOld.setRectifyResult(planCheckList.getRectifyResult());
-                planManagementService.updateById(planCheckList);
+                planManagementService.updateById(planCheckListOld);
             }
         } catch (Exception e) {
             e.printStackTrace();
