@@ -22,7 +22,7 @@ public interface AuditActivitiService {
     R todo(@PathVariable("processDefKey") String paramString, @RequestParam Map<String, Object> paramMap);
 
     @PostMapping({"/task/{taskId}"})
-    R complete(@PathVariable("taskId") String paramString1,   Map<String, Object> params);
+    R complete(@PathVariable("taskId") String paramString1, @RequestBody  Map<String, Object> params);
 
     @DeleteMapping({"/task/{processDefKey}/{businessId}"})
     R cancel(@PathVariable("processDefKey") String paramString1, @PathVariable("businessId") String paramString2);

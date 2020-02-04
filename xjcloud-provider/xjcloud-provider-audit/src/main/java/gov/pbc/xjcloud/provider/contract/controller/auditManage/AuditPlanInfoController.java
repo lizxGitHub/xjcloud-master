@@ -120,7 +120,7 @@ public class AuditPlanInfoController {
 
                 JSONObject varsJSONObject = new JSONObject();
                 varsJSONObject.put("impUserAssignee", impUserAssignee);
-                varsJSONObject.put("implLeaderAssignee", implLeaderAssignee);
+                varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
                 varsJSONObject.put("auditUserAssignee", auditUserAssignee);
                 varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
                 varsJSONObject.put("createdBy", createdBy);
