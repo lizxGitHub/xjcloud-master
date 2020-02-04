@@ -19,6 +19,9 @@ public enum PlanStatusEnum {
     IMP_AUDIT(1010,"整改待审核"),
     IMP_PASS(1011,"整改通过"),
     IMP_REJECT(1012,"驳回整改"),
+    DELAY_APPLY(1014,"延期申请"),
+    DELAY_AUDIT_PASS(1015,"审计领导同意延期"),
+    DELAY_IMP_AUDIT(1016,"实施领导审核"),
     FILE(1013,"已归档");
 
 
