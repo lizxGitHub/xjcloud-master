@@ -71,9 +71,15 @@ public class TaskController {
      * @param params 分页参数
      * @return
      */
-    @PostMapping("complete")
-    public R complete(String taskId, Map<String, Object> params) {
-        R complete = activitiService.complete(taskId, String.valueOf(params));
+    @PostMapping("complete/{taskId}")
+    public R complete(@PathVariable("taskId") String taskId, @RequestBody Map<String, Object> params) {
+        R complete = null;
+        try {
+            complete = activitiService.complete(taskId, params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return complete;
     }
 

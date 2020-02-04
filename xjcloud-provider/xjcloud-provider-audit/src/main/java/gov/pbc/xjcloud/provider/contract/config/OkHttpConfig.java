@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class OkHttpConfig {
     // 默认老外留给你彩蛋中文乱码，加上它就 OK，实测不加这个也不会乱码
-    @Bean
-    public Encoder encoder() {
-        return new FormEncoder();
-    }
+//    @Bean
+//    public Encoder encoder() {
+//        return new FormEncoder();
+//    }
 
     @Bean
     public okhttp3.OkHttpClient okHttpClient() {

@@ -1,11 +1,19 @@
 package gov.pbc.xjcloud.provider.contract.config;
 
+import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import feign.codec.Encoder;
+import feign.form.spring.SpringFormEncoder;
 import gov.pbc.xjcloud.common.core.constant.SecurityConstants;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.support.SpringEncoder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,6 +30,32 @@ public class FeignClientConfig implements RequestInterceptor {
 
     @Value("${audit.token-name:Authorization}")
     private String tokenName;
+
+    @Autowired
+    private ObjectFactory<HttpMessageConverters> messageConverters;
+
+    /**
+     * new一个form编码器，实现支持form表单提交
+     *
+     * @return
+     */
+    @Bean
+    public Encoder feignFormEncoder() {
+        return new SpringFormEncoder(new SpringEncoder(messageConverters));
+    }
+
+
+    /**
+     * 开启Feign的日志
+     *
+     * @return
+     */
+    @Bean
+    public Logger.Level logger() {
+        return Logger.Level.FULL;
+    }
+
+
 
     public FeignClientConfig() {
 

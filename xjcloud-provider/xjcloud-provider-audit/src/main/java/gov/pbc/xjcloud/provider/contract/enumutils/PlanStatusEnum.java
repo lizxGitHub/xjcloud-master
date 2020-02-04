@@ -16,10 +16,11 @@ public enum PlanStatusEnum {
     RECTIFY_REJECT(1007,"整改信息未通过"),
     RECTIFY_COMPLETE(1008,"整改信息已完善"),
     COMPLETE_TOBE_AUDIT(1009,"整改信息待审核"),
-    IMP_AUDIT(10010,"整改待审核"),
+    IMP_AUDIT(1010,"整改待审核"),
     IMP_PASS(1011,"整改通过"),
     IMP_REJECT(1012,"驳回整改"),
     FILE(1013,"已归档");
+
 
     private int code;
 
