@@ -59,9 +59,6 @@ public class PlanManagementController {
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
     public R<Page<PlanCheckList>> index(PlanCheckList query, Page<PlanCheckList> page) {
-        if (query.getCreatedBy() == 0) {
-            return R.ok(page);
-        }
         PageUtil.initPage(page);
         try {
             page = planManagementService.selectPlanCheckList(page, query);

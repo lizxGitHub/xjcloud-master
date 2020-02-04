@@ -76,6 +76,9 @@
         <if test="query.problemDescription!=null and query.problemDescription!=''">
             and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
         </if>
+        <if test="query.implementingAgencyId!=null and query.implementingAgencyId!=''">
+            and a.implementing_agency_id like concat('%',concat(#{query.implementingAgencyId},'%'))
+        </if>
 
     </select>
 
