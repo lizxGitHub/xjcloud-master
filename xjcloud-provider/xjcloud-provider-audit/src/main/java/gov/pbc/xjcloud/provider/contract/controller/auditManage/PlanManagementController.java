@@ -65,14 +65,14 @@ public class PlanManagementController {
         PageUtil.initPage(page);
         try {
             page = planManagementService.selectPlanCheckList(page, query);
-            page.getRecords().stream().forEach(e->{
-                TreeVO treeVO = deptUtil.getDeptMap().get(Integer.parseInt(e.getAuditObjectId()));
-                if(null != treeVO){
-                    e.setAuditObjectId(treeVO.getLabel());
-                }else {
-                    e.setAuditObjectId("其他");
-                }
-            });
+//            page.getRecords().stream().forEach(e->{
+//                TreeVO treeVO = deptUtil.getDeptMap().get(Integer.parseInt(e.getAuditObjectId()));
+//                if(null != treeVO){
+//                    e.setAuditObjectId(treeVO.getLabel());
+//                }else {
+//                    e.setAuditObjectId("其他");
+//                }
+//            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -203,7 +203,7 @@ public class PlanManagementController {
     }
 
     /**
-     * 创建问题
+     * 创建编辑问题
      *
      * @return
      */
@@ -222,6 +222,34 @@ public class PlanManagementController {
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planManagementService.save(planCheckList);
             } else {
+                planCheckList = planManagementService.getById(planCheckList.getId());
+                if (planCheckList != null) {
+                    planManagementService.updateById(planCheckList);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            r.failed(e.getMessage());
+        }
+        return r;
+    }
+
+    /**
+     * 更新问题
+     *
+     * @return
+     */
+    @ApiOperation("更新问题")
+    @PostMapping("/updatePlan")
+    public R<Boolean> updatePlan(PlanCheckList planCheckList) {
+        R<Boolean> r = new R<>();
+        try {
+            PlanCheckList planCheckListOld = planManagementService.getById(planCheckList.getId());
+            if (planCheckListOld != null) {
+                planCheckListOld.setFrequency(planCheckList.getFrequency());
+                planCheckListOld.setRectifyWay(planCheckList.getRectifyWay());
+                planCheckListOld.setPlanTime(planCheckList.getPlanTime());
+                planCheckListOld.setRectifyResult(planCheckList.getRectifyResult());
                 planManagementService.updateById(planCheckList);
             }
         } catch (Exception e) {
@@ -265,9 +293,9 @@ public class PlanManagementController {
                 return r.failed("参数错误，请检查");
             }
             PlanCheckList planOne = planManagementService.getById(id);
-            gov.pbc.xjcloud.common.core.util.R<Map<String,Object>> dept = remoteDeptService.dept(Integer.parseInt(planOne.getImplementingAgencyId()));
+//            gov.pbc.xjcloud.common.core.util.R<Map<String,Object>> dept = remoteDeptService.dept(Integer.parseInt(planOne.getImplementingAgencyId()));
             PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
-            planCheckListDTO.setImplementingAgencyName(dept.getData().get("name").toString());
+//            planCheckListDTO.setImplementingAgencyName(dept.getData().get("name").toString());
             r.setData(planCheckListDTO);
         } catch (Exception e) {
             r.failed(e.getMessage());

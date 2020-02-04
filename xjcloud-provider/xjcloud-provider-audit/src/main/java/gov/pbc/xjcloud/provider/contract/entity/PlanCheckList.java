@@ -2,7 +2,9 @@ package gov.pbc.xjcloud.provider.contract.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -115,4 +117,22 @@ public class PlanCheckList implements Serializable,Cloneable{
      * 审计对象管理员
      */
     private int auditAdminId;
+    /**
+     * 出现频次
+     */
+    private String frequency;
+    /**
+     * 整改措施
+     */
+    private String rectifyWay;
+    /**
+     * 计划整改时长
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
+    private Date planTime;
+    /**
+     * 整改结果
+     */
+    private String rectifyResult;
 }
