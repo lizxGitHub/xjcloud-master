@@ -2,10 +2,9 @@ package gov.pbc.xjcloud.provider.contract.controller.userManage;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
-import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
-import gov.pbc.xjcloud.provider.usercenter.api.feign.RemoteUserService;
+import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 import java.util.Map;
 
 @RestController

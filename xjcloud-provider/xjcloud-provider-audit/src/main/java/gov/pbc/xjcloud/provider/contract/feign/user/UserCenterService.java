@@ -1,7 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.feign.user;
 
-import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.config.FeignClientConfig;
+import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.usercenter.api.entity.SysLog;
 import gov.pbc.xjcloud.provider.usercenter.api.entity.SysRole;
 import gov.pbc.xjcloud.provider.usercenter.api.vo.UserVO;

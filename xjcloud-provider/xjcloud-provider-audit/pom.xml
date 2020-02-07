@@ -191,10 +191,10 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>gov.pbc.xjcloud.common</groupId>
             <artifactId>xjcloud-common-core</artifactId>
-        </dependency>
+        </dependency>-->
         <!--        <dependency>-->
         <!--            <groupId>gov.pbc.xjcloud.common</groupId>-->
         <!--            <artifactId>xjcloud-common-data</artifactId>-->
@@ -215,6 +215,12 @@
             <version>0.0.1</version>
             <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>
             <scope>system</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>4.3.2</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

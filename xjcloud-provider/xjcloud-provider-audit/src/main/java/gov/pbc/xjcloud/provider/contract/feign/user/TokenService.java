@@ -1,8 +1,8 @@
 package gov.pbc.xjcloud.provider.contract.feign.user;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.config.FeignClientConfig;
+import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

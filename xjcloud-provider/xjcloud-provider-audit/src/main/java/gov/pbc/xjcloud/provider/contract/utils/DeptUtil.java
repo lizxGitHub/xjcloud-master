@@ -1,7 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.utils;
 
 import cn.hutool.json.JSONUtil;
-import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
 import gov.pbc.xjcloud.provider.contract.vo.TreeVO;

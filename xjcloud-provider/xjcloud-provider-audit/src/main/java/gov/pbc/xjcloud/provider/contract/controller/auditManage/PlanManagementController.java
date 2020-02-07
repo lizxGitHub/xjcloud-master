@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
-import gov.pbc.xjcloud.provider.contract.vo.PlanCheckListVO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
@@ -15,6 +14,7 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagement
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
+import gov.pbc.xjcloud.provider.contract.vo.PlanCheckListVO;
 import gov.pbc.xjcloud.provider.contract.vo.TreeVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

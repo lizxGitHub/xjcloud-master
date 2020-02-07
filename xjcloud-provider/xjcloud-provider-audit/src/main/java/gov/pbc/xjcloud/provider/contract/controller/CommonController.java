@@ -1,6 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.controller;
 
-import gov.pbc.xjcloud.common.core.util.R;
+import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;

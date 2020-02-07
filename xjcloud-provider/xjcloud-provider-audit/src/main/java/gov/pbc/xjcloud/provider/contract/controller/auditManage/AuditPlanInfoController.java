@@ -20,6 +20,7 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoS
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
+import gov.pbc.xjcloud.provider.contract.utils.R2;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -129,7 +130,7 @@ public class AuditPlanInfoController {
 
                 String vars = varsJSONObject.toJSONString();
                 //启动流程
-                gov.pbc.xjcloud.common.core.util.R<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
                 if(!auditApply.getData()){
                     return r.setMsg("流程启动失败:"+auditApply.getMsg());
                 }

@@ -2,11 +2,11 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
-import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
+import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
 import gov.pbc.xjcloud.provider.usercenter.api.feign.RemoteUserService;
 import org.apache.commons.lang.StringUtils;

@@ -1,8 +1,8 @@
 package gov.pbc.xjcloud.provider.contract.feign.activiti;
 
-import com.alibaba.fastjson.JSONObject;
-import gov.pbc.xjcloud.common.core.util.R;
 import gov.pbc.xjcloud.provider.contract.config.FeignClientConfig;
+import gov.pbc.xjcloud.provider.contract.utils.R;
+import gov.pbc.xjcloud.provider.contract.utils.R2;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import java.util.Map;
 public interface AuditActivitiService {
 
     @PutMapping({"/process/start/{processDefKey}/{businessId}"})
-    R start(@PathVariable("processDefKey") String paramString1, @PathVariable("businessId") Integer paramInteger, @RequestParam("vars") String paramString2);
+    R2 start(@PathVariable("processDefKey") String paramString1, @PathVariable("businessId") Integer paramInteger, @RequestParam("vars") String paramString2);
 
     @GetMapping({"/task/todo/{processDefKey}"})
     R todo(@PathVariable("processDefKey") String paramString, @RequestParam Map<String, Object> paramMap);

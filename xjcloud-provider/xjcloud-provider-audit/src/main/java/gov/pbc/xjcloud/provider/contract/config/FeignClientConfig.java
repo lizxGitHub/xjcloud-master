@@ -5,7 +5,7 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;
-import gov.pbc.xjcloud.common.core.constant.SecurityConstants;
+import gov.pbc.xjcloud.provider.contract.constants.SecurityConstants;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectFactory;
