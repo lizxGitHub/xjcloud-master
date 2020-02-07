@@ -1,10 +1,10 @@
 package gov.pbc.xjcloud.provider.contract.feign.user;
 
 import gov.pbc.xjcloud.provider.contract.config.FeignClientConfig;
+import gov.pbc.xjcloud.provider.contract.entity.sys.SysLog;
+import gov.pbc.xjcloud.provider.contract.entity.sys.SysRole;
 import gov.pbc.xjcloud.provider.contract.utils.R;
-import gov.pbc.xjcloud.provider.usercenter.api.entity.SysLog;
-import gov.pbc.xjcloud.provider.usercenter.api.entity.SysRole;
-import gov.pbc.xjcloud.provider.usercenter.api.vo.UserVO;
+import gov.pbc.xjcloud.provider.contract.vo.UserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

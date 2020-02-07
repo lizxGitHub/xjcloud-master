@@ -181,11 +181,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>gov.pbc.xjcloud.provider.audit.api</groupId>
-            <artifactId>xjcloud-provider-audit-api</artifactId>
-            <version>0.0.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>gov.pbc.xjcloud.provider.audit.api</groupId>-->
+<!--            <artifactId>xjcloud-provider-audit-api</artifactId>-->
+<!--            <version>0.0.1</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -201,21 +201,21 @@
         <!--            <version>0.0.1</version>-->
         <!--        </dependency>-->
 
-        <dependency>
-            <groupId>gov.pbc.xjcloud.provider.api</groupId>
-            <artifactId>xjcloud-provider-usercenter-api</artifactId>
-            <version>0.0.1</version>
-            <systemPath>${project.basedir}/src/lib/xjcloud-provider-usercenter-api.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
+<!--            <artifactId>xjcloud-provider-usercenter-api</artifactId>-->
+<!--            <version>0.0.1</version>-->
+<!--            <systemPath>${project.basedir}/src/lib/xjcloud-provider-usercenter-api.jar</systemPath>-->
+<!--            <scope>system</scope>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>gov.pbc.xjcloud.provider.api</groupId>
-            <artifactId>xjcloud-provider-activiti-api</artifactId>
-            <version>0.0.1</version>
-            <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
+<!--            <artifactId>xjcloud-provider-activiti-api</artifactId>-->
+<!--            <version>0.0.1</version>-->
+<!--            <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>-->
+<!--            <scope>system</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
