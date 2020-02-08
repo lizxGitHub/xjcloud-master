@@ -113,8 +113,8 @@ public class EntryFlowController {
             //类型编码
             entryFlow.setTypeCode(category.getDefKey() + DateTime.now().toDate().getTime());
             // todo 此处需要能够访问用户服务 引入common-security包调用 SecurityUtils.getUsername() 方法;
-            entryFlow.setCreatedBy("user01");
-            entryFlow.setApplyUser("user01");
+//            entryFlow.setCreatedBy("user01");
+//            entryFlow.setApplyUser("user01");
             entryFlow.setInstanceId(IdGenUtil.uuid());
             entryFlow.setEntryFk(IdGenUtil.uuid());
             //新增
@@ -245,7 +245,7 @@ public class EntryFlowController {
             updateWrapper.set("category_fk", entryFlow.getCategoryFk());
             updateWrapper.set("updated_time", new Date());
             // todo 启动修改流程
-            updateWrapper.set("updated_by", "user02");
+//            updateWrapper.set("updated_by", "user02");
             // 词条审核时使用该字段验证
             updateWrapper.set("instance_id", IdGenUtil.uuid());
             // 更改审核状态
