@@ -5,12 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import gov.pbc.xjcloud.provider.activiti.api.feign.RemoteProcessService;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DeptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
-import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditProjectInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
@@ -55,8 +53,6 @@ public class AuditPlanInfoController {
 
     @Resource
     private PlanManagementService planManagementService;
-
-    RemoteProcessService remoteProcessService;
 
     @Autowired
     private DeptUtil deptUtil;

@@ -8,7 +8,6 @@ import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
-import gov.pbc.xjcloud.provider.usercenter.api.feign.RemoteUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +31,6 @@ public class TaskController {
     @Autowired
     AuditActivitiService activitiService;
 
-    @Autowired
-    RemoteUserService remoteUserService;
 
     @Value("${audit.flow-key:auditApply}")
     private String auditFlowDefKey;

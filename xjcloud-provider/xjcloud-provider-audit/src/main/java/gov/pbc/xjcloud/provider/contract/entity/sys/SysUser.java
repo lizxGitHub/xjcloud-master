@@ -3,34 +3,37 @@
 // (powered by Fernflower decompiler)
 //
 
-package gov.pbc.xjcloud.provider.contract.vo;
+package gov.pbc.xjcloud.provider.contract.entity.sys;
 
-import gov.pbc.xjcloud.provider.contract.entity.sys.SysRole;
-
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
-public class UserVO implements Serializable {
+public class SysUser implements Serializable {
     private static final long serialVersionUID = 1L;
+    @TableId(
+        value = "user_id",
+        type = IdType.AUTO
+    )
     private Integer userId;
     private String username;
     private String password;
+    @JsonIgnore
     private String salt;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    @TableLogic
     private String delFlag;
     private String lockFlag;
     private String phone;
     private String avatar;
     private Integer deptId;
     private Integer tenantId;
-    private String deptName;
-    private List<String> permissionList;
-    private List<SysRole> roleList;
-    private List<Integer> roleIdList;
 
-    public UserVO() {
+    public SysUser() {
     }
 
     public Integer getUserId() {
@@ -81,22 +84,6 @@ public class UserVO implements Serializable {
         return this.tenantId;
     }
 
-    public String getDeptName() {
-        return this.deptName;
-    }
-
-    public List<String> getPermissionList() {
-        return this.permissionList;
-    }
-
-    public List<SysRole> getRoleList() {
-        return this.roleList;
-    }
-
-    public List<Integer> getRoleIdList() {
-        return this.roleIdList;
-    }
-
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
@@ -145,41 +132,25 @@ public class UserVO implements Serializable {
         this.tenantId = tenantId;
     }
 
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
-
-    public void setPermissionList(List<String> permissionList) {
-        this.permissionList = permissionList;
-    }
-
-    public void setRoleList(List<SysRole> roleList) {
-        this.roleList = roleList;
-    }
-
-    public void setRoleIdList(List<Integer> roleIdList) {
-        this.roleIdList = roleIdList;
-    }
-
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (!(o instanceof UserVO)) {
+        } else if (!(o instanceof SysUser)) {
             return false;
         } else {
-            UserVO other = (UserVO)o;
+            SysUser other = (SysUser)o;
             if (!other.canEqual(this)) {
                 return false;
             } else {
-                label203: {
+                label155: {
                     Object this$userId = this.getUserId();
                     Object other$userId = other.getUserId();
                     if (this$userId == null) {
                         if (other$userId == null) {
-                            break label203;
+                            break label155;
                         }
                     } else if (this$userId.equals(other$userId)) {
-                        break label203;
+                        break label155;
                     }
 
                     return false;
@@ -205,43 +176,43 @@ public class UserVO implements Serializable {
                     return false;
                 }
 
-                label182: {
+                label134: {
                     Object this$salt = this.getSalt();
                     Object other$salt = other.getSalt();
                     if (this$salt == null) {
                         if (other$salt == null) {
-                            break label182;
+                            break label134;
                         }
                     } else if (this$salt.equals(other$salt)) {
-                        break label182;
+                        break label134;
                     }
 
                     return false;
                 }
 
-                label175: {
+                label127: {
                     Object this$createTime = this.getCreateTime();
                     Object other$createTime = other.getCreateTime();
                     if (this$createTime == null) {
                         if (other$createTime == null) {
-                            break label175;
+                            break label127;
                         }
                     } else if (this$createTime.equals(other$createTime)) {
-                        break label175;
+                        break label127;
                     }
 
                     return false;
                 }
 
-                label168: {
+                label120: {
                     Object this$updateTime = this.getUpdateTime();
                     Object other$updateTime = other.getUpdateTime();
                     if (this$updateTime == null) {
                         if (other$updateTime == null) {
-                            break label168;
+                            break label120;
                         }
                     } else if (this$updateTime.equals(other$updateTime)) {
-                        break label168;
+                        break label120;
                     }
 
                     return false;
@@ -257,15 +228,15 @@ public class UserVO implements Serializable {
                     return false;
                 }
 
-                label154: {
+                label106: {
                     Object this$lockFlag = this.getLockFlag();
                     Object other$lockFlag = other.getLockFlag();
                     if (this$lockFlag == null) {
                         if (other$lockFlag == null) {
-                            break label154;
+                            break label106;
                         }
                     } else if (this$lockFlag.equals(other$lockFlag)) {
-                        break label154;
+                        break label106;
                     }
 
                     return false;
@@ -281,15 +252,15 @@ public class UserVO implements Serializable {
                     return false;
                 }
 
-                label140: {
+                label92: {
                     Object this$avatar = this.getAvatar();
                     Object other$avatar = other.getAvatar();
                     if (this$avatar == null) {
                         if (other$avatar == null) {
-                            break label140;
+                            break label92;
                         }
                     } else if (this$avatar.equals(other$avatar)) {
-                        break label140;
+                        break label92;
                     }
 
                     return false;
@@ -315,61 +286,13 @@ public class UserVO implements Serializable {
                     return false;
                 }
 
-                label119: {
-                    Object this$deptName = this.getDeptName();
-                    Object other$deptName = other.getDeptName();
-                    if (this$deptName == null) {
-                        if (other$deptName == null) {
-                            break label119;
-                        }
-                    } else if (this$deptName.equals(other$deptName)) {
-                        break label119;
-                    }
-
-                    return false;
-                }
-
-                label112: {
-                    Object this$permissionList = this.getPermissionList();
-                    Object other$permissionList = other.getPermissionList();
-                    if (this$permissionList == null) {
-                        if (other$permissionList == null) {
-                            break label112;
-                        }
-                    } else if (this$permissionList.equals(other$permissionList)) {
-                        break label112;
-                    }
-
-                    return false;
-                }
-
-                Object this$roleList = this.getRoleList();
-                Object other$roleList = other.getRoleList();
-                if (this$roleList == null) {
-                    if (other$roleList != null) {
-                        return false;
-                    }
-                } else if (!this$roleList.equals(other$roleList)) {
-                    return false;
-                }
-
-                Object this$roleIdList = this.getRoleIdList();
-                Object other$roleIdList = other.getRoleIdList();
-                if (this$roleIdList == null) {
-                    if (other$roleIdList != null) {
-                        return false;
-                    }
-                } else if (!this$roleIdList.equals(other$roleIdList)) {
-                    return false;
-                }
-
                 return true;
             }
         }
     }
 
     protected boolean canEqual(Object other) {
-        return other instanceof UserVO;
+        return other instanceof SysUser;
     }
 
     public int hashCode() {
@@ -399,18 +322,10 @@ public class UserVO implements Serializable {
         result = result * 59 + ($deptId == null ? 43 : $deptId.hashCode());
         Object $tenantId = this.getTenantId();
         result = result * 59 + ($tenantId == null ? 43 : $tenantId.hashCode());
-        Object $deptName = this.getDeptName();
-        result = result * 59 + ($deptName == null ? 43 : $deptName.hashCode());
-        Object $permissionList = this.getPermissionList();
-        result = result * 59 + ($permissionList == null ? 43 : $permissionList.hashCode());
-        Object $roleList = this.getRoleList();
-        result = result * 59 + ($roleList == null ? 43 : $roleList.hashCode());
-        Object $roleIdList = this.getRoleIdList();
-        result = result * 59 + ($roleIdList == null ? 43 : $roleIdList.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UserVO(userId=" + this.getUserId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ", salt=" + this.getSalt() + ", createTime=" + this.getCreateTime() + ", updateTime=" + this.getUpdateTime() + ", delFlag=" + this.getDelFlag() + ", lockFlag=" + this.getLockFlag() + ", phone=" + this.getPhone() + ", avatar=" + this.getAvatar() + ", deptId=" + this.getDeptId() + ", tenantId=" + this.getTenantId() + ", deptName=" + this.getDeptName() + ", permissionList=" + this.getPermissionList() + ", roleList=" + this.getRoleList() + ", roleIdList=" + this.getRoleIdList() + ")";
+        return "SysUser(userId=" + this.getUserId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ", salt=" + this.getSalt() + ", createTime=" + this.getCreateTime() + ", updateTime=" + this.getUpdateTime() + ", delFlag=" + this.getDelFlag() + ", lockFlag=" + this.getLockFlag() + ", phone=" + this.getPhone() + ", avatar=" + this.getAvatar() + ", deptId=" + this.getDeptId() + ", tenantId=" + this.getTenantId() + ")";
     }
 }
