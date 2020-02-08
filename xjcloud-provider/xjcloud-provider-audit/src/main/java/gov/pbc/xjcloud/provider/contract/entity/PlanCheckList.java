@@ -37,6 +37,9 @@ public class PlanCheckList implements Serializable,Cloneable{
     /** 项目名称 */
     @Column(name = "project_name")
     private String projectName ;
+    /** 项目类型 */
+    @Column(name = "project_type")
+    private String projectType ;
     /** 实施机构 */
     @Column(name = "implementing_agency_id")
     private String implementingAgencyId ;
