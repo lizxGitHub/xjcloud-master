@@ -1,6 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.vo.ac;
 
-import gov.pbc.xjcloud.provider.activiti.api.vo.ActVO;
 import lombok.Data;
 
 import java.util.Date;

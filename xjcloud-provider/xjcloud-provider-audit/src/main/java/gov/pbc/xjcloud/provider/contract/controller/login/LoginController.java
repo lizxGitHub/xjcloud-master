@@ -35,9 +35,6 @@ public class LoginController {
     @Value("${audit.token-name:Authorization}")
     private String tokenName;
 
-    @Autowired
-    RestTemplate restTemplate;
-
     @GetMapping("token")
     public R<String> getToken(@RequestParam Map<String, String> params) {
         R<String> r = new R<>();
