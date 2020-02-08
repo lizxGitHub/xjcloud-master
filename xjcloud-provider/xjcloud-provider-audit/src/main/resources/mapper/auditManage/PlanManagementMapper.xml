@@ -90,6 +90,9 @@
         <if test="status!=null and status!=''">
             and a.status =#{status}
         </if>
+        <if test="auditYear!=null and auditYear!=''">
+            and a.audit_year  like concat('%',concat(#{auditYear},'%'))
+        </if>
         <choose>
             <when test="deptChild!=null and deptChild.size()>0">
                 and a.audit_object_id in
@@ -126,6 +129,9 @@
         FROM
         `plan_check_list` a
         where a.del_flag='0'
+        <if test="query.auditYear!=null and query.auditYear!=''">
+            and a.audit_year  like concat('%',concat(#{query.auditYear},'%'))
+        </if>
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
         </if>

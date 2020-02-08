@@ -85,8 +85,8 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
-    public List<Map<String, Object>> getShortPlans(List deptChild, String status) {
-        return planManagementMapper.getShortPlans(deptChild, status);
+    public List<Map<String, Object>> getShortPlans(List deptChild, String status, String auditYear) {
+        return planManagementMapper.getShortPlans(deptChild, status, auditYear);
     }
 
     /**

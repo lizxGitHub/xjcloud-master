@@ -263,7 +263,7 @@ public class AuditPlanInfoController {
      *
      */
     @GetMapping("/XJInfo")
-    public JSONObject getXJInfo() {
+    public JSONObject getXJInfo(String auditYear) {
         JSONObject jsonObject = new JSONObject();
         JSONArray jSONArray = new JSONArray();
         Iterator<Map.Entry<String, String>> iter = DeptConstants.deptMap.entrySet().iterator(); //遍历地区
@@ -275,7 +275,7 @@ public class AuditPlanInfoController {
             String value = entry.getValue();
             //按dept查询问题数 key
             List deptChild = deptUtil.findChildBank(Integer.parseInt(key), "支行");
-            List<Map<String, Object>> shortPlans = planManagementService.getShortPlans(deptChild, "");
+            List<Map<String, Object>> shortPlans = planManagementService.getShortPlans(deptChild, "", auditYear);
             //返回的结果是所有问题的list 根据code来判断是未完成
 
             int total = 0;

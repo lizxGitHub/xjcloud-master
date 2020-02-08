@@ -26,5 +26,5 @@ public interface PlanManagementService extends IService<PlanCheckList> {
 
     int countStatisticPlanReport();
 
-    List<Map<String, Object>> getShortPlans(List deptChild, String status);
+    List<Map<String, Object>> getShortPlans(List deptChild, String status, String auditYear);
 }
