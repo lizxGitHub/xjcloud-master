@@ -31,6 +31,12 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         return page;
     }
 
+    public Page<PlanCheckList> selectPlanCheckListByAdmin(Page page, PlanCheckList query) {
+        List<PlanCheckList> list = planManagementMapper.selectPlanCheckListByAdmin(page, query);
+        page.setRecords(list);
+        return page;
+    }
+
     @Override
     public List<Map<String, Object>> selectEntryByCategoryId(String categoryId) {
         return planManagementMapper.selectEntryByCategoryId(categoryId);

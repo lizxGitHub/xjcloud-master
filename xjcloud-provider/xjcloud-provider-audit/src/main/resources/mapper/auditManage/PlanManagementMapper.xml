@@ -39,8 +39,7 @@
         </foreach>
     </delete>
 
-    <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
-        SELECT
+    <sql id="select">
         a.id,
         a.project_code,
         a.project_name,
@@ -61,6 +60,37 @@
         a.audit_classification_id,
         a.auditing_experience,
         a.risk_assessment_id
+    </sql>
+
+    <select id="selectPlanCheckListByAdmin" resultMap="PlanCheckListMapper">
+        SELECT
+        <include refid="select" />
+        FROM
+        `plan_check_list` a
+        LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
+        where a.del_flag='0' and a.`status` != '1001'
+        and a.implementing_agency_id like concat('%',concat(#{query.implementingAgencyId},'%'))
+        <if test="query.projectName!=null and query.projectName!=''">
+            and a.project_name like concat('%',concat(#{query.projectName},'%'))
+        </if>
+        <if test="query.status!=null and query.status!=''">
+            and a.`status` = #{query.status, jdbcType=VARCHAR}
+        </if>
+        <if test="query.auditYear!=null and query.auditYear!=''">
+            and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
+        </if>
+        <if test="query.auditNatureId!=null and query.auditNatureId!=''">
+            and a.audit_nature_id like concat('%',concat(#{query.auditNatureId},'%'))
+        </if>
+        <if test="query.projectType!=null and query.projectType!=''">
+            and a.project_type like concat('%',concat(#{query.projectType},'%'))
+        </if>
+
+    </select>
+
+    <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
+        SELECT
+        <include refid="select" />
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
@@ -118,26 +148,7 @@
     </select>
     <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
-        a.id,
-        a.project_code,
-        a.project_name,
-        a.project_type,
-        a.implementing_agency_id,
-        a.audit_object_id,
-        a.audit_nature_id,
-        a.audit_year,
-        a.status,
-        a.question_entry_id,
-        a.problem_severity_id,
-        a.rectify_situation_id,
-        a.problem_characterization,
-        a.problem_description,
-        a.may_affect,
-        a.rectification_suggestions,
-        a.audit_basis,
-        a.audit_classification_id,
-        a.auditing_experience,
-        a.risk_assessment_id
+        <include refid="select" />
         FROM
         `plan_check_list` a
         where a.del_flag='0'
@@ -200,26 +211,7 @@
     </select>
     <select id="selectAttentionPage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
-        a.id,
-        a.project_code,
-        a.project_name,
-        a.project_type,
-        a.implementing_agency_id,
-        a.audit_object_id,
-        a.audit_nature_id,
-        a.audit_year,
-        a.status,
-        a.question_entry_id,
-        a.problem_severity_id,
-        a.rectify_situation_id,
-        a.problem_characterization,
-        a.problem_description,
-        a.may_affect,
-        a.rectification_suggestions,
-        a.audit_basis,
-        a.audit_classification_id,
-        a.auditing_experience,
-        a.risk_assessment_id
+        <include refid="select" />
         FROM
         user_attention_check b
         left join `plan_check_list` a on a.id = b.check_id

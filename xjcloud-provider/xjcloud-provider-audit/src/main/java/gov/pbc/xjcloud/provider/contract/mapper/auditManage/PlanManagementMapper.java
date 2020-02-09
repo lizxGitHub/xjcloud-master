@@ -19,6 +19,8 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      */
     List<PlanCheckList> selectPlanCheckList(@Param("page") Page page, @Param("query") PlanCheckList query);
 
+    List<PlanCheckList> selectPlanCheckListByAdmin(@Param("page") Page page, @Param("query") PlanCheckList query);
+
     /**
      * 根据categoryId获取词条
      * @param categoryId

@@ -18,7 +18,6 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoS
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
-import gov.pbc.xjcloud.provider.contract.utils.R2;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -59,10 +58,18 @@ public class AuditPlanInfoController {
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
-    public R<Page<AuditPlanInfo>> index(AuditPlanInfo query, Page<AuditPlanInfo> page) {
+    public R<Page<PlanCheckList>> index(PlanCheckList query, Page<PlanCheckList> page) {
         PageUtil.initPage(page);
         try {
-            page = auditPlanInfoServiceImpl.selectAuditPlanInfoList(page, query);
+            page = planManagementService.selectPlanCheckListByAdmin(page, query);
+//            page.getRecords().stream().forEach(e->{
+//                TreeVO treeVO = deptUtil.getDeptMap().get(Integer.parseInt(e.getAuditObjectId()));
+//                if(null != treeVO){
+//                    e.setAuditObjectId(treeVO.getLabel());
+//                }else {
+//                    e.setAuditObjectId("其他");
+//                }
+//            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,52 +101,73 @@ public class AuditPlanInfoController {
     }
 
     /**
-     * 上报计划
+     * 更改状态
      * @param ids
-     * @param
      * @return
      */
-    @PostMapping("/reportPlan")
-    public R<Boolean> reportPlan(@RequestParam(name = "ids", required = true) String ids) {
+    @PostMapping("/changePlanStatusByIds")
+    public R<Boolean> changePlanStatusByIds(@RequestParam(name = "ids", required = true) String ids, @RequestParam(name = "status", required = true) String status) {
         R<Boolean> r = new R<>();
-        String[] idArray = ids.split(",");
         try {
+            String[] idArray = ids.split(",");
             for (String id : idArray) {
                 PlanCheckList plan = planManagementService.getById(id);
-                String implementingAgencyId = plan.getImplementingAgencyId(); //实施机构id
-                String auditObjectId = plan.getAuditObjectId(); //审计对象id
-                int createdBy = plan.getCreatedBy(); //创建人
-
-                int impUserAssignee = plan.getImpUserId(); //
-                int implLeaderAssignee = plan.getImpAdminId(); //
-                int auditUserAssignee = plan.getAuditUserId(); //
-                int auditLeaderAssignee = plan.getAuditAdminId(); //
-
-                JSONObject varsJSONObject = new JSONObject();
-                varsJSONObject.put("impUserAssignee", impUserAssignee);
-                varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
-                varsJSONObject.put("auditUserAssignee", auditUserAssignee);
-                varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
-                varsJSONObject.put("createdBy", createdBy);
-                varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
-                varsJSONObject.put("delayDate", null);
-
-                String vars = varsJSONObject.toJSONString();
-                //启动流程
-                R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
-                if(!auditApply.getData()){
-                    return r.setMsg("流程启动失败:"+auditApply.getMsg());
-                }
-                //修改状态
-                plan.setStatus(String.valueOf(PlanStatusEnum.PLAN_TOBE_AUDITED.getCode()));
+                plan.setStatus(status);
                 planManagementService.updateById(plan);
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return r.setData(true);
     }
+
+//    /**
+//     * 上报计划
+//     * @param ids
+//     * @param
+//     * @return
+//     */
+//    @PostMapping("/reportPlan")
+//    public R<Boolean> reportPlan(@RequestParam(name = "ids", required = true) String ids) {
+//        R<Boolean> r = new R<>();
+//        String[] idArray = ids.split(",");
+//        try {
+//            for (String id : idArray) {
+//                PlanCheckList plan = planManagementService.getById(id);
+//                String implementingAgencyId = plan.getImplementingAgencyId(); //实施机构id
+//                String auditObjectId = plan.getAuditObjectId(); //审计对象id
+//                int createdBy = plan.getCreatedBy(); //创建人
+//
+//                int impUserAssignee = plan.getImpUserId(); //
+//                int implLeaderAssignee = plan.getImpAdminId(); //
+//                int auditUserAssignee = plan.getAuditUserId(); //
+//                int auditLeaderAssignee = plan.getAuditAdminId(); //
+//
+//                JSONObject varsJSONObject = new JSONObject();
+//                varsJSONObject.put("impUserAssignee", impUserAssignee);
+//                varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
+//                varsJSONObject.put("auditUserAssignee", auditUserAssignee);
+//                varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
+//                varsJSONObject.put("createdBy", createdBy);
+//                varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
+//                varsJSONObject.put("delayDate", null);
+//
+//                String vars = varsJSONObject.toJSONString();
+//                //启动流程
+//                R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+//                if(!auditApply.getData()){
+//                    return r.setMsg("流程启动失败:"+auditApply.getMsg());
+//                }
+//                //修改状态
+//                plan.setStatus(String.valueOf(PlanStatusEnum.PLAN_TOBE_AUDITED.getCode()));
+//                planManagementService.updateById(plan);
+//
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return r.setData(true);
+//    }
 
 //    @ApiOperation("批准问题信息")
 //    @PostMapping("/approvalPlan")
@@ -291,7 +319,7 @@ public class AuditPlanInfoController {
             }
             double percentage = 0;
             if (total != 0) {
-                percentage = new BigDecimal((float)notRectified / total).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                percentage = new BigDecimal((float) notRectified / total).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             }
             jsonObjectIn.put("deptId", key); //地区id
             jsonObjectIn.put("name", value); //地区名称
