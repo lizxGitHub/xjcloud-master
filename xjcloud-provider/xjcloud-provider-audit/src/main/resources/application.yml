@@ -43,6 +43,20 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
+#    springboot上传配置
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-request-size: 10MB
+      resolve-lazily: false
+      max-file-size: 10MB
+#      spring.servlet.multipart.enabled=true，是否支持 multipart 上传文件
+#      spring.servlet.multipart.file-size-threshold=0，支持文件写入磁盘
+#      spring.servlet.multipart.location=，上传文件的临时目录
+#      spring.servlet.multipart.max-file-size=10Mb，最大支持文件大小
+#      spring.servlet.multipart.max-request-size=10Mb，最大支持请求大小
+#      spring.servlet.multipart.resolve-lazily=false，是否支持 multipart 上传文件时懒加载
 #    rabbitmq:
 #        host: 127.0.0.1
 #        port: 5672
@@ -83,6 +97,11 @@ audit:
   Authorization: Basic eGpjbG91ZDp4amNsb3Vk
   token-name: Authorization
   flow-key: auditApply
+  file:
+    uploadPrefix: audit-upload
+    staticAccessPath: /${audit.file.uploadPrefix:audit-upload}/** # 静态资源访问配置
+    uploadFolder: D:/java-project/audit-upload/ #windows上传地址
+  #  uploadFolder: /xjcloud/audit-upload/ #linux上传地址
 
 feign:
   hystrix:
