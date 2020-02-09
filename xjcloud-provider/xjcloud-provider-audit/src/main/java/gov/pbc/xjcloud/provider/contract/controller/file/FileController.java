@@ -48,7 +48,7 @@ public class FileController {
         }
         String originalFilename = file.getOriginalFilename();
         String fileName = file.getName();
-        String suffixName = fileName.substring(originalFilename.lastIndexOf("."));
+        String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
         //生成文件名称通用方法
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Random r = new Random();
