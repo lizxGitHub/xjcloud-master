@@ -47,8 +47,9 @@ public class FileController {
             return "业务分类为空";
         }
         String originalFilename = file.getOriginalFilename();
-        String fileName = file.getName();
+        String fileName = originalFilename.substring(0,originalFilename.lastIndexOf("."));
         String suffixName = originalFilename.substring(originalFilename.lastIndexOf("."));
+
         //生成文件名称通用方法
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Random r = new Random();
