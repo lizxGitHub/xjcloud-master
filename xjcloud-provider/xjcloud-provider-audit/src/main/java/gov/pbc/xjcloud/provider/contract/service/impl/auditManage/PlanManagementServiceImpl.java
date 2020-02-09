@@ -43,6 +43,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
+    public Map<String, Object> selectEntryById(String id) {
+        return planManagementMapper.selectEntryById(id);
+    }
+
+    @Override
     public List<Map<String, Object>> selectEntryByQuery(PlanCheckList query, Long pageStart, Long pageNo) {
         String agencyId = query.getImplementingAgencyId();
         if(StringUtils.contains(agencyId,"all")){
@@ -93,6 +98,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     @Override
     public List<Map<String, Object>> getShortPlans(List deptChild, String status, String auditYear) {
         return planManagementMapper.getShortPlans(deptChild, status, auditYear);
+    }
+
+    @Override
+    public int saveReturnPK(PlanCheckList planCheckList) {
+        return planManagementMapper.saveReturnPK(planCheckList);
     }
 
     /**

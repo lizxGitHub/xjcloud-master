@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
+import gov.pbc.xjcloud.provider.contract.enumutils.SHNormalStateEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
@@ -158,7 +160,6 @@ public class PlanManagementController {
         try {
 
             planList = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
-            planList = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             page.setRecords(planList);
             page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));
         } catch (Exception e) {
@@ -191,6 +192,12 @@ public class PlanManagementController {
             e.put("name", name);
         });
 
+        return R.ok(maps);
+    }
+
+    @GetMapping("/selectEntryById")
+    public R<Map<String, Object>> selectEntryById(@RequestParam(name = "id", required = true) String id) {
+        Map<String, Object> maps = planManagementService.selectEntryById(id);
         return R.ok(maps);
     }
 
@@ -236,7 +243,12 @@ public class PlanManagementController {
             if (planCheckList.getId() == 0) {
                 planCheckList.setStatus(String.valueOf(PlanStatusEnum.PLAN_UN_SUBMIT.getCode()));
                 planCheckList.setDelFlag(DelConstants.EXITED);
-                planManagementService.save(planCheckList);
+                int num = planManagementService.saveReturnPK(planCheckList);
+                AuditPlanInfo auditPlanInfo = new AuditPlanInfo();
+                auditPlanInfo.setPlanId(planCheckList.getId());
+                auditPlanInfo.setUserId(planCheckList.getCreatedBy());
+                auditPlanInfo.setStatus(SHNormalStateEnum.NORMAL_1001.getCode());
+                auditPlanInfoServiceImpl.save(auditPlanInfo);
             } else {
                 planCheckList = planManagementService.getById(planCheckList.getId());
                 if (planCheckList != null) {

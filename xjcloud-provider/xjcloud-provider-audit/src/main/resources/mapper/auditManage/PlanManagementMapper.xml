@@ -126,6 +126,10 @@
     <select id="selectEntryByCategoryId" resultType="java.util.HashMap">
         SELECT id,`NAME` name,name1,name2,name3 FROM `entry_info` where category_fk = #{categoryId, jdbcType=VARCHAR} and del_flag = '0'
     </select>
+
+    <select id="selectEntryById" resultType="java.util.HashMap">
+        SELECT id,`NAME` name FROM `entry_info` where id = #{id, jdbcType=VARCHAR} and del_flag = '0'
+    </select>
     <select id="getShortPlans" resultType="java.util.HashMap">
         SELECT a.id, a.status FROM `plan_check_list` a where a.del_flag='0'
         <if test="status!=null and status!=''">
@@ -241,4 +245,106 @@
             and b.user_id = #{query.userId}
         </if>
     </select>
+
+    <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList" useGeneratedKeys="true" keyProperty="planCheckList.id" keyColumn="id">
+        INSERT INTO `plan_check_list`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `id`,
+            `created_by`,
+            `project_code`,
+            `project_name`,
+            `project_type`,
+            `implementing_agency_id`,
+            `audit_object_id`,
+            `audit_nature_id`,
+            `audit_year`,
+            `question_entry_id`,
+            `problem_severity_id`,
+            `rectify_situation_id`,
+            `problem_characterization`,
+            `problem_description`,
+            `may_affect`,
+            `rectification_suggestions`,
+            `audit_basis`,
+            `audit_classification_id`,
+            `auditing_experience`,
+            `risk_assessment_id`,
+            `imp_user_id`,
+            `imp_admin_id`,
+            `audit_user_id`,
+            `audit_admin_id`
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{planCheckList.id},
+            <if test="planCheckList.createdBy != null">
+                #{planCheckList.createdBy},
+            </if>
+            <if test="planCheckList.projectCode != null">
+            #{planCheckList.projectCode},
+            </if>
+            <if test="planCheckList.projectName != null">
+            #{planCheckList.projectName},
+            </if>
+            <if test="planCheckList.projectType != null">
+            #{planCheckList.projectType},
+            </if>
+            <if test="planCheckList.implementingAgencyId != null">
+            #{planCheckList.implementingAgencyId},
+            </if>
+            <if test="planCheckList.auditObjectId != null">
+            #{planCheckList.auditObjectId},
+            </if>
+            <if test="planCheckList.auditNatureId != null">
+            #{planCheckList.auditNatureId},
+            </if>
+            <if test="planCheckList.auditYear != null">
+            #{planCheckList.auditYear},
+            </if>
+            <if test="planCheckList.questionEntryId != null">
+            #{planCheckList.questionEntryId},
+            </if>
+            <if test="planCheckList.problemSeverityId != null">
+            #{planCheckList.problemSeverityId},
+            </if>
+            <if test="planCheckList.rectifySituationId != null">
+            #{planCheckList.rectifySituationId},
+            </if>
+            <if test="planCheckList.problemCharacterization != null">
+            #{planCheckList.problemCharacterization},
+            </if>
+            <if test="planCheckList.problemDescription != null">
+            #{planCheckList.problemDescription},
+            </if>
+            <if test="planCheckList.mayAffect != null">
+            #{planCheckList.mayAffect},
+            </if>
+            <if test="planCheckList.rectificationSuggestions != null">
+            #{planCheckList.rectificationSuggestions},
+            </if>
+            <if test="planCheckList.auditBasis != null">
+            #{planCheckList.auditBasis},
+            </if>
+            <if test="planCheckList.auditClassificationId != null">
+            #{planCheckList.auditClassificationId},
+            </if>
+            <if test="planCheckList.auditingExperience != null">
+            #{planCheckList.auditingExperience},
+            </if>
+            <if test="planCheckList.riskAssessmentId != null">
+            #{planCheckList.riskAssessmentId},
+            </if>
+            <if test="planCheckList.impUserId != null">
+            #{planCheckList.impUserId},
+            </if>
+            <if test="planCheckList.impAdminId != null">
+            #{planCheckList.impAdminId},
+            </if>
+            <if test="planCheckList.auditUserId != null">
+            #{planCheckList.auditUserId},
+            </if>
+            <if test="planCheckList.auditAdminId != null">
+            #{planCheckList.auditAdminId}
+            </if>
+        </trim>
+    </insert>
 </mapper>

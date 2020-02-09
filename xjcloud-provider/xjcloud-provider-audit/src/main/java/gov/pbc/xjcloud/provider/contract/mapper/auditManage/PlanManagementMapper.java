@@ -28,6 +28,8 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      */
     List<Map<String, Object>> selectEntryByCategoryId(@Param("categoryId") String categoryId);
 
+    Map<String, Object> selectEntryById(@Param("id") String id);
+
     /**
      * 根据条件查询结果集
      * @param query
@@ -150,4 +152,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
     Page<PlanCheckList> selectAttentionPage(@Param("page") Page<PlanCheckList> page, @Param("query") Map<String, Object> query);
 
     List<Map<String, Object>> getShortPlans(@Param("deptChild") List deptChild, @Param("status") String status, @Param("auditYear") String auditYear);
+
+    int saveReturnPK(@Param("planCheckList") PlanCheckList planCheckList);
 }

@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
@@ -10,6 +11,7 @@ import gov.pbc.xjcloud.provider.contract.constants.DeptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
+import gov.pbc.xjcloud.provider.contract.enumutils.SHLeaderStateEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
@@ -18,6 +20,7 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoS
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditProjectInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
+import gov.pbc.xjcloud.provider.contract.utils.R2;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -114,6 +117,37 @@ public class AuditPlanInfoController {
                 PlanCheckList plan = planManagementService.getById(id);
                 plan.setStatus(status);
                 planManagementService.updateById(plan);
+                //启动流程
+                if (SHLeaderStateEnum.LEADER_1003.getCode().equals(status)) {
+                    int createdBy = plan.getCreatedBy(); //创建人
+                    int impUserAssignee = plan.getImpUserId(); //
+                    int implLeaderAssignee = plan.getImpAdminId(); //
+                    int auditUserAssignee = plan.getAuditUserId(); //
+                    int auditLeaderAssignee = plan.getAuditAdminId(); //
+
+                    JSONObject varsJSONObject = new JSONObject();
+                    varsJSONObject.put("impUserAssignee", impUserAssignee);
+                    varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
+                    varsJSONObject.put("auditUserAssignee", auditUserAssignee);
+                    varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
+                    varsJSONObject.put("createdBy", createdBy);
+                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
+                    varsJSONObject.put("delayDate", null);
+                    varsJSONObject.put("projectName", plan.getProjectName());
+                    varsJSONObject.put("projectCode", plan.getProjectCode());
+                    varsJSONObject.put("implementingAgencyId", plan.getImplementingAgencyId());
+                    varsJSONObject.put("auditObjectId", plan.getAuditObjectId());
+                    varsJSONObject.put("auditNatureId", plan.getAuditNatureId());
+                    varsJSONObject.put("auditYear", plan.getAuditYear());
+                    varsJSONObject.put("status", plan.getStatus());
+
+                    String vars = varsJSONObject.toJSONString();
+                    //启动流程
+                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                    if(!auditApply.getData()){
+                        return r.setMsg("流程启动失败:"+auditApply.getMsg());
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -258,36 +292,6 @@ public class AuditPlanInfoController {
 
 
     /**
-     * 创建问题
-     *
-     * @return
-     */
-    @ApiOperation("保存问题")
-    @PostMapping("/saveOrUpdate")
-    public R<Boolean> saveOrUpdate(AuditPlanInfo auditPlanInfo) {
-        R<Boolean> r = new R<>();
-        try {
-            if (StringUtils.isBlank(auditPlanInfo.getId())) {
-                int code = (int) ((Math.random() * 9 + 1) * 1000);
-                auditPlanInfo.getPlanCheckList().setProjectCode("PROJECT" + String.valueOf(code));
-                auditPlanInfo.getPlanCheckList().setDelFlag(DelConstants.EXITED);
-                auditPlanInfo.setStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
-
-                auditPlanInfoServiceImpl.save(auditPlanInfo);
-            } else {
-                auditPlanInfoServiceImpl.validate(auditPlanInfo, r);
-                auditPlanInfoServiceImpl.updateById(auditPlanInfo);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            r.setMsg(e.getMessage());
-            r.setCode(ApiErrorCode.FAILED.getCode());
-        }
-        return r;
-    }
-
-    /**
      *
      */
     @GetMapping("/XJInfo")
@@ -334,4 +338,15 @@ public class AuditPlanInfoController {
 
     }
 
+    /**
+     * 根据planId与userId获取状态
+     *
+     * @param
+     * @return
+     */
+    @GetMapping("/getByPlanUserId")
+    public R<AuditPlanInfo> getByPlanUserId(@RequestParam(name = "planId", required = true) String planId,  @RequestParam(name = "userId", required = true) String userId) {
+        AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getByPlanUserId(planId, userId);
+        return R.ok(auditPlanInfo);
+    }
 }

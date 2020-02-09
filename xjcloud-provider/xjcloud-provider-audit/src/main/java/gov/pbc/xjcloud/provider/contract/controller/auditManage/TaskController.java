@@ -11,10 +11,15 @@ import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,7 +64,21 @@ public class TaskController {
                 String actJsonStr = JSONObject.toJSONString(actVO);
                 ActAuditVO actAuditVO = JSONUtil.toBean(actJsonStr, ActAuditVO.class);
                 R<Integer> auditStatus = activitiService.getTaskVariable(actAuditVO.getTaskId(), "auditStatus");
+                R<String> projectName = activitiService.getTaskVariable(actAuditVO.getTaskId(), "projectName");
+                R<String> projectCode = activitiService.getTaskVariable(actAuditVO.getTaskId(), "projectCode");
+                R<String> implementingAgencyId = activitiService.getTaskVariable(actAuditVO.getTaskId(), "implementingAgencyId");
+                R<String> auditObjectId = activitiService.getTaskVariable(actAuditVO.getTaskId(), "auditObjectId");
+                R<String> auditNatureId = activitiService.getTaskVariable(actAuditVO.getTaskId(), "auditNatureId");
+                R<String> auditYear = activitiService.getTaskVariable(actAuditVO.getTaskId(), "auditYear");
+                R<String> status = activitiService.getTaskVariable(actAuditVO.getTaskId(), "status");
                 actAuditVO.setAuditStatus(auditStatus.getData());
+                actAuditVO.setProjectName(projectName.getData());
+                actAuditVO.setProjectCode(projectCode.getData());
+                actAuditVO.setImplementingAgencyId(implementingAgencyId.getData());
+                actAuditVO.setAuditObjectId(auditObjectId.getData());
+                actAuditVO.setAuditNatureId(auditNatureId.getData());
+                actAuditVO.setAuditYear(auditYear.getData());
+                actAuditVO.setStatus(status.getData());
                 return actAuditVO;
             }).collect(Collectors.toList());
             actTaskMap.getData().put("records", resultList);
@@ -105,8 +124,11 @@ public class TaskController {
                     plan.setDelayDate(null);
                 }
                 planManagementService.updateById(plan);
+
             }
             params.remove("bizKey");
+            Map<String, Object> planMap = transBean2Map(plan);
+            params.putAll(planMap);
             complete = activitiService.complete(taskId, params);
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,6 +147,35 @@ public class TaskController {
     @GetMapping("getTaskView")
     public ResponseEntity taskView(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
         return activitiService.getTaskView(processDefKey, businessId);
+    }
+
+    /**
+     * 对象装换map
+     * @param obj
+     * @return
+     */
+    private static Map<String, Object> transBean2Map(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        Map<String, Object> map = new HashMap<>();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+            for (PropertyDescriptor property : propertyDescriptors) {
+                String key = property.getName();
+                // 过滤class属性
+                if (!key.equals("class") && !key.equals("pageNo") && !key.equals("pageSize")) {
+                    // 得到property对应的getter方法
+                    Method getter = property.getReadMethod();
+                    Object value = getter.invoke(obj);
+                    map.put(key, value);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("transBean2Map Error " + e);
+        }
+        return map;
     }
 
 }

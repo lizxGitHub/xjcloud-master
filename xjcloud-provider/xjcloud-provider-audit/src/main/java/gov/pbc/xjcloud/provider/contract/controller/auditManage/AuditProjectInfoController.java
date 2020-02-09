@@ -175,29 +175,5 @@ public class AuditProjectInfoController {
 //    }
 
 
-    /**
-     * 创建问题
-     *
-     * @return
-     */
-    @ApiOperation("保存问题")
-    @PostMapping("/saveOrUpdate")
-    public R<Boolean> saveOrUpdate(AuditProjectInfo auditPlanInfo) {
-        R<Boolean> r = new R<>();
-        try {
-            if (StringUtils.isBlank(auditPlanInfo.getId())) {
-                int code = (int) ((Math.random() * 9 + 1) * 1000);
-                auditPlanInfo.getPlanCheckList().setProjectCode("PROJECT" + String.valueOf(code));
-                auditPlanInfo.getPlanCheckList().setDelFlag(DelConstants.EXITED);
-                auditPlanInfo.setStatus(StateEnum.SH_NORMAL_NO_PRESENTATION.getCode());
-            }
-            auditProjectInfoServiceImpl.validate(auditPlanInfo, r);
-            auditProjectInfoServiceImpl.saveOrUpdate(auditPlanInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-            r.failed(e.getMessage());
-        }
-        return r;
-    }
 
 }

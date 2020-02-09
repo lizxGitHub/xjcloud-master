@@ -16,6 +16,8 @@ public interface PlanManagementService extends IService<PlanCheckList> {
 
     List<Map<String, Object>> selectEntryByCategoryId(String categoryId);
 
+    Map<String, Object> selectEntryById(String id);
+
     List<Map<String, Object>>  selectEntryByQuery(PlanCheckList query, Long pageStart, Long pageNo);
 
     int  countEntryByQuery(PlanCheckList query);
@@ -29,4 +31,6 @@ public interface PlanManagementService extends IService<PlanCheckList> {
     int countStatisticPlanReport();
 
     List<Map<String, Object>> getShortPlans(List deptChild, String status, String auditYear);
+
+    int saveReturnPK(PlanCheckList planCheckList);
 }

@@ -1,6 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.AuditPlanInfoMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.AuditPlanInfoService;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Service
 @Transactional(rollbackFor = {Exception.class})
@@ -19,15 +17,8 @@ public class AuditPlanInfoServiceImpl extends IBaseServiceImpl<AuditPlanInfoMapp
     private AuditPlanInfoMapper auditPlanInfoMapper;
 
     @Override
-    public Page<AuditPlanInfo> selectAuditPlanInfoList(Page page, AuditPlanInfo query) {
-        List<AuditPlanInfo> list =  auditPlanInfoMapper.selectAuditPlanInfoList(page, query);
-        page.setRecords(list);
-        return page;
-    }
-
-    @Override
-    public AuditPlanInfo getById(String id, String roleId) {
-        return auditPlanInfoMapper.getById(id, roleId);
+    public AuditPlanInfo getByPlanUserId(String planId, String userId) {
+        return auditPlanInfoMapper.getByPlanUserId(planId, userId);
     }
 
     @Override
@@ -36,12 +27,8 @@ public class AuditPlanInfoServiceImpl extends IBaseServiceImpl<AuditPlanInfoMapp
     }
 
     @Override
-    public void updateByPlanId(String planId, String roleId, String status) {
-        auditPlanInfoMapper.updateByPlanId(planId, roleId, status);
+    public void updateByPlanUserId(String planId, String userId, String status) {
+        auditPlanInfoMapper.updateByPlanUserId(planId, userId, status);
     }
 
-    @Override
-    public void insertA(AuditPlanInfo query) {
-        auditPlanInfoMapper.insertA(query);
-    }
 }
