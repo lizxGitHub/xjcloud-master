@@ -70,6 +70,9 @@ public class EntryFlow implements Serializable, Cloneable {
     @Column(name = "name")
     @Length(max = 32, min = 1,message = "词条名称字符长度介于1~32个字符之间")
     private String name;
+    private String name1;
+    private String name2;
+    private String name3;
     /**
      * 词条分类
      */
@@ -122,6 +125,9 @@ public class EntryFlow implements Serializable, Cloneable {
         entryInfo.setTypeCode(this.getTypeCode());
         entryInfo.setCategoryFk(this.getCategoryFk());
         entryInfo.setName(this.getName());
+        entryInfo.setName1(this.getName1());
+        entryInfo.setName2(this.getName2());
+        entryInfo.setName3(this.getName3());
         entryInfo.setRemarks(this.getRemarks());
         entryInfo.setRevision(this.getRevision());
         entryInfo.setDelFlag(DelConstants.EXITED);

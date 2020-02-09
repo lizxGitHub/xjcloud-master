@@ -21,6 +21,9 @@
         select
             a.id,
             a.name,
+            a.name1,
+            a.name2,
+            a.name3,
             a.type_code,
             a.created_by,
             a.created_time,
@@ -42,7 +45,7 @@
             and a.audit_status = #{query.auditStatus}
         </if>
 
-        <if test="query.categoryFk!=null and query.categoryFk!=''">
+        <if test="query.userOpt!=null and query.userOpt!=''">
             and a.user_opt = #{query.userOpt}
         </if>
 

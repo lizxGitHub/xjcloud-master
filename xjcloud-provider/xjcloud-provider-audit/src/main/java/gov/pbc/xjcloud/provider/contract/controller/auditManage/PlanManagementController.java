@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -172,7 +173,25 @@ public class PlanManagementController {
     @ApiOperation("获取类别")
     @GetMapping("/selectEntryByCategoryId")
     public R<List<Map<String, Object>>> selectEntryByCategoryId(@RequestParam(name = "categoryId", required = true) String categoryId) {
-        return R.ok(planManagementService.selectEntryByCategoryId(categoryId));
+        List<Map<String, Object>> maps = planManagementService.selectEntryByCategoryId(categoryId);
+        maps.stream().filter(Objects::nonNull).forEach(e -> {
+            String name = (String) e.get("name");
+            String name1 = (String) e.get("name1");
+            String name2 = (String) e.get("name2");
+            String name3 = (String) e.get("name3");
+            if (StringUtils.isNotBlank(name1)) {
+                name += '-' + name1;
+            }
+            if (StringUtils.isNotBlank(name2)) {
+                name += '-' + name2;
+            }
+            if (StringUtils.isNotBlank(name3)) {
+                name += '-' + name3;
+            }
+            e.put("name", name);
+        });
+
+        return R.ok(maps);
     }
 
     /**

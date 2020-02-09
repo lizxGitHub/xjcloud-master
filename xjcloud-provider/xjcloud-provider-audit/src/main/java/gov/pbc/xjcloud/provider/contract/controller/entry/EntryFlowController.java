@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 词条流程controller
@@ -61,6 +62,19 @@ public class EntryFlowController {
             if (null != query) {
                 page = entryFlowService.selectEntryInfo(page, query);
             }
+            page.getRecords().stream().filter(Objects::nonNull).forEach(e->{
+                String name = e.getName();
+                if(StringUtils.isNotBlank(e.getName1())){
+                    name+='-'+e.getName1();
+                }
+                if(StringUtils.isNotBlank(e.getName2())){
+                    name+='-'+e.getName2();
+                }
+                if(StringUtils.isNotBlank(e.getName3())){
+                    name+='-'+e.getName3();
+                }
+                e.setName(name);
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return R.failed(e.getMessage());
