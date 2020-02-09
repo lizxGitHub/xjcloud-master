@@ -68,7 +68,6 @@ public class DeptUtil {
     }
     @Scheduled(fixedRate=1000*60)
     public void cleanDeptMap(){
-        System.out.println("已清理部门数据");
         this.deptMap=new HashMap<>();
     }
 }

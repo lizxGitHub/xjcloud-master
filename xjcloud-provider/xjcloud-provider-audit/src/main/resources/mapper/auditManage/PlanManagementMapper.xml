@@ -24,6 +24,7 @@
         <result column="auditing_experience" property="auditingExperience"/>
         <result column="risk_assessment_id" property="riskAssessmentId"/>
         <result column="instance_id" property="instanceId"/>
+        <result column="plan_time" property="planTime"/>
     </resultMap>
     <insert id="addCheckAttention">
         insert into user_attention_check (user_id,check_id) values
@@ -59,12 +60,13 @@
         a.audit_basis,
         a.audit_classification_id,
         a.auditing_experience,
+        a.plan_time,
         a.risk_assessment_id
     </sql>
 
     <select id="selectPlanCheckListByAdmin" resultMap="PlanCheckListMapper">
         SELECT
-        <include refid="select" />
+        <include refid="select"/>
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
@@ -90,7 +92,7 @@
 
     <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
         SELECT
-        <include refid="select" />
+        <include refid="select"/>
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
@@ -148,7 +150,7 @@
             and a.status =#{status}
         </if>
         <if test="auditYear!=null and auditYear!=''">
-            and a.audit_year  like concat('%',concat(#{auditYear},'%'))
+            and a.audit_year like concat('%',concat(#{auditYear},'%'))
         </if>
         <choose>
             <when test="deptChild!=null and deptChild.size()>0">
@@ -164,12 +166,13 @@
     </select>
     <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
-        <include refid="select" />
+        <include refid="select"/>
         FROM
         `plan_check_list` a
+        LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
         where a.del_flag='0'
         <if test="query.auditYear!=null and query.auditYear!=''">
-            and a.audit_year  like concat('%',concat(#{query.auditYear},'%'))
+            and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
         </if>
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
@@ -227,7 +230,7 @@
     </select>
     <select id="selectAttentionPage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
-        <include refid="select" />
+        <include refid="select"/>
         FROM
         user_attention_check b
         left join `plan_check_list` a on a.id = b.check_id
@@ -256,6 +259,31 @@
         <if test="query.userId!=null and query.userId!=''">
             and b.user_id = #{query.userId}
         </if>
+    </select>
+    <select id="findDeadlinePlan" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        `plan_check_list` a
+        where a.del_flag='0'
+        and a.plan_time is not null
+        and date_add(a.plan_time,interval 1 month)&lt;=( SELECT now( ))
+        and (imp_user_id=#{userId} or imp_admin_id=#{userId} or audit_user_id=#{userId}
+        or audit_admin_id=#{userId})
+        and status!=#{status}
+    </select>
+    <select id="getDeadlinePlanPage" resultMap="PlanCheckListMapper">
+         SELECT
+        <include refid="select"/>
+        FROM
+        `plan_check_list` a
+        LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
+        where a.del_flag='0'
+        and a.plan_time is not null
+        and date_add(a.plan_time,interval 1 month)&lt;=( SELECT now( ))
+        and (imp_user_id=#{query.userId} or imp_admin_id=#{query.userId} or audit_user_id=#{query.userId}
+        or audit_admin_id=#{query.userId})
+        and status!=#{query.status}
     </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList" useGeneratedKeys="true" keyProperty="planCheckList.id" keyColumn="id">

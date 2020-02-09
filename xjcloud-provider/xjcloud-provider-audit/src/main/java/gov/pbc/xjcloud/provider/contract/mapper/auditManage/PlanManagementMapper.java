@@ -154,4 +154,19 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
     List<Map<String, Object>> getShortPlans(@Param("deptChild") List deptChild, @Param("status") String status, @Param("auditYear") String auditYear);
 
     int saveReturnPK(@Param("planCheckList") PlanCheckList planCheckList);
+
+    /**
+     * 超时统计
+     * @param query
+     * @return
+     */
+    int findDeadlinePlan(Map<String, Object> query);
+
+    /**
+     * 超时提醒分页数据
+     * @param query
+     * @param page
+     * @return
+     */
+    Page<PlanCheckList> getDeadlinePlanPage( @Param("page") Page<PlanCheckList> page,@Param("query") Map<String, Object> query);
 }

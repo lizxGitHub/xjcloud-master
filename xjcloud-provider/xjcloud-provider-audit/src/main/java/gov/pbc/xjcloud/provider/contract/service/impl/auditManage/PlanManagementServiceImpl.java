@@ -1,15 +1,22 @@
 package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +26,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     @Resource
     private PlanManagementMapper planManagementMapper;
+
     /**
      * 自定义分页查询
-     * @param page 分页对象
+     *
+     * @param page  分页对象
      * @param query 查询参数
      * @return
      */
@@ -50,24 +59,24 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     @Override
     public List<Map<String, Object>> selectEntryByQuery(PlanCheckList query, Long pageStart, Long pageNo) {
         String agencyId = query.getImplementingAgencyId();
-        if(StringUtils.contains(agencyId,"all")){
-            agencyId="";
+        if (StringUtils.contains(agencyId, "all")) {
+            agencyId = "";
         }
-        query.setImplementingAgencyId(StringUtils.join(StringUtils.split(agencyId,","),"','"));
-        if(StringUtils.equals(query.getAuditNatureId(),"all")){
+        query.setImplementingAgencyId(StringUtils.join(StringUtils.split(agencyId, ","), "','"));
+        if (StringUtils.equals(query.getAuditNatureId(), "all")) {
             query.setAuditNatureId("");
         }
-        if(StringUtils.equals(query.getAuditObjectId(),"all")){
+        if (StringUtils.equals(query.getAuditObjectId(), "all")) {
             query.setAuditObjectId("");
         }
-        if(StringUtils.equals(query.getProblemSeverityId(),"all")){
+        if (StringUtils.equals(query.getProblemSeverityId(), "all")) {
             query.setProblemSeverityId("");
         }
-        if(StringUtils.equals(query.getRectifySituationId(),"all")){
+        if (StringUtils.equals(query.getRectifySituationId(), "all")) {
             query.setRectifySituationId("");
         }
 
-        return planManagementMapper.selectEntryByQuery(query,pageStart,pageNo);
+        return planManagementMapper.selectEntryByQuery(query, pageStart, pageNo);
     }
 
     @Override
@@ -107,29 +116,44 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     /**
      * 按计划完成类型查询分页数据
+     *
      * @param page
      * @param query
      * @return
      */
     public Page<PlanCheckList> selectTypePage(Page<PlanCheckList> page, Map<String, Object> query) {
-        List<PlanCheckList> list = planManagementMapper.selectTypePage(page,query);
+        List<PlanCheckList> list = planManagementMapper.selectTypePage(page, query);
         page.setRecords(list);
         return page;
     }
 
     public void addCheckAttention(String userId, String checkStr) {
         String[] checkArr = checkStr.split(",");
-        planManagementMapper.cancelCheckAttention(userId,checkArr);
-        planManagementMapper.addCheckAttention(userId,checkArr);
+        planManagementMapper.cancelCheckAttention(userId, checkArr);
+        planManagementMapper.addCheckAttention(userId, checkArr);
     }
 
     /**
      * 关注列表
+     *
      * @param page
      * @param query
      * @return
      */
     public Page<PlanCheckList> selectAttentionPage(Page<PlanCheckList> page, Map<String, Object> query) {
-        return planManagementMapper.selectAttentionPage(page,query);
+        return planManagementMapper.selectAttentionPage(page, query);
+    }
+
+    public int getDeadlinePlan(String userId) {
+        Date now = DateTime.now().toDate();
+        Map<String, Object> query = new HashMap<>();
+        query.put("userId", userId);
+        query.put("now", now);
+        query.put("status", PlanStatusEnum.FILE.getCode());
+        return planManagementMapper.findDeadlinePlan(query);
+    }
+
+    public Page<PlanCheckList> getDeadlinePlanPage(Map<String, Object> query, Page<PlanCheckList> page) {
+        return  planManagementMapper.getDeadlinePlanPage(page,query);
     }
 }

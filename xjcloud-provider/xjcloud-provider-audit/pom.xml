@@ -222,6 +222,12 @@
             <version>4.3.2</version>
             <scope>compile</scope>
         </dependency>
+<!--        websocket 支持 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
 
     </dependencies>
 

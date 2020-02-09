@@ -22,14 +22,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  *
@@ -334,5 +332,35 @@ public class PlanManagementController {
         }
         String s = JSONObject.toJSONString(checkList);
         return JSONUtil.toBean(s, PlanCheckListVO.class);
+    }
+
+    @ApiOperation("超时提醒个数统计")
+    @GetMapping("deadcount/{userId}")
+    public R getDeadCount(@PathVariable(name = "userId") String userId) {
+        if (StringUtils.isBlank(userId)) {
+            return R.ok(0);
+        }
+        int deadlinePlan = planManagementService.getDeadlinePlan(userId);
+        return R.ok(deadlinePlan);
+    }
+
+    @ApiOperation("超时提醒分页")
+    @GetMapping("deadcount/{userId}/page")
+    public R<Page<PlanCheckList>> getDeadCountPage(@PathVariable("userId") String userId,Map<String,Object> params) {
+        if (StringUtils.isBlank(userId)) {
+            return R.ok(new Page<>());
+        }
+        Page<PlanCheckList> page = new Page();
+        String current = params.getOrDefault("current", "1").toString();
+        String size = params.getOrDefault("size", "10").toString();
+        page.setCurrent(Long.parseLong(current));
+        page.setSize(Long.parseLong(size));
+        Date now = DateTime.now().toDate();
+        Map<String, Object> query = new HashMap<>();
+        query.put("userId", userId);
+        query.put("now", now);
+        query.put("status", PlanStatusEnum.FILE.getCode());
+        Page<PlanCheckList> result = planManagementService.getDeadlinePlanPage(query,page);
+        return R.ok(result);
     }
 }
