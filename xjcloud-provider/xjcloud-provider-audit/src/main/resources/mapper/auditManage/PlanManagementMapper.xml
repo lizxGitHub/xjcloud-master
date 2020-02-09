@@ -120,6 +120,18 @@
         <if test="query.projectType!=null and query.projectType!=''">
             and a.project_type like concat('%',concat(#{query.projectType},'%'))
         </if>
+        <if test="query.impUserId!=null and query.impUserId!=''">
+            and a.imp_user_id like concat('%',concat(#{query.impUserId},'%'))
+        </if>
+        <if test="query.impAdminId!=null and query.impAdminId!=''">
+            and a.imp_admin_id like concat('%',concat(#{query.impAdminId},'%'))
+        </if>
+        <if test="query.auditUserId!=null and query.auditUserId!=''">
+            and a.audit_user_id like concat('%',concat(#{query.auditUserId},'%'))
+        </if>
+        <if test="query.auditAdminId!=null and query.auditAdminId!=''">
+            and a.audit_admin_id like concat('%',concat(#{query.auditAdminId},'%'))
+        </if>
 
     </select>
 
@@ -272,7 +284,8 @@
             `imp_user_id`,
             `imp_admin_id`,
             `audit_user_id`,
-            `audit_admin_id`
+            `audit_admin_id`,
+            `status`
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{planCheckList.id},
@@ -343,7 +356,10 @@
             #{planCheckList.auditUserId},
             </if>
             <if test="planCheckList.auditAdminId != null">
-            #{planCheckList.auditAdminId}
+            #{planCheckList.auditAdminId},
+            </if>
+            <if test="planCheckList.status != null">
+            #{planCheckList.status}
             </if>
         </trim>
     </insert>

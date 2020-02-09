@@ -243,12 +243,8 @@ public class PlanManagementController {
             if (planCheckList.getId() == 0) {
                 planCheckList.setStatus(String.valueOf(PlanStatusEnum.PLAN_UN_SUBMIT.getCode()));
                 planCheckList.setDelFlag(DelConstants.EXITED);
-                int num = planManagementService.saveReturnPK(planCheckList);
-                AuditPlanInfo auditPlanInfo = new AuditPlanInfo();
-                auditPlanInfo.setPlanId(planCheckList.getId());
-                auditPlanInfo.setUserId(planCheckList.getCreatedBy());
-                auditPlanInfo.setStatus(SHNormalStateEnum.NORMAL_1001.getCode());
-                auditPlanInfoServiceImpl.save(auditPlanInfo);
+//                int num = planManagementService.saveReturnPK(planCheckList);
+                planManagementService.save(planCheckList);
             } else {
                 planCheckList = planManagementService.getById(planCheckList.getId());
                 if (planCheckList != null) {
