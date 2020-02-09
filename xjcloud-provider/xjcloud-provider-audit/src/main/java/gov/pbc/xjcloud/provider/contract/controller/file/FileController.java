@@ -1,7 +1,9 @@
 package gov.pbc.xjcloud.provider.contract.controller.file;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +33,9 @@ public class FileController {
     @Value("${audit.file.uploadPrefix}")
     private String uploadPrefix;
 
+    @Value("${audit.file.appUrl}")
+    private String appUrl;
+
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String upload(HttpServletRequest req,@RequestParam("file") MultipartFile file, @RequestParam("bizKey") String bizKey) {
@@ -50,7 +55,8 @@ public class FileController {
         tempName.append(fileName).append(sdf.format(new Date())).append(suffixName);
         String newFileName = tempName.toString();
         try {
-            String filePath = uploadPrefix+File.separator+bizKey+File.separator+newFileName;
+            //返回给前端的访问地址
+            String filePath = appUrl +"/"+uploadPrefix+"/"+bizKey+"/"+newFileName;
             File upload = new File(uploadFolder+File.separator+bizKey+File.separator+newFileName);
             if(!upload.exists()){
                 upload.getParentFile().mkdirs();

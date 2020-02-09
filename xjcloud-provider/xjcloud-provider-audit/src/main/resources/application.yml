@@ -74,6 +74,7 @@ server:
 eureka:
   instance:
     prefer-ip-address: true
+    ip-address: 127.0.0.1
   client:
     fetch-registry: true
     service-url:
@@ -101,6 +102,7 @@ audit:
     uploadPrefix: audit-upload
     staticAccessPath: /${audit.file.uploadPrefix:audit-upload}/** # 静态资源访问配置
     uploadFolder: D:/java-project/audit-upload/ #windows上传地址
+    appUrl: ${eureka.instance.ip-address}:${server.port} #返回给前端的访问地址
   #  uploadFolder: /xjcloud/audit-upload/ #linux上传地址
 
 feign:
