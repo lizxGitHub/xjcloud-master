@@ -36,10 +36,18 @@
             left join entry_category b on a.category_fk = b.id
         where a.del_flag='0'
         <if test="query.name!=null and query.name!=''">
-            and a.name like concat('%',concat(#{query.name},'%'))
+            and (
+            a.name like concat('%',concat(#{query.name},'%')) or
+            a.name1 like concat('%',concat(#{query.name},'%')) or
+            a.name2 like concat('%',concat(#{query.name},'%')) or
+            a.name3 like concat('%',concat(#{query.name},'%'))
+            )
         </if>
         <if test="query.userOpt!=null and query.userOpt!=''">
             and a.user_opt = #{query.userOpt}
+        </if>
+        <if test="query.categoryFk!=null and query.categoryFk!=''">
+            and a.category_fk = #{query.categoryFk}
         </if>
         <if test="query.auditStatus!=null and query.auditStatus!=''">
             and a.audit_status = #{query.auditStatus}
