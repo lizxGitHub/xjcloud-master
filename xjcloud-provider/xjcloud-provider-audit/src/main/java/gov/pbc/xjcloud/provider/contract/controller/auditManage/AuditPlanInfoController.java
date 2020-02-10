@@ -144,34 +144,34 @@ public class AuditPlanInfoController {
                     auditPlanInfo4.setStatus("1001");
                     auditPlanInfoServiceImpl.save(auditPlanInfo4);
 
-//                    int createdBy = plan.getCreatedBy(); //创建人
-//                    int impUserAssignee = plan.getImpUserId(); //
-//                    int implLeaderAssignee = plan.getImpAdminId(); //
-//                    int auditUserAssignee = plan.getAuditUserId(); //
-//                    int auditLeaderAssignee = plan.getAuditAdminId(); //
-//
-//                    JSONObject varsJSONObject = new JSONObject();
-//                    varsJSONObject.put("impUserAssignee", impUserAssignee);
-//                    varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
-//                    varsJSONObject.put("auditUserAssignee", auditUserAssignee);
-//                    varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
-//                    varsJSONObject.put("createdBy", createdBy);
-//                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
-//                    varsJSONObject.put("delayDate", null);
-//                    varsJSONObject.put("projectName", plan.getProjectName());
-//                    varsJSONObject.put("projectCode", plan.getProjectCode());
-//                    varsJSONObject.put("implementingAgencyId", plan.getImplementingAgencyId());
-//                    varsJSONObject.put("auditObjectId", plan.getAuditObjectId());
-//                    varsJSONObject.put("auditNatureId", plan.getAuditNatureId());
-//                    varsJSONObject.put("auditYear", plan.getAuditYear());
-//                    varsJSONObject.put("status", plan.getStatus());
-//
-//                    String vars = varsJSONObject.toJSONString();
-//                    //启动流程
-//                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
-//                    if(!auditApply.getData()){
-//                        return r.setMsg("流程启动失败:"+auditApply.getMsg());
-//                    }
+                    int createdBy = plan.getCreatedBy(); //创建人
+                    int impUserAssignee = plan.getImpUserId(); //
+                    int implLeaderAssignee = plan.getImpAdminId(); //
+                    int auditUserAssignee = plan.getAuditUserId(); //
+                    int auditLeaderAssignee = plan.getAuditAdminId(); //
+
+                    JSONObject varsJSONObject = new JSONObject();
+                    varsJSONObject.put("impUserAssignee", impUserAssignee);
+                    varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
+                    varsJSONObject.put("auditUserAssignee", auditUserAssignee);
+                    varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
+                    varsJSONObject.put("createdBy", createdBy);
+                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
+                    varsJSONObject.put("delayDate", null);
+                    varsJSONObject.put("projectName", plan.getProjectName());
+                    varsJSONObject.put("projectCode", plan.getProjectCode());
+                    varsJSONObject.put("implementingAgencyId", plan.getImplementingAgencyId());
+                    varsJSONObject.put("auditObjectId", plan.getAuditObjectId());
+                    varsJSONObject.put("auditNatureId", plan.getAuditNatureId());
+                    varsJSONObject.put("auditYear", plan.getAuditYear());
+                    varsJSONObject.put("status", plan.getStatus());
+
+                    String vars = varsJSONObject.toJSONString();
+                    //启动流程
+                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                    if(!auditApply.getData()){
+                        return r.setMsg("流程启动失败:"+auditApply.getMsg());
+                    }
                 }
             }
         } catch (Exception e) {
