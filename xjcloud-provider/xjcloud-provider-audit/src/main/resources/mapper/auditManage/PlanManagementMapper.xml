@@ -230,22 +230,38 @@
     </select>
     <select id="selectAttentionPage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
-        <include refid="select"/>
+        a.id,
+        a.project_code,
+        a.project_name,
+        a.implementing_agency_id,
+        a.audit_object_id,
+        a.audit_nature_id,
+        a.audit_year,
+        a.status,
+        a.question_entry_id,
+        a.problem_severity_id,
+        rectify_situation_entry.name as rectify_situation_id,
+        a.problem_characterization,
+        a.problem_description,
+        a.may_affect,
+        a.rectification_suggestions,
+        a.audit_basis,
+        a.audit_classification_id,
+        a.auditing_experience,
+        a.risk_assessment_id
         FROM
         user_attention_check b
         left join `plan_check_list` a on a.id = b.check_id
+        left join entry_info rectify_situation_entry on pcl.rectify_situation_id=rectify_situation_entry.id and rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6
         where a.del_flag='0'
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
-        </if>
-        <if test="query.projectType!=null and query.projectType!=''">
-            and a.project_type like concat('%',concat(#{query.projectType},'%'))
         </if>
         <if test="query.problemCharacterization!=null and query.problemCharacterization!=''">
             and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
         </if>
         <if test="query.problemDescription!=null and query.problemDescription!=''">
-            and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
+            and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
         <if test="query.deptId!=null and query.deptId!=''">
             and a.implementing_agency_id =#{query.deptId}
@@ -258,6 +274,9 @@
         </if>
         <if test="query.userId!=null and query.userId!=''">
             and b.user_id = #{query.userId}
+        </if>
+        <if test="query.rectifySituationId!=null and query.rectifySituationId!=''">
+            and a.rectify_situation_id = #{query.rectifySituationId}
         </if>
     </select>
     <select id="findDeadlinePlan" resultType="java.lang.Integer">
