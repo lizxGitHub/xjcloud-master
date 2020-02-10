@@ -334,7 +334,7 @@ public class PlanManagementController {
         return r;
     }
 
-    private String getFieldMethodType(String name,String type) {
+    private String getFieldMethodType(String name, String type) {
         StringBuffer method = new StringBuffer();
         char c = name.charAt(0);
         String s = String.valueOf(c).toUpperCase();
@@ -350,28 +350,22 @@ public class PlanManagementController {
             if (StringUtils.isBlank(id)) {
                 return r.failed("参数错误，请检查");
             }
-            List<EntryInfo> list= entryService.list();
-            Map<String, EntryInfo> entryMap = list.stream().filter(e -> {
-                StringBuffer sb = new StringBuffer();
-                sb.append(e.getName());
-                sb.append(e.getName1());
-                sb.append(e.getName2());
-                sb.append(e.getName3());
-                return StringUtils.isNotBlank(sb.toString());
-            }).collect(Collectors.toMap(e -> e.getId(), e->e));
+            List<EntryInfo> list = entryService.list();
+            Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
+                    .collect(Collectors.toMap(e -> e.getId(), e -> e));
             PlanCheckList planOne = planManagementService.getById(id);
             PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
             Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
-            for(Field field:declaredFields){
+            for (Field field : declaredFields) {
                 String name = field.getName();
                 field.setAccessible(true);
-                String fieldSetter=getFieldMethodType(name, CommonConstants.SETTER);
+                String fieldSetter = getFieldMethodType(name, CommonConstants.SETTER);
                 Class<?> type = field.getType();
-                if(type.equals(String.class)){
+                if (type.equals(String.class)) {
                     Object invoke = field.get(planCheckListDTO);
-                    if(null!=entryMap.get(invoke)){
-                        Method methodSetter = planCheckListDTO.getClass().getDeclaredMethod(fieldSetter,type);
-                        methodSetter.invoke(planCheckListDTO,(Object)entryMap.get(invoke).getConcatName());
+                    if (null != entryMap.get(invoke)) {
+                        Method methodSetter = planCheckListDTO.getClass().getDeclaredMethod(fieldSetter, type);
+                        methodSetter.invoke(planCheckListDTO, (Object) entryMap.get(invoke).getConcatName());
                     }
                 }
             }
@@ -403,7 +397,7 @@ public class PlanManagementController {
 
     @ApiOperation("超时提醒分页")
     @GetMapping("deadcount/{userId}/page")
-    public R<Page<PlanCheckList>> getDeadCountPage(@PathVariable("userId") String userId,Map<String,Object> params) {
+    public R<Page<PlanCheckList>> getDeadCountPage(@PathVariable("userId") String userId, Map<String, Object> params) {
         if (StringUtils.isBlank(userId)) {
             return R.ok(new Page<>());
         }
@@ -417,7 +411,7 @@ public class PlanManagementController {
         query.put("userId", userId);
         query.put("now", now);
         query.put("status", PlanStatusEnum.FILE.getCode());
-        Page<PlanCheckList> result = planManagementService.getDeadlinePlanPage(query,page);
+        Page<PlanCheckList> result = planManagementService.getDeadlinePlanPage(query, page);
         return R.ok(result);
     }
 }
