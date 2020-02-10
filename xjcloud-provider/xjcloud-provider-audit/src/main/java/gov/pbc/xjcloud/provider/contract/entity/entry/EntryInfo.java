@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
@@ -92,4 +93,18 @@ public class EntryInfo implements Serializable, Cloneable {
     @Column(name = "del_flag")
     @TableLogic
     private String delFlag;
+
+    public Object getConcatName() {
+        String name =this.name;
+        if(StringUtils.isNotBlank(this.name1)){
+            name+='-'+this.name1;
+        }
+        if(StringUtils.isNotBlank(this.name2)){
+            name+='-'+this.name2;
+        }
+        if(StringUtils.isNotBlank(this.name3)){
+            name+='-'+this.name3;
+        }
+        return name;
+    }
 }

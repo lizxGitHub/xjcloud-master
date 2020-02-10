@@ -67,4 +67,8 @@ public interface CommonConstants {
 	 * 默认存储bucket
 	 */
 	String BUCKET_NAME = "xjcloud";
+
+	String GETTER="get";
+
+	String SETTER="set";
 }
