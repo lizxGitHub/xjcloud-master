@@ -4,15 +4,18 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
+import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.SHNormalStateEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
@@ -27,7 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -51,6 +57,9 @@ public class PlanManagementController {
 
     @Autowired
     private RemoteDeptService remoteDeptService;
+
+    @Autowired
+    private EntryServiceImpl entryService;
 
     /**
      * 获取审计计划
@@ -315,9 +324,57 @@ public class PlanManagementController {
                 return r.failed("参数错误，请检查");
             }
             PlanCheckList planOne = planManagementService.getById(id);
-//            gov.pbc.xjcloud.common.core.util.R<Map<String,Object>> dept = remoteDeptService.dept(Integer.parseInt(planOne.getImplementingAgencyId()));
             PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
 //            planCheckListDTO.setImplementingAgencyName(dept.getData().get("name").toString());
+            r.setData(planCheckListDTO);
+        } catch (Exception e) {
+            r.failed(e.getMessage());
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    private String getFieldMethodType(String name,String type) {
+        StringBuffer method = new StringBuffer();
+        char c = name.charAt(0);
+        String s = String.valueOf(c).toUpperCase();
+        method.append(type).append(s).append(name.substring(1));
+        return method.toString();
+    }
+
+    @ApiOperation("获取问题详细信息")
+    @GetMapping("detail/{id}")
+    public R<PlanCheckListVO> getPLanInfoDetailById(@PathVariable String id) {
+        R<PlanCheckListVO> r = new R<>();
+        try {
+            if (StringUtils.isBlank(id)) {
+                return r.failed("参数错误，请检查");
+            }
+            List<EntryInfo> list= entryService.list();
+            Map<String, EntryInfo> entryMap = list.stream().filter(e -> {
+                StringBuffer sb = new StringBuffer();
+                sb.append(e.getName());
+                sb.append(e.getName1());
+                sb.append(e.getName2());
+                sb.append(e.getName3());
+                return StringUtils.isNotBlank(sb.toString());
+            }).collect(Collectors.toMap(e -> e.getId(), e->e));
+            PlanCheckList planOne = planManagementService.getById(id);
+            PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
+            Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
+            for(Field field:declaredFields){
+                String name = field.getName();
+                field.setAccessible(true);
+                String fieldSetter=getFieldMethodType(name, CommonConstants.SETTER);
+                Class<?> type = field.getType();
+                if(type.equals(String.class)){
+                    Object invoke = field.get(planCheckListDTO);
+                    if(null!=entryMap.get(invoke)){
+                        Method methodSetter = planCheckListDTO.getClass().getDeclaredMethod(fieldSetter,type);
+                        methodSetter.invoke(planCheckListDTO,(Object)entryMap.get(invoke).getConcatName());
+                    }
+                }
+            }
             r.setData(planCheckListDTO);
         } catch (Exception e) {
             r.failed(e.getMessage());
