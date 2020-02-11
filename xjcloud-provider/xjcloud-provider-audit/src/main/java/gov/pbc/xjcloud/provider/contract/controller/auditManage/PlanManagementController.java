@@ -163,8 +163,24 @@ public class PlanManagementController {
     public R planList(PlanCheckList query, Page<Map<String, Object>> page) {
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
-
-            planList = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
+            List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
+            List<EntryInfo> list = entryService.list();
+            Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
+                    .collect(Collectors.toMap(e -> e.getId(), e -> e));
+            for (Map<String, Object> plan: planListold) {
+                PlanCheckListVO planCheckListDTO = changeToDTO(null);
+                Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
+                for (Field field : declaredFields) {
+                    String name = field.getName();
+                    if(null!=plan.get(name)){
+                        String objVal = plan.get(name).toString();
+                        if(StringUtils.isNotBlank(objVal)&&null != entryMap.get(objVal)){
+                            plan.put(name,entryMap.get(objVal).getConcatName());
+                        }
+                    }
+                }
+                planList.add(plan);
+            }
             page.setRecords(planList);
             page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));
         } catch (Exception e) {

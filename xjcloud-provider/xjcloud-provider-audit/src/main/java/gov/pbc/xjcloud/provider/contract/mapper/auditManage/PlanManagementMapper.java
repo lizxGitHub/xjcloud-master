@@ -36,13 +36,15 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     @Select({"<script>",
-            "select audit_year,agency_entry.name agency_name,audit_entry.name audit_object_name,pcl.id,pcl.project_code,pcl.project_name,pcl.status,"
-                    + " audit_nature_entry.name audit_nature_name,problem_severity_entry.name problem_severity_name,"
+            "select audit_year,agency_entry.name agency_name,audit_entry.name audit_object_name,pcl.id,pcl.project_code,pcl.project_name,project_type_entry.name project_type,pcl.question_entry_id questionEntryId,pcl.problem_severity_id problemSeverityId,"
+                    +"pcl.status,case pcl.status when '' then '待审核' when '1002' then '待审核' when '1004' then '已驳回' else '已批准' end statusVal,pcl.audit_basis auditBasis,pcl.audit_classification_id auditClassificationId,pcl.auditing_experience auditingExperience,"
+                    + "audit_nature_entry.name audit_nature_name,problem_severity_entry.name problem_severity_name,"
                     + "rectify_situation_entry.name rectify_situation_name,risk_assessment_entry.name risk_assessment_name,"
                     + "pcl.problem_characterization,pcl.problem_description"
                     + " from plan_check_list pcl"
                     + " left join entry_info agency_entry on pcl.implementing_agency_id=agency_entry.id and agency_entry.del_flag=0 and agency_entry.category_fk=1"
                     + " left join entry_info audit_entry on pcl.audit_object_id=audit_entry.id and audit_entry.del_flag=0 and audit_entry.category_fk=2"
+                    + " left join entry_info project_type_entry on pcl.project_type=project_type_entry.id and project_type_entry.del_flag=0 and project_type_entry.category_fk=3"
                     + " left join entry_info audit_nature_entry on pcl.audit_nature_id=audit_nature_entry.id and audit_nature_entry.del_flag=0 and audit_nature_entry.category_fk=4"
                     + " left join entry_info problem_severity_entry on pcl.problem_severity_id=problem_severity_entry.id and problem_severity_entry.del_flag=0 and problem_severity_entry.category_fk=5"
                     + " left join entry_info rectify_situation_entry on pcl.rectify_situation_id=rectify_situation_entry.id and rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6"

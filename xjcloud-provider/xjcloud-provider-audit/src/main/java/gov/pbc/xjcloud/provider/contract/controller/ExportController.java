@@ -48,8 +48,8 @@ public class ExportController {
     public void exportExcel(PlanCheckList query, HttpServletResponse response) {
         try {
             String fileName = "审计查询";
-            String[] columns = new String[] { "项目名称", "问题定性", "问题描述", "严重程度", "机构名称", "审计对象", "审计性质", "年度", "机构名称", "整改方案", "风险评估"};
-            String[] keys = new String[] { "project_name", "problem_characterization", "problem_description", "problem_severity_name", "agency_name", "audit_object_name", "audit_nature_name", "audit_year", "agency_name", "rectify_situation_name", "risk_assessment_name"};
+            String[] columns = new String[] { "项目名称","项目类型","项目状态","问题词条","问题严重程度", "问题定性", "问题描述", "严重程度", "机构名称", "审计对象", "审计性质", "审计依据", "审计分类", "审计经验", "年度", "机构名称", "整改情况", "风险评估"};
+            String[] keys = new String[] { "project_name","project_type","statusVal","question_entry_id","problem_severity_id", "problem_characterization", "problem_description", "problem_severity_name", "agency_name", "audit_object_name", "audit_nature_name","audit_basis","audit_classification_id","auditing_experience", "audit_year", "agency_name", "rectify_situation_name", "risk_assessment_name"};
             List<Map<String, Object>> list = planManagementService.selectEntryByQuery(query, null, null);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<String, Object>();
