@@ -22,6 +22,7 @@ public class PlanCheckList implements Serializable,Cloneable{
     private Date createdTime ;
     /** 更新人 */
     @Column(name = "update_by")
+    @TableField(exist = false)
     private int updatedBy ;
     /** 更新时间 */
     @Column(name = "update_time")
@@ -96,6 +97,7 @@ public class PlanCheckList implements Serializable,Cloneable{
      * 流程实例 ACTIVITI 流程实例
      */
     @Column(name = "instance_id")
+    @TableField(exist = false)
     private String instanceId;
 
     @TableField(exist = false)

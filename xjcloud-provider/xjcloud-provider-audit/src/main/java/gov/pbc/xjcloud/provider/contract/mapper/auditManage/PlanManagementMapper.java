@@ -1,8 +1,11 @@
 package gov.pbc.xjcloud.provider.contract.mapper.auditManage;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.mapper.IBaseMapper;
+import gov.pbc.xjcloud.provider.contract.vo.PlanFileVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -171,4 +174,17 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     Page<PlanCheckList> getDeadlinePlanPage( @Param("page") Page<PlanCheckList> page,@Param("query") Map<String, Object> query);
+
+    /**
+     * 插入文件记录
+     * @param planFile
+     */
+    void addFileLog(PlanFile planFile);
+
+    /**
+     * 获取文件列表
+     * @param bizKey
+     * @return
+     */
+    List<PlanFileVO> findFilesByBizKey(String bizKey);
 }

@@ -12,6 +12,8 @@ public class UploadFileConfig {
 
     @Value("${audit.file.uploadFolder}")
     private String uploadFolder;
+    @Value("${spring.servlet.multipart.max-request-size:100MB}")
+    private String maxFileSize;
 
     @Bean
     MultipartConfigElement multipartConfigElement(){
@@ -19,7 +21,7 @@ public class UploadFileConfig {
 //        factory.setLocation(uploadFolder);
         //resolveLazily属性启用是为了推迟文件解析，以在在UploadAction中捕获文件大小异常
         // 单次请求最大上传文件大小
-        factory.setMaxRequestSize("10MB");
+        factory.setMaxRequestSize(maxFileSize);
         return factory.createMultipartConfig();
     }
 }

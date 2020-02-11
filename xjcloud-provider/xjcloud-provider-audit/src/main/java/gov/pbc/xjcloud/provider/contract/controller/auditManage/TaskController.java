@@ -266,4 +266,21 @@ public class TaskController {
         return map;
     }
 
+    /**
+     * 获取流程业务记录
+     *
+     * @param processDefKey
+     * @param businessId
+     * @return
+     */
+    @GetMapping("taskHistory")
+    public R taskHistory(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
+       try {
+           R history = activitiService.history(processDefKey, businessId);
+           return history;
+       }catch (Exception e){
+           e.printStackTrace();
+           return  new R().setData(new ArrayList<>());
+       }
+    }
 }

@@ -252,7 +252,8 @@
         FROM
         user_attention_check b
         left join `plan_check_list` a on a.id = b.check_id
-        left join entry_info rectify_situation_entry on pcl.rectify_situation_id=rectify_situation_entry.id and rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6
+        left join entry_info rectify_situation_entry on pcl.rectify_situation_id=rectify_situation_entry.id and
+        rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6
         where a.del_flag='0'
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
@@ -261,7 +262,8 @@
             and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
         </if>
         <if test="query.problemDescription!=null and query.problemDescription!=''">
-            and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
+            and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or
+            a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
         <if test="query.deptId!=null and query.deptId!=''">
             and a.implementing_agency_id =#{query.deptId}
@@ -292,7 +294,7 @@
         and status!=#{status}
     </select>
     <select id="getDeadlinePlanPage" resultMap="PlanCheckListMapper">
-         SELECT
+        SELECT
         <include refid="select"/>
         FROM
         `plan_check_list` a
@@ -304,8 +306,21 @@
         or audit_admin_id=#{query.userId})
         and status!=#{query.status}
     </select>
+    <select id="findFilesByBizKey" resultType="gov.pbc.xjcloud.provider.contract.vo.PlanFileVO">
+        select
+        id,
+        biz_key bizKey,
+        task_id taskId,
+        task_name taskName,
+        file_uri fileUrl,
+        created_time createdTime,
+        upload_user uploadUser
+        from plan_files
+        where biz_key=#{0}
+    </select>
 
-    <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList" useGeneratedKeys="true" keyProperty="planCheckList.id" keyColumn="id">
+    <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList"
+            useGeneratedKeys="true" keyProperty="planCheckList.id" keyColumn="id">
         INSERT INTO `plan_check_list`
         <trim prefix="(" suffix=")" suffixOverrides=",">
             `id`,
@@ -340,74 +355,78 @@
                 #{planCheckList.createdBy},
             </if>
             <if test="planCheckList.projectCode != null">
-            #{planCheckList.projectCode},
+                #{planCheckList.projectCode},
             </if>
             <if test="planCheckList.projectName != null">
-            #{planCheckList.projectName},
+                #{planCheckList.projectName},
             </if>
             <if test="planCheckList.projectType != null">
-            #{planCheckList.projectType},
+                #{planCheckList.projectType},
             </if>
             <if test="planCheckList.implementingAgencyId != null">
-            #{planCheckList.implementingAgencyId},
+                #{planCheckList.implementingAgencyId},
             </if>
             <if test="planCheckList.auditObjectId != null">
-            #{planCheckList.auditObjectId},
+                #{planCheckList.auditObjectId},
             </if>
             <if test="planCheckList.auditNatureId != null">
-            #{planCheckList.auditNatureId},
+                #{planCheckList.auditNatureId},
             </if>
             <if test="planCheckList.auditYear != null">
-            #{planCheckList.auditYear},
+                #{planCheckList.auditYear},
             </if>
             <if test="planCheckList.questionEntryId != null">
-            #{planCheckList.questionEntryId},
+                #{planCheckList.questionEntryId},
             </if>
             <if test="planCheckList.problemSeverityId != null">
-            #{planCheckList.problemSeverityId},
+                #{planCheckList.problemSeverityId},
             </if>
             <if test="planCheckList.rectifySituationId != null">
-            #{planCheckList.rectifySituationId},
+                #{planCheckList.rectifySituationId},
             </if>
             <if test="planCheckList.problemCharacterization != null">
-            #{planCheckList.problemCharacterization},
+                #{planCheckList.problemCharacterization},
             </if>
             <if test="planCheckList.problemDescription != null">
-            #{planCheckList.problemDescription},
+                #{planCheckList.problemDescription},
             </if>
             <if test="planCheckList.mayAffect != null">
-            #{planCheckList.mayAffect},
+                #{planCheckList.mayAffect},
             </if>
             <if test="planCheckList.rectificationSuggestions != null">
-            #{planCheckList.rectificationSuggestions},
+                #{planCheckList.rectificationSuggestions},
             </if>
             <if test="planCheckList.auditBasis != null">
-            #{planCheckList.auditBasis},
+                #{planCheckList.auditBasis},
             </if>
             <if test="planCheckList.auditClassificationId != null">
-            #{planCheckList.auditClassificationId},
+                #{planCheckList.auditClassificationId},
             </if>
             <if test="planCheckList.auditingExperience != null">
-            #{planCheckList.auditingExperience},
+                #{planCheckList.auditingExperience},
             </if>
             <if test="planCheckList.riskAssessmentId != null">
-            #{planCheckList.riskAssessmentId},
+                #{planCheckList.riskAssessmentId},
             </if>
             <if test="planCheckList.impUserId != null">
-            #{planCheckList.impUserId},
+                #{planCheckList.impUserId},
             </if>
             <if test="planCheckList.impAdminId != null">
-            #{planCheckList.impAdminId},
+                #{planCheckList.impAdminId},
             </if>
             <if test="planCheckList.auditUserId != null">
-            #{planCheckList.auditUserId},
+                #{planCheckList.auditUserId},
             </if>
             <if test="planCheckList.auditAdminId != null">
-            #{planCheckList.auditAdminId},
+                #{planCheckList.auditAdminId},
             </if>
             <if test="planCheckList.status != null">
-            #{planCheckList.status}
+                #{planCheckList.status}
             </if>
         </trim>
+    </insert>
+    <insert id="addFileLog">
+        insert into plan_files(id,upload_user,file_uri,created_time,biz_key,task_id,task_name)
+         values(#{id},#{uploadUser},#{fileUri},#{createdTime},#{bizKey},#{taskId},#{taskName})
     </insert>
 </mapper>

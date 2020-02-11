@@ -1,9 +1,11 @@
 package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
@@ -155,5 +157,19 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     public Page<PlanCheckList> getDeadlinePlanPage(Map<String, Object> query, Page<PlanCheckList> page) {
         return  planManagementMapper.getDeadlinePlanPage(page,query);
+    }
+
+    /**
+     * 文件记录
+     * @param planFile
+     */
+    public void addFileLog(PlanFile planFile) {
+        planManagementMapper.addFileLog(planFile);
+    }
+/**
+ * 获取文件列表
+ */
+    public List<gov.pbc.xjcloud.provider.contract.vo.PlanFileVO> findFilesByBizKey(String bizKey) {
+        return planManagementMapper.findFilesByBizKey(bizKey);
     }
 }
