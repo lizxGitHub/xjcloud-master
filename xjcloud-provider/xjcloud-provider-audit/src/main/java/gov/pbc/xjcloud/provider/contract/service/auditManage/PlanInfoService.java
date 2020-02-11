@@ -1,16 +1,13 @@
 package gov.pbc.xjcloud.provider.contract.service.auditManage;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 
 public interface PlanInfoService extends IService<PlanInfo> {
 
-    Page<PlanInfo> selectPlanInfoList(Page page, PlanInfo query);
+    PlanInfo getByPlanUserId(String planId, String userId);
 
-    PlanInfo getById(String id);
+    void updateById(String id, String statusUser);
 
-    void updateByPlanId(String planId, String status);
-
-    void insertA(PlanInfo query);
+    void updateByPlanUserId(String planId, String userId, String statusUser);
 }
