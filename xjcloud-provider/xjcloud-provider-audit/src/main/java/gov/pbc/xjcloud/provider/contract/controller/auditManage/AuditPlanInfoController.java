@@ -1,20 +1,16 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
-import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DeptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.SHLeaderStateEnum;
-import gov.pbc.xjcloud.provider.contract.enumutils.SHNormalStateEnum;
-import gov.pbc.xjcloud.provider.contract.enumutils.StateEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
+import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
@@ -56,6 +52,9 @@ public class AuditPlanInfoController {
 
     @Resource
     private PlanManagementService planManagementService;
+
+    @Autowired
+    RemoteDeptService remoteDeptService;
 
     @Autowired
     private DeptUtil deptUtil;
@@ -180,141 +179,31 @@ public class AuditPlanInfoController {
         return r.setData(true);
     }
 
-//    /**
-//     * 上报计划
-//     * @param ids
-//     * @param
-//     * @return
-//     */
-//    @PostMapping("/reportPlan")
-//    public R<Boolean> reportPlan(@RequestParam(name = "ids", required = true) String ids) {
-//        R<Boolean> r = new R<>();
-//        String[] idArray = ids.split(",");
-//        try {
-//            for (String id : idArray) {
-//                PlanCheckList plan = planManagementService.getById(id);
-//                String implementingAgencyId = plan.getImplementingAgencyId(); //实施机构id
-//                String auditObjectId = plan.getAuditObjectId(); //审计对象id
-//                int createdBy = plan.getCreatedBy(); //创建人
-//
-//                int impUserAssignee = plan.getImpUserId(); //
-//                int implLeaderAssignee = plan.getImpAdminId(); //
-//                int auditUserAssignee = plan.getAuditUserId(); //
-//                int auditLeaderAssignee = plan.getAuditAdminId(); //
-//
-//                JSONObject varsJSONObject = new JSONObject();
-//                varsJSONObject.put("impUserAssignee", impUserAssignee);
-//                varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
-//                varsJSONObject.put("auditUserAssignee", auditUserAssignee);
-//                varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
-//                varsJSONObject.put("createdBy", createdBy);
-//                varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
-//                varsJSONObject.put("delayDate", null);
-//
-//                String vars = varsJSONObject.toJSONString();
-//                //启动流程
-//                R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
-//                if(!auditApply.getData()){
-//                    return r.setMsg("流程启动失败:"+auditApply.getMsg());
-//                }
-//                //修改状态
-//                plan.setStatus(String.valueOf(PlanStatusEnum.PLAN_TOBE_AUDITED.getCode()));
-//                planManagementService.updateById(plan);
-//
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return r.setData(true);
-//    }
+    /**
+     * 获取实施机构
+     * @return
+     */
+    @GetMapping("/getImplementingAgency")
+    public JSONObject getImplementingAgency () {
+        JSONObject jsonObject = new JSONObject();
+        //按dept查询问题数 key
+        List deptChild = deptUtil.findChildBank(0, "中支");
+        jsonObject.put("implementingAgency", deptChild);
+        return jsonObject;
+    }
 
-//    @ApiOperation("批准问题信息")
-//    @PostMapping("/approvalPlan")
-//    public R<Boolean> approvalPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
-//        R<Boolean> r = new R<>();
-//        try {
-//            auditPlanInfoServiceImpl.updateById(id, "1007");
-//            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
-//            PlanCheckList planCheckList = auditPlanInfo.getPlanCheckList();
-//            String planId = planCheckList.getId();
-//            auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1003");
-//
-//            //审核部门一般员工
-//            AuditProjectInfo auditProjectInfo = auditProjectInfoServiceImpl.getById(id, "1");
-//            if (auditProjectInfo != null) {
-//                auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1001");
-//            } else {
-//                auditProjectInfo = new AuditProjectInfo();
-//                auditProjectInfo.setRoleId("1");
-//                auditProjectInfo.setStatus("1001");
-//                auditProjectInfo.setPlanCheckList(planCheckList);
-//                auditProjectInfo.setOpinion("");
-//                auditProjectInfoServiceImpl.insertA(auditProjectInfo);
-//            }
-//            //审核部门领导
-//            AuditProjectInfo auditProjectInfo2 = auditProjectInfoServiceImpl.getById(id, "2");
-//            if (auditProjectInfo2 != null) {
-//                auditPlanInfoServiceImpl.updateByPlanId(planId, "2", "1004");
-//            } else {
-//                auditProjectInfo2 = new AuditProjectInfo();
-//                auditProjectInfo2.setRoleId("2");
-//                auditProjectInfo2.setStatus("1004");
-//                auditProjectInfo2.setPlanCheckList(planCheckList);
-//                auditProjectInfo2.setOpinion("");
-//                auditProjectInfoServiceImpl.insertA(auditProjectInfo2);
-//            }
-//
-//            //被审核部门一般员工
-//            AuditProjectInfo auditProjectInfo3 = auditProjectInfoServiceImpl.getById(id, "3");
-//            if (auditProjectInfo3 != null) {
-//                auditPlanInfoServiceImpl.updateByPlanId(planId, "3", "1006");
-//            } else {
-//                auditProjectInfo3 = new AuditProjectInfo();
-//                auditProjectInfo3.setRoleId("3");
-//                auditProjectInfo3.setStatus("1006");
-//                auditProjectInfo3.setPlanCheckList(planCheckList);
-//                auditProjectInfo3.setOpinion("");
-//                auditProjectInfoServiceImpl.insertA(auditProjectInfo3);
-//            }
-//            //被审核部门领导
-//            AuditProjectInfo auditProjectInfo4 = auditProjectInfoServiceImpl.getById(id, "4");
-//            if (auditProjectInfo4 != null) {
-//                auditPlanInfoServiceImpl.updateByPlanId(planId, "4", "1004");
-//            } else {
-//                auditProjectInfo4 = new AuditProjectInfo();
-//                auditProjectInfo4.setRoleId("4");
-//                auditProjectInfo4.setStatus("1004");
-//                auditProjectInfo4.setPlanCheckList(planCheckList);
-//                auditProjectInfo4.setOpinion("");
-//                auditProjectInfoServiceImpl.insertA(auditProjectInfo4);
-//            }
-//
-//            //activity import gov.pbc.xjcloud.common.core.util.R;
-////            gov.pbc.xjcloud.common.core.util.R a = auditActivitiService.start("auditPlan", 1, "");
-//            gov.pbc.xjcloud.common.core.util.R a = remoteProcessService.start("auditPlan", 1, "");
-//            System.out.println(a);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return r.setData(true);
-//    }
-
-//    @ApiOperation("获取问题信息")
-//    @PostMapping("/rejectPlan")
-//    public R<Boolean> rejectPlan(@RequestParam(name = "id", required = true) String id, @RequestParam(name = "roleId", required = true) String roleId) {
-//        R<Boolean> r = new R<>();
-//        try {
-//            auditPlanInfoServiceImpl.updateById(id, "1006");
-//            AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getById(id, roleId);
-//            String planId = auditPlanInfo.getPlanCheckList().getId();
-//            auditPlanInfoServiceImpl.updateByPlanId(planId, "1", "1004");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return r.setData(true);
-//    }
-
+    /**
+     * 根据实施机构id获取审计对象
+     * @return
+     */
+    @GetMapping("/getAuditObjectByIAId")
+    public JSONObject getAuditObjectByIAId (@RequestParam(name = "IAId", required = true) int IAId ) {
+        JSONObject jsonObject = new JSONObject();
+        //按dept查询问题数 key
+        List deptChild = deptUtil.findChildBank(IAId, "支行");
+        jsonObject.put("AuditObject", deptChild);
+        return jsonObject;
+    }
 
     /**
      *
@@ -373,5 +262,10 @@ public class AuditPlanInfoController {
     public R<AuditPlanInfo> getByPlanUserId(@RequestParam(name = "planId", required = true) String planId,  @RequestParam(name = "userId", required = true) String userId) {
         AuditPlanInfo auditPlanInfo = auditPlanInfoServiceImpl.getByPlanUserId(planId, userId);
         return R.ok(auditPlanInfo);
+    }
+
+    @GetMapping("/getDeptInfoById")
+    public R getDeptInfoById(@RequestParam(name = "id", required = true) int id) {
+        return R.ok(remoteDeptService.dept(id));
     }
 }
