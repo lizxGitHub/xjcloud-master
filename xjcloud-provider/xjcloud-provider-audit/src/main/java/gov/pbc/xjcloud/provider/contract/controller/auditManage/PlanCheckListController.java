@@ -11,6 +11,7 @@ import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
+import gov.pbc.xjcloud.provider.contract.utils.R2;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -105,14 +106,30 @@ public class PlanCheckListController {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
                 if (userId == plan.getImpAdminId()) {
                     planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), statusUser);
-                    if (statusUser.equals("1002")) {
+                    if (statusUser.equals("1002")) { //确认
                         planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1003");
-                    } else if (statusUser.equals("1003")) {
+
+                        //实施一般员工
+                        PlanInfo planInfo1 = new PlanInfo();
+                        planInfo1.setUserId(plan.getImpUserId());
+                        planInfo1.setStatusUser("1001"); //待完善
+                        planInfo1.setPlanId(plan.getId());
+                        planInfo1.setType(1);
+                        planInfoService.save(planInfo1);
+                        //实施管理员
+                        PlanInfo planInfo2 = new PlanInfo();
+                        planInfo2.setUserId(plan.getImpAdminId());
+                        planInfo2.setStatusUser("1001"); //待审核
+                        planInfo2.setPlanId(plan.getId());
+                        planInfo2.setType(1);
+                        planInfoService.save(planInfo2);
+
+                    } else if (statusUser.equals("1003")) { //驳回
                         planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1004");
                     }
                 } else if (userId == plan.getImpUserId()) {
                     planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), statusUser);
-                    if (statusUser.equals("1002")) {
+                    if (statusUser.equals("1002")) { //上报
                         PlanInfo planInfo = planInfoService.getPlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()));
                         if (planInfo == null) {
                             PlanInfo planInfo1 = new PlanInfo();
@@ -153,10 +170,10 @@ public class PlanCheckListController {
 
                     String vars = varsJSONObject.toJSONString();
                     //启动流程
-//                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
-//                    if(!auditApply.getData()){
-//                        return r.setMsg("流程启动失败:"+auditApply.getMsg());
-//                    }
+                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                    if(!auditApply.getData()){
+                        return r.setMsg("流程启动失败:"+auditApply.getMsg());
+                    }
                 }
             }
         } catch (Exception e) {
