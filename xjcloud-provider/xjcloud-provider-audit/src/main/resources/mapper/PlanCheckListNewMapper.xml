@@ -54,7 +54,7 @@
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
         </if>
         <if test="status!=null and status!=''">
-            and b.status = #{status}
+            and b.status_user = #{status}
         </if>
     </select>
 

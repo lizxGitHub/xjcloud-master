@@ -17,8 +17,13 @@ public class PlanInfoServiceImpl extends IBaseServiceImpl<PlanInfoMapper, PlanIn
     private PlanInfoMapper planInfoMapper;
 
     @Override
-    public PlanInfo getByPlanUserId(String planId, String userId) {
-        return planInfoMapper.getByPlanUserId(planId, userId);
+    public PlanInfo getPlanByPlanUserId(String planId, String userId) {
+        return planInfoMapper.getPlanByPlanUserId(planId, userId);
+    }
+
+    @Override
+    public PlanInfo getProjectByPlanUserId(String planId, String userId) {
+        return planInfoMapper.getProjectByPlanUserId(planId, userId);
     }
 
     @Override
@@ -27,8 +32,13 @@ public class PlanInfoServiceImpl extends IBaseServiceImpl<PlanInfoMapper, PlanIn
     }
 
     @Override
-    public void updateByPlanUserId(String planId, String userId, String statusUser) {
-        planInfoMapper.updateByPlanUserId(planId, userId, statusUser);
+    public void updatePlanByPlanUserId(String planId, String userId, String statusUser) {
+        planInfoMapper.updatePlanByPlanUserId(planId, userId, statusUser);
+    }
+
+    @Override
+    public void updateProjectByPlanUserId(String planId, String userId, String statusUser) {
+        planInfoMapper.updateProjectByPlanUserId(planId, userId, statusUser);
     }
 
 }

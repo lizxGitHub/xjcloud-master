@@ -5,9 +5,13 @@ import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 
 public interface PlanInfoService extends IService<PlanInfo> {
 
-    PlanInfo getByPlanUserId(String planId, String userId);
+    PlanInfo getPlanByPlanUserId(String planId, String userId);
+
+    PlanInfo getProjectByPlanUserId(String planId, String userId);
 
     void updateById(String id, String statusUser);
 
-    void updateByPlanUserId(String planId, String userId, String statusUser);
+    void updatePlanByPlanUserId(String planId, String userId, String statusUser);
+
+    void updateProjectByPlanUserId(String planId, String userId, String statusUser);
 }

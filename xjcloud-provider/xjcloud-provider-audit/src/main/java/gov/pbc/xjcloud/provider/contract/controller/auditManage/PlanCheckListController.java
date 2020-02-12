@@ -104,16 +104,16 @@ public class PlanCheckListController {
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
                 if (userId == plan.getImpAdminId()) {
-                    planInfoService.updateByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), statusUser);
+                    planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), statusUser);
                     if (statusUser.equals("1002")) {
-                        planInfoService.updateByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1003");
+                        planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1003");
                     } else if (statusUser.equals("1003")) {
-                        planInfoService.updateByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1004");
+                        planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1004");
                     }
                 } else if (userId == plan.getImpUserId()) {
-                    planInfoService.updateByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), statusUser);
+                    planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), statusUser);
                     if (statusUser.equals("1002")) {
-                        PlanInfo planInfo = planInfoService.getByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()));
+                        PlanInfo planInfo = planInfoService.getPlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()));
                         if (planInfo == null) {
                             PlanInfo planInfo1 = new PlanInfo();
                             planInfo1.setUserId(plan.getImpAdminId());
@@ -122,7 +122,7 @@ public class PlanCheckListController {
                             planInfo1.setType(0);
                             planInfoService.save(planInfo1);
                         } else {
-                            planInfoService.updateByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), "1001");
+                            planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), "1001");
                         }
                     }
                 }

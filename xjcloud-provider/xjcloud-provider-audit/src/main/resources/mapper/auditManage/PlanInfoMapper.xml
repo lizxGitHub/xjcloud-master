@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanInfoMapper">
 
-    <select id="getByPlanUserId" resultMap="PlanInfoMap">
+    <select id="getPlanByPlanUserId" resultMap="PlanInfoMap">
         SELECT
             a.id,
             a.status_user,
@@ -13,6 +13,21 @@
         where
         a.plan_id= #{planId}
         and a.user_id= #{userId}
+        and `type` = 0
+    </select>
+
+    <select id="getProjectByPlanUserId" resultMap="PlanInfoMap">
+        SELECT
+            a.id,
+            a.status_user,
+            a.user_id,
+            a.plan_id,
+            a.opinion
+        from  plan_info a
+        where
+        a.plan_id= #{planId}
+        and a.user_id= #{userId}
+        and `type` = 1
     </select>
 
     <update id="updateById">
@@ -23,13 +38,24 @@
             id = #{id}
     </update>
 
-    <update id="updateByPlanUserId">
+    <update id="updatePlanByPlanUserId">
         UPDATE plan_info
         SET
          `status_user` = #{statusUser}
         WHERE
             plan_id = #{planId}
             and user_id = #{userId}
+            and `type` = 0
+    </update>
+
+    <update id="updateProjectByPlanUserId">
+        UPDATE plan_info
+        SET
+         `status_user` = #{statusUser}
+        WHERE
+            plan_id = #{planId}
+            and user_id = #{userId}
+            and `type` = 1
     </update>
 
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
