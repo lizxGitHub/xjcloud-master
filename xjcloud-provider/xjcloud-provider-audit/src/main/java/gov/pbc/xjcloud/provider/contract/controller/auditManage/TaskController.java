@@ -67,8 +67,16 @@ public class TaskController {
             Map<String, Object> params = new HashMap<>();
             params.put("size", 1000);
             params.put("current", 1);
-            int type = Integer.parseInt(request.getParameter("type"));
-            int userId = Integer.parseInt(request.getParameter("userId"));
+            int type = 1;
+            if (request.getParameter("type") != null) {
+                type = Integer.parseInt(request.getParameter("type"));
+            }
+            int userId = 0;
+            if (request.getParameter("userId") == null) {
+                throw new Exception("用户id不为空");
+            } else {
+                userId = Integer.parseInt(request.getParameter("userId"));
+            }
             String status = request.getParameter("status");
             gov.pbc.xjcloud.provider.contract.utils.R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
@@ -176,6 +184,10 @@ public class TaskController {
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.PLAN_IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
+                //项目正在实施
+                plan.setStatus("1001"); //正在实施
+                planCheckListService.updateById(plan);
+
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
                 //实施部门管理员
@@ -230,11 +242,19 @@ public class TaskController {
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
+                //项目实施结束
+                plan.setStatus("1002"); //实施结束
+                planCheckListService.updateById(plan);
+
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
+                //项目实施结束
+                plan.setStatus("1003"); //实施结束
+                planCheckListService.updateById(plan);
+
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1005");
                 //实施部门管理员
