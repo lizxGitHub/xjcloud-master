@@ -2,6 +2,7 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
@@ -9,8 +10,10 @@ import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
+import gov.pbc.xjcloud.provider.contract.vo.PlanFileVO;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +48,14 @@ public class TaskController {
     private String auditFlowDefKey;
 
     @Resource
-    private PlanManagementService planManagementService;
+    private PlanManagementServiceImpl planManagementService;
 
     @Resource
     private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
 
     /**
      * 流程页面
+     *
      * @param query
      * @return
      */
@@ -69,10 +73,12 @@ public class TaskController {
             page = planManagementService.selectPlanCheckList(page, query);
             page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
                 if (resultList.size() > 0) {
-                    for(Map<String, String> taskInfo : resultList) {
+                    for (Map<String, String> taskInfo : resultList) {
                         if (Integer.valueOf(taskInfo.get("bizKey")) == e.getId()) {
                             String taskId = taskInfo.get("taskId");
+                            String taskName = taskInfo.get("taskName");
                             e.setTaskId(taskId);
+                            e.setTaskId(taskName);
                             R<Integer> auditStatus = activitiService.getTaskVariable(taskId, "auditStatus");
                             e.setAuditStatus(String.valueOf(auditStatus.getData()));
                             break;
@@ -239,6 +245,7 @@ public class TaskController {
 
     /**
      * 对象装换map
+     *
      * @param obj
      * @return
      */
@@ -275,12 +282,54 @@ public class TaskController {
      */
     @GetMapping("taskHistory")
     public R taskHistory(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
-       try {
-           R history = activitiService.history(processDefKey, businessId);
-           return history;
-       }catch (Exception e){
-           e.printStackTrace();
-           return  new R().setData(new ArrayList<>());
-       }
+        try {
+            R history = activitiService.history(processDefKey, businessId);
+            return history;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new R().setData(new ArrayList<>());
+        }
+    }
+
+    /**
+     * 提交整改结果
+     *
+     * @param params
+     * @return
+     */
+    @PostMapping("submitReport")
+    public R<Boolean> submitReport(@RequestBody Map<String, Object> params) {
+        try {
+            if (null == params.get("taskId") || null == params.get("id") || null == params.get("auditStatus")) {
+                return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
+            }
+            planManagementService.reportPlanAndTask(params);
+            return new R().setData(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
+        }
+
+    }
+
+    /**
+     * 晚上整改计划
+     *
+     * @param params
+     * @return
+     */
+    @PostMapping("completePlan")
+    public R<Boolean> completePlan(@RequestBody Map<String, Object> params) {
+        try {
+            if (null == params.get("taskId") || null == params.get("id") || null == params.get("auditStatus")) {
+                return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
+            }
+            planManagementService.completePlan(params);
+            return new R().setData(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
+        }
+
     }
 }

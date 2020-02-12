@@ -151,6 +151,11 @@ public class PlanCheckList implements Serializable,Cloneable{
      * taskId
      */
     private String taskId;
+    /**
+     * taskName
+     */
+    @TableField(exist = false)
+    private String taskName;
 
     /**
      * auditStatus
