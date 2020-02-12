@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
@@ -117,6 +118,11 @@ public class PlanCheckListNew implements Serializable,Cloneable{
      * taskId
      */
     private String taskId;
+    /**
+     * taskName
+     */
+    @TableField(exist = false)
+    private String taskName;
 
     /**
      * auditStatus

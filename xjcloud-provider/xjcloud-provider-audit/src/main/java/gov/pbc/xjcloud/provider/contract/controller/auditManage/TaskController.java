@@ -81,7 +81,7 @@ public class TaskController {
                             String taskId = taskInfo.get("taskId");
                             String taskName = taskInfo.get("taskName");
                             e.setTaskId(taskId);
-                            e.setTaskId(taskName);
+                            e.setTaskName(taskName);
                             R<Integer> auditStatus = activitiService.getTaskVariable(taskId, "auditStatus");
                             e.setAuditStatus(String.valueOf(auditStatus.getData()));
                             break;
