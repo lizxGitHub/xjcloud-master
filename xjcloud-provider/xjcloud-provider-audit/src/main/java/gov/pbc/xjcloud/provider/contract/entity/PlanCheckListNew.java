@@ -128,6 +128,12 @@ public class PlanCheckListNew implements Serializable,Cloneable{
      * auditStatus
      */
     private String auditStatus;
+    /**
+     * 驳回反馈
+     */
+    @TableField(exist = false)
+    private String rollbackText;
+
     /** 启动时间 */
     private Date startTime ;
     /** 归档时间 */

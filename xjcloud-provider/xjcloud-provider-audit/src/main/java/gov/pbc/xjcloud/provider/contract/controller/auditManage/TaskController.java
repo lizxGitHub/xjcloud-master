@@ -56,6 +56,7 @@ public class TaskController {
 
     /**
      * 流程页面
+     *
      * @param query
      * @return
      */
@@ -81,20 +82,19 @@ public class TaskController {
             gov.pbc.xjcloud.provider.contract.utils.R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
+            Map<Integer, Map<String, String>> collect = resultList.stream().filter(e -> org.apache.commons.lang3.StringUtils.isNoneBlank(e.get("bizKey"))).collect(Collectors.toMap(e -> Integer.parseInt(e.get("bizKey")), e -> e));
             page = planCheckListService.selectAll(page, query, type, userId, status);
             page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
-                if (resultList.size() > 0) {
-                    for(Map<String, String> taskInfo : resultList) {
-                        if (Integer.valueOf(taskInfo.get("bizKey")) == e.getId()) {
-                            String taskId = taskInfo.get("taskId");
-                            String taskName = taskInfo.get("taskName");
-                            e.setTaskId(taskId);
-                            e.setTaskName(taskName);
-                            R<Integer> auditStatus = activitiService.getTaskVariable(taskId, "auditStatus");
-                            e.setAuditStatus(String.valueOf(auditStatus.getData()));
-                            break;
-                        }
-                    }
+                if (null != collect.get(e.getId())) {
+                    Map<String, String> taskInfo = collect.get(e.getId());
+                    String taskId = taskInfo.get("taskId");
+                    String taskName = taskInfo.get("taskName");
+                    e.setTaskId(taskId);
+                    e.setTaskName(taskName);
+                    R<Integer> auditStatus = activitiService.getTaskVariable(taskId, "auditStatus");
+                    R<String> rollbackText = activitiService.getTaskVariable(taskId, "rollbackText");
+                    e.setAuditStatus(String.valueOf(auditStatus.getData()));
+                    e.setRollbackText(String.valueOf(rollbackText.getData()));
                 }
             });
         } catch (Exception e) {
@@ -290,6 +290,7 @@ public class TaskController {
 
     /**
      * 对象装换map
+     *
      * @param obj
      * @return
      */
