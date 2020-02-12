@@ -2,17 +2,20 @@ package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
+import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,9 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     @Resource
     private PlanManagementMapper planManagementMapper;
+
+    @Autowired
+    private AuditActivitiService auditActivitiService;
 
     /**
      * 自定义分页查询
@@ -171,5 +177,71 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
  */
     public List<gov.pbc.xjcloud.provider.contract.vo.PlanFileVO> findFilesByBizKey(String bizKey) {
         return planManagementMapper.findFilesByBizKey(bizKey);
+    }
+
+    /**
+     * 提交整改结果
+     * @param params
+     */
+    public void reportPlanAndTask(Map<String, Object> params) {
+        PlanCheckList planCheckList =new PlanCheckList();
+        planCheckList.setId(Integer.parseInt(params.get("id").toString()));
+        planCheckList.setRectifyResult(params.get("rectifyResult").toString());
+        planCheckList.setStatus(params.get("status").toString());
+        UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("rectify_result",params.get("rectifyResult"));
+        updateWrapper.set("status",params.get("status"));
+        updateWrapper.set("auditStatus",params.get("status"));
+        this.update(planCheckList,updateWrapper);
+        //提交文件
+
+        if(null!=params.get("fileUri")){
+            PlanFile planFile = new PlanFile();
+            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
+            planFile.setTaskName(params.get("taskName").toString());
+            planFile.setFileUri(params.get("fileUri").toString());
+            planFile.setBizKey(Integer.parseInt(params.get("id").toString()));
+            planFile.setUploadUser(params.get("uploadUser").toString());
+            this.addFileLog(planFile);
+        }
+        Map<String,Object> actVars = new HashMap<>();
+        actVars.put("rectifyResult",params.get("rectifyResult"));
+        actVars.put("auditStatus",params.get("auditStatus"));
+        actVars.put("status",params.get("auditStatus"));
+        auditActivitiService.complete(params.get("taskId").toString(),actVars);
+    }
+
+    /**
+     * 完善计划
+     * @param params
+     */
+    public void completePlan(Map<String, Object> params) {
+        PlanCheckList planCheckList =new PlanCheckList();
+        planCheckList.setId(Integer.parseInt(params.get("id").toString()));
+        planCheckList.setPlanTime(new Date(params.get("planTime").toString()));
+        planCheckList.setRectifyWay(params.get("rectifyWay").toString());
+        planCheckList.setStatus(params.get("status").toString());
+        UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("plan_time",params.get("planTime"));
+        updateWrapper.set("rectify_way",params.get("rectifyWay"));
+        updateWrapper.set("status",params.get("status"));
+        updateWrapper.set("auditStatus",params.get("status"));
+        this.update(planCheckList,updateWrapper);
+        //提交文件
+        if(null!=params.get("fileUri")){
+            PlanFile planFile = new PlanFile();
+            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
+            planFile.setTaskName(params.get("taskName").toString());
+            planFile.setFileUri(params.get("fileUri").toString());
+            planFile.setBizKey(Integer.parseInt(params.get("id").toString()));
+            planFile.setUploadUser(params.get("uploadUser").toString());
+            this.addFileLog(planFile);
+        }
+        Map<String,Object> actVars = new HashMap<>();
+        actVars.put("planTime",params.get("planTime"));
+        actVars.put("rectifyWay",params.get("rectifyWay"));
+        actVars.put("auditStatus",params.get("auditStatus"));
+        actVars.put("status",params.get("auditStatus"));
+        auditActivitiService.complete(params.get("taskId").toString(),actVars);
     }
 }

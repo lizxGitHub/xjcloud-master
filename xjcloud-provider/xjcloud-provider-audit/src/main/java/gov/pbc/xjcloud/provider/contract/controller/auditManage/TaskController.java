@@ -3,15 +3,12 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
-import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
-import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
-import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
@@ -23,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -49,10 +45,10 @@ public class TaskController {
     private String auditFlowDefKey;
 
     @Resource
-    private PlanCheckListServiceImpl planCheckListService;
+    private PlanManagementService planManagementService;
 
     @Resource
-    private PlanInfoServiceImpl planInfoService;
+    private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
 
     /**
      * 流程页面
@@ -60,20 +56,17 @@ public class TaskController {
      * @return
      */
     @GetMapping(value = {"/flow/page", ""})
-    public com.baomidou.mybatisplus.extension.api.R<Page<PlanCheckListNew>> flowPage(HttpServletRequest request, PlanCheckListNew query, Page<PlanCheckListNew> page) {
+    public com.baomidou.mybatisplus.extension.api.R<Page<PlanCheckList>> flowPage(PlanCheckList query, Page<PlanCheckList> page) {
         PageUtil.initPage(page);
         try {
             //获取代办
             Map<String, Object> params = new HashMap<>();
             params.put("size", 1000);
             params.put("current", 1);
-            int type = Integer.parseInt(request.getParameter("type"));
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            String status = request.getParameter("status");
             gov.pbc.xjcloud.provider.contract.utils.R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
-            page = planCheckListService.selectAll(page, query, type, userId, status);
+            page = planManagementService.selectPlanCheckList(page, query);
             page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
                 if (resultList.size() > 0) {
                     for(Map<String, String> taskInfo : resultList) {
@@ -158,89 +151,67 @@ public class TaskController {
             if (params.get("mark") != null) {
                 mark = params.get("mark").toString();
             }
-            PlanCheckListNew plan = planCheckListService.getById(planId);
+            PlanCheckList plan = planManagementService.getById(planId);
             if (PlanStatusEnum.PLAN_IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
                 if (StringUtils.isNotBlank(mark) && "markOne".equals(mark)) {
                     //审计对象管理员
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1002");
+                    auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1002");
                 }
             } else if (PlanStatusEnum.PLAN_TOBE_AUDITED.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.PLAN_IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
-
-                PlanInfo planInfo = planInfoService.getProjectByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getAuditAdminId()));
-                if (planInfo == null) {
-                    //审计对象管理员
-                    PlanInfo planInfo1 = new PlanInfo();
-                    planInfo1.setUserId(plan.getAuditAdminId());
-                    planInfo1.setStatusUser("1001"); //待审核
-                    planInfo1.setPlanId(plan.getId());
-                    planInfo1.setType(1);
-                    planInfoService.save(planInfo1);
-                }
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
             } else if (PlanStatusEnum.PLAN_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
-
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
             } else if (PlanStatusEnum.RECTIFY_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
             } else if (PlanStatusEnum.RECTIFY_COMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
-                PlanInfo planInfo = planInfoService.getProjectByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getAuditUserId()));
-                if (planInfo == null) {
-                    //审计对象管理员
-                    PlanInfo planInfo1 = new PlanInfo();
-                    planInfo1.setUserId(plan.getAuditUserId());
-                    planInfo1.setStatusUser("1001"); //待审核
-                    planInfo1.setPlanId(plan.getId());
-                    planInfo1.setType(1);
-                    planInfoService.save(planInfo1);
-                }
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             } else if (PlanStatusEnum.COMPLETE_TOBE_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //审计对象员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
             } else if (PlanStatusEnum.IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
                 //审计对象员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1005");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1005");
                 //实施部门管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
                 //审计对象员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1004");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1004");
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+                auditPlanInfoServiceImpl.updateByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             }
             params.remove("bizKey");
             plan.setAuditStatus(statusStr);
