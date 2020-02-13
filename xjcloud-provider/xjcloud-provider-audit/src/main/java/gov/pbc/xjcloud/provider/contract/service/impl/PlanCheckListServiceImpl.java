@@ -39,4 +39,9 @@ public class PlanCheckListServiceImpl extends IBaseServiceImpl<PlanCheckListNewM
     public int saveReturnPK(PlanCheckListNew planCheckList) {
         return planCheckListNewMapper.saveReturnPK(planCheckList);
     }
+
+    @Override
+    public void updatePlanById(PlanCheckListNew plan) {
+        planCheckListNewMapper.updatePlanById(plan);
+    }
 }

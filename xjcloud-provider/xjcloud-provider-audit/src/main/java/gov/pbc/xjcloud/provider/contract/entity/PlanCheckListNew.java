@@ -96,6 +96,10 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     /**
      * 整改措施
      */
+    private String rectifyMan;
+    /**
+     * 整改措施
+     */
     private String rectifyWay;
     /**
      * 计划整改时长

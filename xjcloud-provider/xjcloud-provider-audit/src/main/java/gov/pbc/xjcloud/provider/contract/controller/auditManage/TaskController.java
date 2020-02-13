@@ -212,7 +212,7 @@ public class TaskController {
                 //项目启动时间
                 plan.setStartTime(new Date());
                 plan.setStatus("1001"); //正在实施
-                planCheckListService.updateById(plan);
+//                planCheckListService.updatePlanById(plan);
                 startTimeAll = new Date();
                 planTimeTemp.setStartTimeAll(startTimeAll);
                 //实施部门一般员工
@@ -254,7 +254,7 @@ public class TaskController {
                 planTimeTemp.setDays(daysPart);
                 //项目整改结果录入时间
                 plan.setResultEnterTime(new Date());
-                planCheckListService.updateById(plan);
+                planCheckListService.updatePlanById(plan);
 
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
@@ -295,7 +295,7 @@ public class TaskController {
                 planTimeTemp.setEndTimeAll(endTimeAll);
                 //项目实施结束
                 plan.setStatus("1002"); //实施结束
-                planCheckListService.updateById(plan);
+                planCheckListService.updatePlanById(plan);
 
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
@@ -308,7 +308,7 @@ public class TaskController {
                 plan.setStatus("1003"); //实施结束
                 //项目归档时间
                 plan.setArchiveTime(new Date());
-                planCheckListService.updateById(plan);
+                planCheckListService.updatePlanById(plan);
 
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1005");
@@ -323,10 +323,7 @@ public class TaskController {
             planTimeTempService.updateById(planTimeTemp);
 
             params.remove("bizKey");
-            plan.setAuditStatus(statusStr);
-            Map<String, Object> planMap = transBean2Map(plan);
-            params.putAll(planMap);
-
+            params.remove("opinion");
             complete = activitiService.complete(taskId, params);
         } catch (Exception e) {
             e.printStackTrace();

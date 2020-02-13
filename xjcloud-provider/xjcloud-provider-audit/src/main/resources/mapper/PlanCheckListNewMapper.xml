@@ -45,6 +45,128 @@
         from plan_check_list a  where a.id = #{id}
     </select>
 
+    <update id="updatePlanById">
+        UPDATE
+            `plan_check_list`
+        SET
+        <if test="plan.createdBy!=null and plan.createdBy!=''">
+            `created_by`=#{plan.createdBy},
+        </if>
+        <if test="plan.createdTime!=null and plan.createdTime!=''">
+            `created_time`=#{plan.createdTime},
+        </if>
+        <if test="plan.updatedTime!=null and plan.updatedTime!=''">
+            `updated_time`=#{plan.updatedTime},
+        </if>
+        <if test="plan.projectCode!=null and plan.projectCode!=''">
+            `project_code`=#{plan.projectCode},
+        </if>
+        <if test="plan.projectType!=null and plan.projectType!=''">
+            `project_type`=#{plan.projectType},
+        </if>
+        <if test="plan.implementingAgencyId!=null and plan.implementingAgencyId!=''">
+            `implementing_agency_id`=#{plan.implementingAgencyId},
+        </if>
+        <if test="plan.auditObjectId!=null and plan.auditObjectId!=''">
+            `audit_object_id`=#{plan.auditObjectId},
+        </if>
+        <if test="plan.auditNatureId!=null and plan.auditNatureId!=''">
+            `audit_nature_id`=#{plan.auditNatureId},
+        </if>
+        <if test="plan.auditYear!=null and plan.auditYear!=''">
+            `audit_year`=#{plan.auditYear},
+        </if>
+        <if test="plan.status!=null and plan.status!=''">
+            `status`=#{plan.status},
+        </if>
+        <if test="plan.questionEntryId!=null and plan.questionEntryId!=''">
+            `question_entry_id`=#{plan.questionEntryId},
+        </if>
+        <if test="plan.problemSeverityId!=null and plan.problemSeverityId!=''">
+            `problem_severity_id`=#{plan.problemSeverityId},
+        </if>
+        <if test="plan.rectifySituationId!=null and plan.rectifySituationId!=''">
+            `rectify_situation_id`=#{plan.rectifySituationId},
+        </if>
+        <if test="plan.problemCharacterization!=null and plan.problemCharacterization!=''">
+            `problem_characterization`=#{plan.problemCharacterization},
+        </if>
+        <if test="plan.problemDescription!=null and plan.problemDescription!=''">
+            `problem_description`=#{plan.problemDescription},
+        </if>
+        <if test="plan.mayAffect!=null and plan.mayAffect!=''">
+            `may_affect`=#{plan.mayAffect},
+        </if>
+        <if test="plan.rectificationSuggestions!=null and plan.rectificationSuggestions!=''">
+            `rectification_suggestions`=#{plan.rectificationSuggestions},
+        </if>
+        <if test="plan.auditBasis!=null and plan.auditBasis!=''">
+            `audit_basis`=#{plan.auditBasis},
+        </if>
+        <if test="plan.auditClassificationId!=null and plan.auditClassificationId!=''">
+            `audit_classification_id`=#{plan.auditClassificationId},
+        </if>
+        <if test="plan.auditingExperience!=null and plan.auditingExperience!=''">
+            `auditing_experience`=#{plan.auditingExperience},
+        </if>
+        <if test="plan.riskAssessmentId!=null and plan.riskAssessmentId!=''">
+            `risk_assessment_id`=#{plan.riskAssessmentId},
+        </if>
+        <if test="plan.frequency!=null and plan.frequency!=''">
+            `frequency`=#{plan.frequency},
+        </if>
+        <if test="plan.rectifyMan!=null and plan.rectifyMan!=''">
+            `rectify_man`=#{plan.rectifyMan},
+        </if>
+        <if test="plan.rectifyWay!=null and plan.rectifyWay!=''">
+            `rectify_way`=#{plan.rectifyWay},
+        </if>
+        <if test="plan.planTime!=null and plan.planTime!=''">
+            `plan_time`=#{plan.planTime},
+        </if>
+        <if test="plan.rectifyResult!=null and plan.rectifyResult!=''">
+            `rectify_result`=#{plan.rectifyResult},
+        </if>
+        <if test="plan.delayRemarks!=null and plan.delayRemarks!=''">
+            `delay_remarks`=#{plan.delayRemarks},
+        </if>
+        <if test="plan.delayDate!=null and plan.delayDate!=''">
+            `delay_date`=#{plan.delayDate},
+        </if>
+        <if test="plan.impUserId!=null and plan.impUserId!=''">
+            `imp_user_id`=#{plan.impUserId},
+        </if>
+        <if test="plan.impAdminId!=null and plan.impAdminId!=''">
+            `imp_admin_id`=#{plan.impAdminId},
+        </if>
+        <if test="plan.auditUserId!=null and plan.auditUserId!=''">
+            `audit_user_id`=#{plan.auditUserId},
+        </if>
+        <if test="plan.auditAdminId!=null and plan.auditAdminId!=''">
+            `audit_admin_id`=#{plan.auditAdminId},
+        </if>
+        <if test="plan.taskId!=null and plan.taskId!=''">
+            `task_id`=#{plan.taskId},
+        </if>
+        <if test="plan.auditStatus!=null and plan.auditStatus!=''">
+            `audit_status`=#{plan.auditStatus},
+        </if>
+        <if test="plan.startTime!=null and plan.startTime!=''">
+            `start_time`=#{plan.startTime},
+        </if>
+        <if test="plan.archiveTime!=null and plan.archiveTime!=''">
+            `archive_time`=#{plan.archiveTime},
+        </if>
+        <if test="plan.resultEnterTime!=null and plan.resultEnterTime!=''">
+            `result_enter_time`=#{plan.resultEnterTime},
+        </if>
+        <if test="plan.projectName!=null and plan.projectName!=''">
+            `project_name`=#{plan.projectName}
+        </if>
+        WHERE
+            (`id`=#{plan.id})
+    </update>
+
     <select id="selectAll" resultMap="PlanCheckListMapper">
         SELECT
         <include refid="select"/>

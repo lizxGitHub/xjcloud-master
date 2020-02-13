@@ -80,10 +80,7 @@ public class PlanCheckListController {
                 planInfoList.add(planInfo1);
                 planInfoService.saveBatch(planInfoList);
             } else {
-                planCheckList = planCheckListService.getById(planCheckList.getId());
-                if (planCheckList != null) {
-                    planCheckListService.updateById(planCheckList);
-                }
+                planCheckListService.updatePlanById(planCheckList);
             }
         } catch (Exception e) {
             e.printStackTrace();

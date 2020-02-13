@@ -3,6 +3,7 @@ package gov.pbc.xjcloud.provider.contract.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
+import org.apache.ibatis.annotations.Param;
 
 public interface PlanCheckListService extends IService<PlanCheckListNew> {
 
@@ -11,5 +12,7 @@ public interface PlanCheckListService extends IService<PlanCheckListNew> {
     PlanCheckListNew selectById(int id);
 
     int saveReturnPK(PlanCheckListNew planCheckList);
+
+    void updatePlanById(PlanCheckListNew plan);
 
 }
