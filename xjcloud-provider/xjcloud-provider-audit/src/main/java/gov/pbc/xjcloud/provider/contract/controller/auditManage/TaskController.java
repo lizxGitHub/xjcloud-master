@@ -393,14 +393,14 @@ public class TaskController {
     @PostMapping("submitReport")
     public R<Boolean> submitReport(@RequestBody Map<String, Object> params) {
         try {
-            if (null == params.get("taskId") || null == params.get("id") || null == params.get("auditStatus")) {
+            if (null == params.get("taskId") || null == params.get("id") || null == params.get("status")) {
                 return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
             }
             planManagementService.reportPlanAndTask(params);
             return new R().setData(true);
         } catch (Exception e) {
             e.printStackTrace();
-            return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
+            return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg(e.getMessage()).setData(false);
         }
 
     }

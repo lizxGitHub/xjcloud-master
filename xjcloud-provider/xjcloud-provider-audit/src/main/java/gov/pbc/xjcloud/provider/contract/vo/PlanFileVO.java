@@ -6,4 +6,6 @@ import lombok.Data;
 @Data
 public class PlanFileVO extends PlanFile {
     private String fileUrl;
+
+    private String fileName;
 }

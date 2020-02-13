@@ -12,6 +12,7 @@ import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -184,30 +185,32 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param params
      */
     public void reportPlanAndTask(Map<String, Object> params) {
-        PlanCheckList planCheckList =new PlanCheckList();
-        planCheckList.setId(Integer.parseInt(params.get("id").toString()));
-        planCheckList.setRectifyResult(params.get("rectifyResult").toString());
-        planCheckList.setStatus(params.get("status").toString());
+        PlanCheckList originalPlan = this.getById(params.get("id").toString());
+        originalPlan.setRectifyResult(params.get("rectifyResult").toString());
+        originalPlan.setStatus(params.get("status").toString());
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("rectify_result",params.get("rectifyResult"));
         updateWrapper.set("status",params.get("status"));
-        updateWrapper.set("auditStatus",params.get("status"));
-        this.update(planCheckList,updateWrapper);
+        updateWrapper.eq("id",params.get("id"));
+//        updateWrapper.set("audit_status",params.get("status"));
+        this.update(originalPlan,updateWrapper);
         //提交文件
 
         if(null!=params.get("fileUri")){
             PlanFile planFile = new PlanFile();
+            planFile.setId(IdGenUtil.uuid());
             planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
             planFile.setTaskName(params.get("taskName").toString());
             planFile.setFileUri(params.get("fileUri").toString());
             planFile.setBizKey(Integer.parseInt(params.get("id").toString()));
             planFile.setUploadUser(params.get("uploadUser").toString());
+            planFile.setCreatedTime(new Date());
             this.addFileLog(planFile);
         }
         Map<String,Object> actVars = new HashMap<>();
         actVars.put("rectifyResult",params.get("rectifyResult"));
-        actVars.put("auditStatus",params.get("auditStatus"));
-        actVars.put("status",params.get("auditStatus"));
+        actVars.put("auditStatus",params.get("status"));
+        actVars.put("status",params.get("status"));
         auditActivitiService.complete(params.get("taskId").toString(),actVars);
     }
 
@@ -216,32 +219,37 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param params
      */
     public void completePlan(Map<String, Object> params) {
-        PlanCheckList planCheckList =new PlanCheckList();
-        planCheckList.setId(Integer.parseInt(params.get("id").toString()));
-        planCheckList.setPlanTime(new Date(params.get("planTime").toString()));
-        planCheckList.setRectifyWay(params.get("rectifyWay").toString());
-        planCheckList.setStatus(params.get("status").toString());
+        PlanCheckList originalPlan = this.getById(params.get("id").toString());
+        originalPlan.setRectifyResult(params.get("rectifyResult").toString());
+        originalPlan.setStatus(params.get("status").toString());
+        originalPlan.setId(Integer.parseInt(params.get("id").toString()));
+        originalPlan.setPlanTime(new Date(params.get("planTime").toString()));
+        originalPlan.setRectifyWay(params.get("rectifyWay").toString());
+        originalPlan.setStatus(params.get("status").toString());
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("plan_time",params.get("planTime"));
         updateWrapper.set("rectify_way",params.get("rectifyWay"));
         updateWrapper.set("status",params.get("status"));
-        updateWrapper.set("auditStatus",params.get("status"));
-        this.update(planCheckList,updateWrapper);
+//        updateWrapper.set("audit_status",params.get("status"));
+        updateWrapper.eq("id",params.get("id"));
+        this.update(originalPlan,updateWrapper);
         //提交文件
         if(null!=params.get("fileUri")){
             PlanFile planFile = new PlanFile();
+            planFile.setId(IdGenUtil.uuid());
             planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
             planFile.setTaskName(params.get("taskName").toString());
             planFile.setFileUri(params.get("fileUri").toString());
             planFile.setBizKey(Integer.parseInt(params.get("id").toString()));
             planFile.setUploadUser(params.get("uploadUser").toString());
+            planFile.setCreatedTime(new Date());
             this.addFileLog(planFile);
         }
         Map<String,Object> actVars = new HashMap<>();
         actVars.put("planTime",params.get("planTime"));
         actVars.put("rectifyWay",params.get("rectifyWay"));
-        actVars.put("auditStatus",params.get("auditStatus"));
-        actVars.put("status",params.get("auditStatus"));
+        actVars.put("auditStatus",params.get("status"));
+        actVars.put("status",params.get("status"));
         auditActivitiService.complete(params.get("taskId").toString(),actVars);
     }
 }

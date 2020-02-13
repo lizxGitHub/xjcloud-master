@@ -120,8 +120,9 @@ public class FileController {
 //            jsonObject.put("size", getFileSize(e.length()));
 //            list.add(jsonObject);
 //        });
-        list.stream().filter(Objects::nonNull).forEach(e->{
+        list.stream().filter(Objects::nonNull).filter(e->StringUtils.isNotBlank(e.getFileUri())).forEach(e->{
             e.setFileUrl(appUrl+'/'+e.getFileUri());
+            e.setFileName(e.getFileUri().substring(e.getFileUri().lastIndexOf("/")+1));
         });
         return new R().setData(list);
     }

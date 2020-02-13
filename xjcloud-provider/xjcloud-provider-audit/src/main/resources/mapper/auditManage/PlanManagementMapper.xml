@@ -312,7 +312,7 @@
         biz_key bizKey,
         task_id taskId,
         task_name taskName,
-        file_uri fileUrl,
+        file_uri fileUri,
         created_time createdTime,
         upload_user uploadUser
         from plan_files
