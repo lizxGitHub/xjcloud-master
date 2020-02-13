@@ -7,6 +7,7 @@
         <result column="project_code" property="projectCode"/>
         <result column="project_name" property="projectName"/>
         <result column="project_type" property="projectType"/>
+        <result column="created_by" property="createdBy"/>
         <result column="implementing_agency_id" property="implementingAgencyId"/>
         <result column="audit_object_id" property="auditObjectId"/>
         <result column="audit_nature_id" property="auditNatureId"/>
@@ -319,6 +320,7 @@
 
     <sql id="selectOnly">
         a.id,
+        a.created_by,
         a.project_code,
         a.project_name,
         a.project_type,
