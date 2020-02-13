@@ -58,6 +58,16 @@
             and `type` = 1
     </update>
 
+    <update id="updateProjectOpinionByPlanUserId">
+        UPDATE plan_info
+        SET
+         `opinion` = #{opinion}
+        WHERE
+            plan_id = #{planId}
+            and user_id = #{userId}
+            and `type` = 1
+    </update>
+
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
     <resultMap type="gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo" id="PlanInfoMap">
         <id property="id" column="id"/>

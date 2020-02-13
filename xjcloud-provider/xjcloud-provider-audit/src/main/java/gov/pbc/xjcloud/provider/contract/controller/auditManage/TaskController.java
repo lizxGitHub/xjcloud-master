@@ -175,6 +175,10 @@ public class TaskController {
             Date endTimePartTwo = null;
             //修改状态
             String planId = (String) params.get("bizKey");
+            String opinion = ""; //驳回意见
+            if (params.get("opinion") != null) {
+                opinion = (String) params.get("opinion");
+            }
             int status = (int) params.get("auditStatus");
             String statusStr = params.get("auditStatus").toString();
             String mark = "";
@@ -189,6 +193,7 @@ public class TaskController {
                 planTimeTempService.save(planTimeTemp);
             }
             if (PlanStatusEnum.PLAN_IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getImpUserId()), opinion);
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
                 //实施部门管理员
@@ -237,13 +242,16 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
 
             } else if (PlanStatusEnum.RECTIFY_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getImpUserId()), opinion);
                 endTimePartOne = new Date();
-                daysPart += daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
+                daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
+                planTimeTemp.setDays(daysPart);
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
             } else if (PlanStatusEnum.RECTIFY_COMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 endTimePartOne = new Date();
-                daysPart += daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
+                daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
+                planTimeTemp.setDays(daysPart);
                 //项目整改结果录入时间
                 plan.setResultEnterTime(new Date());
                 planCheckListService.updateById(plan);
@@ -271,15 +279,18 @@ public class TaskController {
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
             } else if (PlanStatusEnum.IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getImpUserId()), opinion);
                 endTimePartTwo = new Date();
-                daysPart += daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                planTimeTemp.setDays(daysPart);
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 endTimePartTwo = new Date();
-                daysPart += daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                planTimeTemp.setDays(daysPart);
                 endTimeAll = new Date();
                 planTimeTemp.setEndTimeAll(endTimeAll);
                 //项目实施结束
@@ -291,7 +302,7 @@ public class TaskController {
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
-                days = daysOfTwo(planTimeTemp.getStartTimeAll(), planTimeTemp.getEndTimeAll()) - daysPart;
+                days = daysOfTwo(planTimeTemp.getStartTimeAll(), planTimeTemp.getEndTimeAll()) - planTimeTemp.getDays();
                 planTimeTemp.setDays(days);
                 //项目实施结束
                 plan.setStatus("1003"); //实施结束
