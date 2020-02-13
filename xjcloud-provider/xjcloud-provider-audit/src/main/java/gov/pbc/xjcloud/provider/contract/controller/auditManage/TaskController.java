@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
+import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
@@ -53,6 +55,9 @@ public class TaskController {
 
     @Resource
     private PlanInfoServiceImpl planInfoService;
+
+    @Resource
+    private PlanTimeTempServiceImpl planTimeTempService;
 
     /**
      * 流程页面
@@ -160,6 +165,14 @@ public class TaskController {
     public R complete(@PathVariable("taskId") String taskId, @RequestBody Map<String, Object> params) {
         R complete = null;
         try {
+            Float days = 0F; //整改天数
+            Float daysPart = 0F; //整改天数
+            Date startTimeAll = null;
+            Date endTimeAll = null;
+            Date startTimePartOne = null;
+            Date endTimePartOne = null;
+            Date startTimePartTwo = null;
+            Date endTimePartTwo = null;
             //修改状态
             String planId = (String) params.get("bizKey");
             int status = (int) params.get("auditStatus");
@@ -169,6 +182,12 @@ public class TaskController {
                 mark = params.get("mark").toString();
             }
             PlanCheckListNew plan = planCheckListService.getById(planId);
+            PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(plan.getId());
+            if (planTimeTemp == null) {
+                planTimeTemp = new PlanTimeTemp();
+                planTimeTemp.setPlanId(plan.getId());
+                planTimeTempService.save(planTimeTemp);
+            }
             if (PlanStatusEnum.PLAN_IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
@@ -185,9 +204,12 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.PLAN_IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //项目正在实施
+                //项目启动时间
+                plan.setStartTime(new Date());
                 plan.setStatus("1001"); //正在实施
                 planCheckListService.updateById(plan);
-
+                startTimeAll = new Date();
+                planTimeTemp.setStartTimeAll(startTimeAll);
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
                 //实施部门管理员
@@ -204,6 +226,8 @@ public class TaskController {
                     planInfoService.save(planInfo1);
                 }
             } else if (PlanStatusEnum.PLAN_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
+                startTimePartOne = new Date();
+                planTimeTemp.setStartTimePartOne(startTimePartOne);
                 //审计对象管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
@@ -213,9 +237,17 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
 
             } else if (PlanStatusEnum.RECTIFY_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                endTimePartOne = new Date();
+                daysPart += daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
             } else if (PlanStatusEnum.RECTIFY_COMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
+                endTimePartOne = new Date();
+                daysPart += daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
+                //项目整改结果录入时间
+                plan.setResultEnterTime(new Date());
+                planCheckListService.updateById(plan);
+
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
                 //审计对象管理员
@@ -234,14 +266,22 @@ public class TaskController {
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                startTimePartTwo = new Date();
+                planTimeTemp.setStartTimePartTwo(startTimePartTwo);
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
             } else if (PlanStatusEnum.IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                endTimePartTwo = new Date();
+                daysPart += daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
+                endTimePartTwo = new Date();
+                daysPart += daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                endTimeAll = new Date();
+                planTimeTemp.setEndTimeAll(endTimeAll);
                 //项目实施结束
                 plan.setStatus("1002"); //实施结束
                 planCheckListService.updateById(plan);
@@ -251,8 +291,12 @@ public class TaskController {
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
+                days = daysOfTwo(planTimeTemp.getStartTimeAll(), planTimeTemp.getEndTimeAll()) - daysPart;
+                planTimeTemp.setDays(days);
                 //项目实施结束
                 plan.setStatus("1003"); //实施结束
+                //项目归档时间
+                plan.setArchiveTime(new Date());
                 planCheckListService.updateById(plan);
 
                 //实施部门一般员工
@@ -264,10 +308,14 @@ public class TaskController {
                 //审计对象管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             }
+
+            planTimeTempService.updateById(planTimeTemp);
+
             params.remove("bizKey");
             plan.setAuditStatus(statusStr);
             Map<String, Object> planMap = transBean2Map(plan);
             params.putAll(planMap);
+
             complete = activitiService.complete(taskId, params);
         } catch (Exception e) {
             e.printStackTrace();
@@ -376,5 +424,22 @@ public class TaskController {
             return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
         }
 
+    }
+
+    /**
+     * 算天数
+     *
+     * @param fDate
+     * @param oDate
+     * @return
+     */
+    public int daysOfTwo(Date fDate, Date oDate) {
+        // 安全检查
+        if (fDate == null || oDate == null) {
+            throw new IllegalArgumentException("date is null, check it again");
+        }
+        // 根据相差的毫秒数计算
+        int daysPart = (int) ((oDate.getTime() - fDate.getTime()) / 24 * 3600 * 1000);
+        return daysPart;
     }
 }

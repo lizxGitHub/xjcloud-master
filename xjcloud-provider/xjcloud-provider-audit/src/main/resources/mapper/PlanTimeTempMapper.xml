@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gov.pbc.xjcloud.provider.contract.mapper.PlanTimeTempMapper">
+
+    <resultMap id="PlanTimeTempMapper" type="gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp">
+        <result column="id" property="id"/>
+        <result column="plan_id" property="planId"/>
+        <result column="start_time_all" property="startTimeAll"/>
+        <result column="start_time_part_one" property="startTimePartOne"/>
+        <result column="start_time_part_two" property="startTimePartTwo"/>
+        <result column="end_time_all" property="endTimeAll"/>
+        <result column="days" property="days"/>
+    </resultMap>
+
+    <select id="getByPlanId" resultMap="PlanTimeTempMapper">
+        SELECT * from plan_time_temp where plan_id = #{planId}
+    </select>
+
+</mapper>
