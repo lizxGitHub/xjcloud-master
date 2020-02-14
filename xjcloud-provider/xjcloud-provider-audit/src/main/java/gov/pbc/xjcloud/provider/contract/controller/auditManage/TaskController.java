@@ -210,9 +210,9 @@ public class TaskController {
             } else if (PlanStatusEnum.PLAN_IMP_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //项目正在实施
                 //项目启动时间
-                plan.setStartTime(new Date());
+//                plan.setStartTime(new Date());
                 plan.setStatus("1001"); //正在实施
-//                planCheckListService.updatePlanById(plan);
+                planCheckListService.updatePlanById(plan);
                 startTimeAll = new Date();
                 planTimeTemp.setStartTimeAll(startTimeAll);
                 //实施部门一般员工
@@ -253,8 +253,8 @@ public class TaskController {
                 daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
                 planTimeTemp.setDays(daysPart);
                 //项目整改结果录入时间
-                plan.setResultEnterTime(new Date());
-                planCheckListService.updatePlanById(plan);
+//                plan.setResultEnterTime(new Date());
+//                planCheckListService.updatePlanById(plan);
 
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
@@ -307,7 +307,7 @@ public class TaskController {
                 //项目实施结束
                 plan.setStatus("1003"); //实施结束
                 //项目归档时间
-                plan.setArchiveTime(new Date());
+//                plan.setArchiveTime(new Date());
                 planCheckListService.updatePlanById(plan);
 
                 //实施部门一般员工
@@ -447,7 +447,7 @@ public class TaskController {
             throw new IllegalArgumentException("date is null, check it again");
         }
         // 根据相差的毫秒数计算
-        int daysPart = (int) ((oDate.getTime() - fDate.getTime()) / 24 * 3600 * 1000);
+        int daysPart = (int) ((oDate.getTime() - fDate.getTime()) / (24 * 3600 * 1000));
         return daysPart;
     }
 }

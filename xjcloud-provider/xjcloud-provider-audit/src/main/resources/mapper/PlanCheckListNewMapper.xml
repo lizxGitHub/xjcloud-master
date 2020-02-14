@@ -314,8 +314,10 @@
         a.imp_admin_id,
         a.audit_user_id,
         a.audit_admin_id,
+        b.id,
         b.status_user,
-        b.user_id
+        b.user_id,
+        b.opinion
     </sql>
 
     <sql id="selectOnly">
