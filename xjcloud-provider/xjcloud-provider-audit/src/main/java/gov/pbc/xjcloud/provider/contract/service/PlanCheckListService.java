@@ -15,4 +15,6 @@ public interface PlanCheckListService extends IService<PlanCheckListNew> {
 
     void updatePlanById(PlanCheckListNew plan);
 
+    Page<PlanCheckListNew> selectByStatuses(Page page, PlanCheckListNew query, String[] Statuses);
+
 }

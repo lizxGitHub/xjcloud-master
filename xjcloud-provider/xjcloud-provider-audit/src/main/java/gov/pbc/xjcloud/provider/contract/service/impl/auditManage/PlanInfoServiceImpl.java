@@ -27,8 +27,8 @@ public class PlanInfoServiceImpl extends IBaseServiceImpl<PlanInfoMapper, PlanIn
     }
 
     @Override
-    public void updateById(String id, String statusUser) {
-        planInfoMapper.updateById(id, statusUser);
+    public void updateStatusById(String id, String statusUser) {
+        planInfoMapper.updateStatusById(id, statusUser);
     }
 
     @Override

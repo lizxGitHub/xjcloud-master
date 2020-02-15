@@ -30,7 +30,7 @@
         and `type` = 1
     </select>
 
-    <update id="updateById">
+    <update id="updateStatusById">
         UPDATE plan_info
         SET
          `status_user` = #{statusUser}

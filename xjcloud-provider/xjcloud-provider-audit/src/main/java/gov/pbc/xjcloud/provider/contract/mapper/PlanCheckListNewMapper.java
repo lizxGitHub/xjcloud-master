@@ -12,6 +12,8 @@ public interface PlanCheckListNewMapper extends IBaseMapper<PlanCheckListNew> {
 
     PlanCheckListNew selectById(@Param("id") int id);
 
+    List<PlanCheckListNew> selectByStatuses(Page page, @Param("query") PlanCheckListNew query, @Param("array") String[] statuses);
+
     int saveReturnPK(@Param("planCheckList") PlanCheckListNew planCheckList);
 
     void updatePlanById(@Param("plan") PlanCheckListNew plan);

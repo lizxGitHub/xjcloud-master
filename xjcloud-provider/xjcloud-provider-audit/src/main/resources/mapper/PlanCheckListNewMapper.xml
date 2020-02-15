@@ -46,6 +46,21 @@
         from plan_check_list a  where a.id = #{id}
     </select>
 
+    <select id="selectByStatuses" resultMap="PlanCheckListMapper">
+        SELECT
+        <include refid="selectOnly"/>
+        from plan_check_list a  where a.status in
+        <foreach collection="array" open="(" separator="," close=")" item="status" index="index">
+            #{status}
+        </foreach>
+        <if test="query.projectName!=null and query.projectName!=''">
+            and a.project_name like concat('%',concat(#{query.projectName},'%'))
+        </if>
+        <if test="query.status!=null and query.status!=''">
+            and a.status like concat('%',concat(#{query.status},'%'))
+        </if>
+    </select>
+
     <update id="updatePlanById">
         UPDATE
             `plan_check_list`
@@ -200,88 +215,100 @@
             `problem_description`,
             `may_affect`,
             `rectification_suggestions`,
-            `audit_basis`,
-            `audit_classification_id`,
-            `auditing_experience`,
-            `risk_assessment_id`,
+            <if test="planCheckList.auditBasis != null and planCheckList.auditBasis !=''">
+                `audit_basis`,
+            </if>
+            <if test="planCheckList.auditClassificationId != null and planCheckList.auditClassificationId !=''">
+                `audit_classification_id`,
+            </if>
+            <if test="planCheckList.auditingExperience != null and planCheckList.auditingExperience !=''">
+                `auditing_experience`,
+            </if>
+            <if test="planCheckList.riskAssessmentId != null and planCheckList.riskAssessmentId !=''">
+                `risk_assessment_id`,
+            </if>
             `imp_user_id`,
             `imp_admin_id`,
-            `audit_user_id`,
-            `audit_admin_id`,
+            <if test="planCheckList.auditUserId != null and planCheckList.auditUserId !=''">
+                `audit_user_id`,
+            </if>
+            <if test="planCheckList.auditAdminId != null and planCheckList.auditAdminId !=''">
+                `audit_admin_id`,
+            </if>
             `status`
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{planCheckList.id},
-            <if test="planCheckList.createdBy != null">
+            <if test="planCheckList.createdBy != null and planCheckList.createdBy !=''">
                 #{planCheckList.createdBy},
             </if>
-            <if test="planCheckList.projectCode != null">
+            <if test="planCheckList.projectCode != null and planCheckList.projectCode !=''">
                 #{planCheckList.projectCode},
             </if>
-            <if test="planCheckList.projectName != null">
+            <if test="planCheckList.projectName != null and planCheckList.projectName !=''">
                 #{planCheckList.projectName},
             </if>
-            <if test="planCheckList.projectType != null">
+            <if test="planCheckList.projectType != null and planCheckList.projectType !=''">
                 #{planCheckList.projectType},
             </if>
-            <if test="planCheckList.implementingAgencyId != null">
+            <if test="planCheckList.implementingAgencyId != null and planCheckList.implementingAgencyId !=''">
                 #{planCheckList.implementingAgencyId},
             </if>
-            <if test="planCheckList.auditObjectId != null">
+            <if test="planCheckList.auditObjectId != null and planCheckList.auditObjectId !=''">
                 #{planCheckList.auditObjectId},
             </if>
-            <if test="planCheckList.auditNatureId != null">
+            <if test="planCheckList.auditNatureId != null and planCheckList.auditNatureId !=''">
                 #{planCheckList.auditNatureId},
             </if>
-            <if test="planCheckList.auditYear != null">
+            <if test="planCheckList.auditYear != null and planCheckList.auditYear !=''">
                 #{planCheckList.auditYear},
             </if>
-            <if test="planCheckList.questionEntryId != null">
+            <if test="planCheckList.questionEntryId != null and planCheckList.questionEntryId !=''">
                 #{planCheckList.questionEntryId},
             </if>
-            <if test="planCheckList.problemSeverityId != null">
+            <if test="planCheckList.problemSeverityId != null and planCheckList.problemSeverityId !=''">
                 #{planCheckList.problemSeverityId},
             </if>
-            <if test="planCheckList.rectifySituationId != null">
+            <if test="planCheckList.rectifySituationId != null and planCheckList.rectifySituationId !=''">
                 #{planCheckList.rectifySituationId},
             </if>
-            <if test="planCheckList.problemCharacterization != null">
+            <if test="planCheckList.problemCharacterization != null and planCheckList.problemCharacterization !=''">
                 #{planCheckList.problemCharacterization},
             </if>
-            <if test="planCheckList.problemDescription != null">
+            <if test="planCheckList.problemDescription != null and planCheckList.problemDescription !=''">
                 #{planCheckList.problemDescription},
             </if>
-            <if test="planCheckList.mayAffect != null">
+            <if test="planCheckList.mayAffect != null and planCheckList.mayAffect !=''">
                 #{planCheckList.mayAffect},
             </if>
-            <if test="planCheckList.rectificationSuggestions != null">
+            <if test="planCheckList.rectificationSuggestions != null and planCheckList.rectificationSuggestions !=''">
                 #{planCheckList.rectificationSuggestions},
             </if>
-            <if test="planCheckList.auditBasis != null">
+            <if test="planCheckList.auditBasis != null and planCheckList.auditBasis !=''">
                 #{planCheckList.auditBasis},
             </if>
-            <if test="planCheckList.auditClassificationId != null">
+            <if test="planCheckList.auditClassificationId != null and planCheckList.auditClassificationId !=''">
                 #{planCheckList.auditClassificationId},
             </if>
-            <if test="planCheckList.auditingExperience != null">
+            <if test="planCheckList.auditingExperience != null and planCheckList.auditingExperience !=''">
                 #{planCheckList.auditingExperience},
             </if>
-            <if test="planCheckList.riskAssessmentId != null">
+            <if test="planCheckList.riskAssessmentId != null and planCheckList.riskAssessmentId !=''">
                 #{planCheckList.riskAssessmentId},
             </if>
-            <if test="planCheckList.impUserId != null">
+            <if test="planCheckList.impUserId != null and planCheckList.impUserId !=''">
                 #{planCheckList.impUserId},
             </if>
-            <if test="planCheckList.impAdminId != null">
+            <if test="planCheckList.impAdminId != null and planCheckList.impAdminId !=''">
                 #{planCheckList.impAdminId},
             </if>
-            <if test="planCheckList.auditUserId != null">
+            <if test="planCheckList.auditUserId != null and planCheckList.auditUserId !=''">
                 #{planCheckList.auditUserId},
             </if>
-            <if test="planCheckList.auditAdminId != null">
+            <if test="planCheckList.auditAdminId != null and planCheckList.auditAdminId !=''">
                 #{planCheckList.auditAdminId},
             </if>
-            <if test="planCheckList.status != null">
+            <if test="planCheckList.status != null and planCheckList.status !=''">
                 #{planCheckList.status}
             </if>
         </trim>

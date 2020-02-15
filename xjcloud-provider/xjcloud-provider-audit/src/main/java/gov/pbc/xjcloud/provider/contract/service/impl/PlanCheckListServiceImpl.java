@@ -44,4 +44,11 @@ public class PlanCheckListServiceImpl extends IBaseServiceImpl<PlanCheckListNewM
     public void updatePlanById(PlanCheckListNew plan) {
         planCheckListNewMapper.updatePlanById(plan);
     }
+
+    @Override
+    public Page<PlanCheckListNew> selectByStatuses(Page page, PlanCheckListNew query, String[] Statuses) {
+        List<PlanCheckListNew> list = planCheckListNewMapper.selectByStatuses(page, query, Statuses);
+        page.setRecords(list);
+        return page;
+    }
 }

@@ -10,7 +10,7 @@ public interface PlanInfoMapper extends IBaseMapper<PlanInfo> {
 
     PlanInfo getProjectByPlanUserId(@Param("planId") String planId, @Param("userId") String userId);
 
-    void updateById(@Param("id") String id, @Param("statusUser") String statusUser);
+    void updateStatusById(@Param("id") String id, @Param("statusUser") String statusUser);
 
     void updatePlanByPlanUserId(@Param("planId") String planId, @Param("userId") String userId, @Param("statusUser") String statusUser);
 

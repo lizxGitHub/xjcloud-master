@@ -9,7 +9,7 @@ public interface PlanInfoService extends IService<PlanInfo> {
 
     PlanInfo getProjectByPlanUserId(String planId, String userId);
 
-    void updateById(String id, String statusUser);
+    void updateStatusById(String id, String statusUser);
 
     void updatePlanByPlanUserId(String planId, String userId, String statusUser);
 

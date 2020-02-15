@@ -4,13 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
-import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
+import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,8 +45,12 @@ public class PlanCheckListController {
     @Autowired
     private AuditActivitiService auditActivitiService;
 
+    @Resource
+    private PlanTimeTempServiceImpl planTimeTempService;
+
     @Autowired
     private PlanManagementServiceImpl planManagementService;
+
     /**
      * 获取审计计划
      *
@@ -65,6 +71,18 @@ public class PlanCheckListController {
         return R.ok(page);
     }
 
+    @GetMapping(value = {"statuses", ""})
+    public R<Page<PlanCheckListNew>> statuses(PlanCheckListNew query, Page<PlanCheckListNew> page, String statuses) {
+        PageUtil.initPage(page);
+        String[] arry = statuses.split(",");
+        try {
+            page = planCheckListService.selectByStatuses(page, query, arry);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(page);
+    }
+
     @PostMapping("/saveOrEditPlan")
     public R<Boolean> saveOrEditPlan(PlanCheckListNew planCheckList) {
         R<Boolean> r = new R<>();
@@ -72,6 +90,9 @@ public class PlanCheckListController {
             if (planCheckList.getId() == 0) {
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
                 planCheckList.setProjectCode("PROJECT-" + code);
+                Calendar date = Calendar.getInstance();
+                String year = String.valueOf(date.get(Calendar.YEAR));
+                planCheckList.setAuditYear(year);
             }
             String fileUri= planCheckList.getFileUri();
             planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
@@ -115,7 +136,7 @@ public class PlanCheckListController {
      * @return
      */
     @PostMapping("/changePlanStatusByIds")
-    public R<Boolean> changePlanStatusByIds(@RequestParam(name = "ids", required = true) String ids, @RequestParam(name = "statusUser", required = true) String statusUser, @RequestParam(name = "userId", required = true) int userId) {
+    public R<Boolean> changePlanStatusByIds(HttpServletRequest request, @RequestParam(name = "ids", required = true) String ids, @RequestParam(name = "statusUser", required = true) String statusUser, @RequestParam(name = "userId", required = true) int userId) {
         R<Boolean> r = new R<>();
         try {
             String[] idArray = ids.split(",");
@@ -140,9 +161,34 @@ public class PlanCheckListController {
                         planInfo2.setPlanId(plan.getId());
                         planInfo2.setType(1);
                         planInfoService.save(planInfo2);
+                        //审计对象管理员
+                        PlanInfo planInfo3 = new PlanInfo();
+                        planInfo3.setUserId(plan.getAuditAdminId());
+                        planInfo3.setStatusUser("1004"); //待审核
+                        planInfo3.setPlanId(plan.getId());
+                        planInfo3.setType(1);
+                        planInfoService.save(planInfo3);
+
+                        plan.setStatus("1001"); //正在实施
+                        planCheckListService.updatePlanById(plan);
+
+                        PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(plan.getId());
+                        if (planTimeTemp == null) {
+                            planTimeTemp = new PlanTimeTemp();
+                            planTimeTemp.setPlanId(plan.getId());
+                            planTimeTemp.setStartTimeAll(new Date());
+                            planTimeTempService.save(planTimeTemp);
+                        }
 
                     } else if (statusUser.equals("1003")) { //驳回
-                        planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1004");
+                        PlanInfo planInfo = planInfoService.getPlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()));
+                        if (request.getParameter("opinion") != null) {
+                            planInfo.setOpinion(request.getParameter("opinion"));
+                        }
+                        planInfo.setStatusUser("1004");
+                        planInfoService.updateById(planInfo);
+
+//                        planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1004");
                     }
                 } else if (userId == plan.getImpUserId()) {
                     planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), statusUser);
@@ -156,7 +202,7 @@ public class PlanCheckListController {
                             planInfo1.setType(0);
                             planInfoService.save(planInfo1);
                         } else {
-                            planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), "1001");
+                            planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), "1002");
                         }
                     }
                 }
@@ -175,7 +221,7 @@ public class PlanCheckListController {
                     varsJSONObject.put("auditUserAssignee", auditUserAssignee);
                     varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
                     varsJSONObject.put("createdBy", createdBy);
-                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_TOBE_AUDITED.getCode());
+                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_AUDIT_PASS.getCode());
                     varsJSONObject.put("delayDate", null);
                     varsJSONObject.put("projectName", plan.getProjectName());
                     varsJSONObject.put("projectCode", plan.getProjectCode());
