@@ -99,6 +99,7 @@ public class PlanCheckListController {
             if (planCheckList.getId() == 0) {
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planCheckList.setStatus("0");
+                planCheckList.setCreatedTime(new Date());
                 planCheckListService.saveReturnPK(planCheckList);
                 int planId = planCheckList.getId();
                 List<PlanInfo> planInfoList = new ArrayList<>();
@@ -169,6 +170,8 @@ public class PlanCheckListController {
                         planInfo3.setType(1);
                         planInfoService.save(planInfo3);
 
+                        //项目启动时间
+                        plan.setStartTime(new Date());
                         plan.setStatus("1001"); //正在实施
                         planCheckListService.updatePlanById(plan);
 

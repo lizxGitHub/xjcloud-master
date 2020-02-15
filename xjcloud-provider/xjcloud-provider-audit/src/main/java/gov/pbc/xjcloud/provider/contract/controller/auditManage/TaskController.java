@@ -30,6 +30,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -252,8 +253,8 @@ public class TaskController {
                 daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
                 planTimeTemp.setDays(daysPart);
                 //项目整改结果录入时间
-//                plan.setResultEnterTime(new Date());
-//                planCheckListService.updatePlanById(plan);
+                plan.setResultEnterTime(new Date());
+                planCheckListService.updatePlanById(plan);
 
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
@@ -310,7 +311,7 @@ public class TaskController {
                 //项目实施结束
                 plan.setStatus("1003"); //实施结束
                 //项目归档时间
-//                plan.setArchiveTime(new Date());
+                plan.setArchiveTime(new Date());
                 planCheckListService.updatePlanById(plan);
 
                 //实施部门一般员工
@@ -465,6 +466,12 @@ public class TaskController {
         int daysPart = (int) ((oDate.getTime() - fDate.getTime()) / (24 * 3600 * 1000));
         return daysPart;
     }
+
+    public static String getStringDate(Date currentTime) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = formatter.format(currentTime);
+        return dateString;
+     }
     @GetMapping("/plan/costdays/{bizKey}")
     public R<PlanTimeTemp> getBizWasteDay(@PathVariable Integer bizKey){
         try {

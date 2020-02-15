@@ -68,11 +68,11 @@
         <if test="plan.createdBy!=null and plan.createdBy!=''">
             `created_by`=#{plan.createdBy},
         </if>
-        <if test="plan.createdTime!=null and plan.createdTime!=''">
-            `created_time`=#{plan.createdTime},
+        <if test="plan.createdTime!=null">
+            `created_time`=#{plan.createdTime,jdbcType=TIMESTAMP},
         </if>
-        <if test="plan.updatedTime!=null and plan.updatedTime!=''">
-            `updated_time`=#{plan.updatedTime},
+        <if test="plan.updatedTime!=null">
+            `updated_time`=#{plan.updatedTime,jdbcType=TIMESTAMP},
         </if>
         <if test="plan.projectCode!=null and plan.projectCode!=''">
             `project_code`=#{plan.projectCode},
@@ -137,8 +137,8 @@
         <if test="plan.rectifyWay!=null and plan.rectifyWay!=''">
             `rectify_way`=#{plan.rectifyWay},
         </if>
-        <if test="plan.planTime!=null and plan.planTime!=''">
-            `plan_time`=#{plan.planTime},
+        <if test="plan.planTime!=null">
+            `plan_time`=#{plan.planTime,jdbcType=TIMESTAMP},
         </if>
         <if test="plan.rectifyResult!=null and plan.rectifyResult!=''">
             `rectify_result`=#{plan.rectifyResult},
@@ -167,14 +167,14 @@
         <if test="plan.auditStatus!=null and plan.auditStatus!=''">
             `audit_status`=#{plan.auditStatus},
         </if>
-        <if test="plan.startTime!=null and plan.startTime!=''">
-            `start_time`=#{plan.startTime},
+        <if test="plan.startTime!=null">
+            `start_time`=#{plan.startTime,jdbcType=TIMESTAMP},
         </if>
-        <if test="plan.archiveTime!=null and plan.archiveTime!=''">
-            `archive_time`=#{plan.archiveTime},
+        <if test="plan.archiveTime!=null">
+            `archive_time`=#{plan.archiveTime,jdbcType=TIMESTAMP},
         </if>
-        <if test="plan.resultEnterTime!=null and plan.resultEnterTime!=''">
-            `result_enter_time`=#{plan.resultEnterTime},
+        <if test="plan.resultEnterTime!=null">
+            `result_enter_time`=#{plan.resultEnterTime,jdbcType=TIMESTAMP},
         </if>
         <if test="plan.projectName!=null and plan.projectName!=''">
             `project_name`=#{plan.projectName}
@@ -201,6 +201,7 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             `id`,
             `created_by`,
+            `created_time`,
             `project_code`,
             `project_name`,
             `project_type`,
@@ -241,6 +242,9 @@
             #{planCheckList.id},
             <if test="planCheckList.createdBy != null and planCheckList.createdBy !=''">
                 #{planCheckList.createdBy},
+            </if>
+            <if test="planCheckList.createdTime != null">
+                #{planCheckList.createdTime,jdbcType=TIMESTAMP},
             </if>
             <if test="planCheckList.projectCode != null and planCheckList.projectCode !=''">
                 #{planCheckList.projectCode},
