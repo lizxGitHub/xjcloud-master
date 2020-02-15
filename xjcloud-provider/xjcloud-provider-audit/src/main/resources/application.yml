@@ -33,7 +33,7 @@ spring:
     filters: stat
     maxActive: 20
     initialSize: 1
-    maxWait: 60000
+    maxWait: 600000
     minIdle: 1
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
@@ -75,6 +75,7 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: 127.0.0.1
+#    ip-address: 39.108.50.114
   client:
     fetch-registry: true
     service-url:

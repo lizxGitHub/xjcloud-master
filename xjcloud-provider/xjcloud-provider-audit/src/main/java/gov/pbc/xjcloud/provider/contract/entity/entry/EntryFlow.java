@@ -114,7 +114,7 @@ public class EntryFlow implements Serializable, Cloneable {
      * 逻辑删除;0-未删除，1-已删除
      */
     @Column(name = "del_Flag",columnDefinition = "varchar default 0")
-    @TableLogic
+    @TableLogic(value = "0")
     private String delFlag;
 
     public EntryInfo getEntryInfo() {

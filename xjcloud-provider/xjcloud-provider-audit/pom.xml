@@ -66,12 +66,12 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.11</version>
+            <version>3.15</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
-            <version>3.11</version>
+            <version>3.15</version>
         </dependency>
         <!-- 通用mapper -->
         <!--        <dependency>-->
@@ -181,11 +181,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>gov.pbc.xjcloud.provider.audit.api</groupId>-->
-<!--            <artifactId>xjcloud-provider-audit-api</artifactId>-->
-<!--            <version>0.0.1</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>gov.pbc.xjcloud.provider.audit.api</groupId>-->
+        <!--            <artifactId>xjcloud-provider-audit-api</artifactId>-->
+        <!--            <version>0.0.1</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -201,28 +201,28 @@
         <!--            <version>0.0.1</version>-->
         <!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
-<!--            <artifactId>xjcloud-provider-usercenter-api</artifactId>-->
-<!--            <version>0.0.1</version>-->
-<!--            <systemPath>${project.basedir}/src/lib/xjcloud-provider-usercenter-api.jar</systemPath>-->
-<!--            <scope>system</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
+        <!--            <artifactId>xjcloud-provider-usercenter-api</artifactId>-->
+        <!--            <version>0.0.1</version>-->
+        <!--            <systemPath>${project.basedir}/src/lib/xjcloud-provider-usercenter-api.jar</systemPath>-->
+        <!--            <scope>system</scope>-->
+        <!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
-<!--            <artifactId>xjcloud-provider-activiti-api</artifactId>-->
-<!--            <version>0.0.1</version>-->
-<!--            <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>-->
-<!--            <scope>system</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
+        <!--            <artifactId>xjcloud-provider-activiti-api</artifactId>-->
+        <!--            <version>0.0.1</version>-->
+        <!--            <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>-->
+        <!--            <scope>system</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>4.3.2</version>
             <scope>compile</scope>
         </dependency>
-<!--        websocket 支持 -->
+        <!--        websocket 支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -244,18 +244,33 @@
     </dependencyManagement>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>template/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>template/**</include>
+                </includes>
+            </resource>
+
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-
                     <includeSystemScope>true</includeSystemScope>
 
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

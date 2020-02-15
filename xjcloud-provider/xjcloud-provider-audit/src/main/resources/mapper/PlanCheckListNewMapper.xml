@@ -24,7 +24,7 @@
         <result column="audit_classification_id" property="auditClassificationId"/>
         <result column="auditing_experience" property="auditingExperience"/>
         <result column="risk_assessment_id" property="riskAssessmentId"/>
-        <result column="instance_id" property="instanceId"/>
+<!--        <result column="instance_id" property="instanceId"/>-->
         <result column="plan_time" property="planTime"/>
         <result column="imp_user_id" property="impUserId"/>
         <result column="imp_admin_id" property="impAdminId"/>

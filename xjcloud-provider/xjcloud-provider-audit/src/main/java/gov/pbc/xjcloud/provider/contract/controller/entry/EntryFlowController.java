@@ -1,5 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.controller.entry;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,15 +22,33 @@ import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.entry.EntryFlowVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.joda.time.DateTime;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
-import java.util.Date;
-import java.util.Objects;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 词条流程controller
@@ -36,6 +56,7 @@ import java.util.Objects;
 @Api("词条流程接口类")
 @RestController
 @RequestMapping("/audit-api/entry/flow")
+@Log4j2
 public class EntryFlowController {
 
     @Resource
@@ -62,16 +83,16 @@ public class EntryFlowController {
             if (null != query) {
                 page = entryFlowService.selectEntryInfo(page, query);
             }
-            page.getRecords().stream().filter(Objects::nonNull).forEach(e->{
+            page.getRecords().stream().filter(Objects::nonNull).forEach(e -> {
                 String name = e.getName();
-                if(StringUtils.isNotBlank(e.getName1())){
-                    name+='-'+e.getName1();
+                if (StringUtils.isNotBlank(e.getName1())) {
+                    name += '-' + e.getName1();
                 }
-                if(StringUtils.isNotBlank(e.getName2())){
-                    name+='-'+e.getName2();
+                if (StringUtils.isNotBlank(e.getName2())) {
+                    name += '-' + e.getName2();
                 }
-                if(StringUtils.isNotBlank(e.getName3())){
-                    name+='-'+e.getName3();
+                if (StringUtils.isNotBlank(e.getName3())) {
+                    name += '-' + e.getName3();
                 }
                 e.setName(name);
             });
@@ -84,6 +105,7 @@ public class EntryFlowController {
 
     /**
      * 查询参数设置
+     *
      * @param query
      * @param queryWrapper
      */
@@ -91,7 +113,7 @@ public class EntryFlowController {
         if (StringUtils.isNotBlank(query.getName())) {
             queryWrapper.like("name", query.getName());
         }
-        if (null !=query.getCategoryFk()) {
+        if (null != query.getCategoryFk()) {
             queryWrapper.eq("category_fk", query.getCategoryFk());
         }
         if (StringUtils.isNotBlank(query.getUserOpt())) {
@@ -344,5 +366,152 @@ public class EntryFlowController {
         return r;
     }
 
+    /**
+     * @param request
+     * @param response
+     * @return
+     */
+    @GetMapping("template/download")
+    public void getWordFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String fileNameString = "词条导入模板.xlsx"; //声明要下载的文件名
+        //String fileName = new String(fileNameString.getBytes("ISO8859-1"), "UTF-8");
+        response.setContentType("application/octet-stream");
+        // URLEncoder.encode(fileNameString, "UTF-8") 下载文件名为中文的，文件名需要经过url编码
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileNameString, "UTF-8"));
+        ServletOutputStream out = null;
+        InputStream resourceAsStream= null;
+        try {
+            resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("template/" + fileNameString);
+            DataInputStream dis = new DataInputStream(resourceAsStream);
+            byte[] keyBytes = new byte[resourceAsStream.available()];
+            dis.readFully(keyBytes);
+            dis.close();
+            resourceAsStream.close();
+            out = response.getOutputStream();
+            out.write(keyBytes);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        } finally {
+            out.flush();
+            out.close();
+        }
+    }
 
+
+    @PostMapping("import")
+    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdUser") String createdUser) {
+        Sheet modelSheet=null;
+        if (null == file) {
+            return R.failed("上传文件不能为空");
+        }
+        String fileName = file.getOriginalFilename();
+//        String[] headers = {"词条类型", "一级名称", "二级名称", "三级名称", "四级名称", "备注"};
+        try {
+            if (StringUtils.isBlank(fileName)) {
+                throw new RuntimeException("导入文档为空!");
+            } else if (fileName.toLowerCase().endsWith("xls")) {
+            } else if (fileName.toLowerCase().endsWith("xlsx")) {
+            } else {
+                throw new RuntimeException("文档格式不正确!");
+            }
+
+            List<EntryCategory> list = categoryService.list();
+            Map<String, EntryCategory> entryMap = list.stream().collect(Collectors.toMap(EntryCategory::getName, e -> e));
+            modelSheet = ExcelUtil.getReader(file.getInputStream(), "词条导入").setIgnoreEmptyRow(true).getSheet();
+            if (modelSheet == null) {
+                throw new RuntimeException("请使用模板导入!");
+            }
+            if (modelSheet.getLastRowNum() < 3) {
+                throw new RuntimeException("文档中没有工作表!");
+            }
+            int maxRow = modelSheet.getLastRowNum();
+            int cell = 6;//6列 ，指定模板,从0 开始读取
+            List<EntryFlow> entryFlows = new ArrayList<>(maxRow-1);
+            for (int startRow = 2; startRow <= maxRow; startRow++) {
+                Row row = modelSheet.getRow(startRow);
+                String category = row.getCell(0).getStringCellValue();
+                String name = row.getCell(1).getStringCellValue();
+                if (StringUtils.isBlank(category) || StringUtils.isBlank(name)) {
+                    continue;
+                }
+                if (!entryMap.containsKey(category)) {
+                    continue;
+                }
+                String remarks = row.getCell(5).getStringCellValue();
+                EntryFlow entryFlow = new EntryFlow();
+                entryFlow.setRemarks(remarks);
+                entryFlow.setApplyUser(createdUser);
+                entryFlow.setCreatedBy(createdUser);
+                entryFlow.setCategoryFk(entryMap.get(category).getId());
+                entryFlow.setName(name);
+                if (entryMap.get(category).getLevel() == 4) {
+                    String name1 = row.getCell(2).getStringCellValue();
+                    String name2 = row.getCell(3).getStringCellValue();
+                    String name3 = row.getCell(4).getStringCellValue();
+                    entryFlow.setName1(name1);
+                    entryFlow.setName2(name2);
+                    entryFlow.setName3(name3);
+                }
+                //乐观锁
+                entryFlow.setRevision(1);
+                //类型编码
+                entryFlow.setTypeCode(entryMap.get(category).getDefKey() + DateTime.now().toDate().getTime());
+                entryFlow.setId(IdGenUtil.uuid());
+                entryFlow.setEntryFk(IdGenUtil.uuid());
+                entryFlow.setUserOpt(OptConstants.ADD);
+                entryFlow.setAuditStatus(String.valueOf(AuditStatusEnum.ADD.getCode()));
+                entryFlow.setInstanceId(IdGenUtil.uuid());
+                entryFlow.setCreatedTime(new Date());
+                entryFlow.setDelFlag(DelConstants.EXITED);
+                entryFlows.add(entryFlow);
+            }
+            boolean result = entryFlowService.saveBatch(entryFlows, entryFlows.size());
+            return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + entryFlows.size() + "条数据" : "导入失败");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new R<Boolean>(ApiErrorCode.FAILED).setMsg("请下载模板导入");
+        }
+    }
+
+    /**
+     * 获取单元格值
+     *
+     * @param row    获取的行
+     * @param column 获取单元格列号
+     * @return 单元格值
+     */
+    public Object getCellValue(Row row, int column) {
+        Object val = "";
+        try {
+            Cell cell = row.getCell(column);
+            if (cell != null) {
+                if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                    // val = cell.getNumericCellValue();
+                    // 当excel 中的数据为数值或日期是需要特殊处理
+                    if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        double d = cell.getNumericCellValue();
+                        Date date = HSSFDateUtil.getJavaDate(d);
+                        SimpleDateFormat dformat = new SimpleDateFormat(
+                                "yyyy-MM-dd");
+                        val = dformat.format(date);
+                    } else {
+                        NumberFormat nf = NumberFormat.getInstance();
+                        nf.setGroupingUsed(false);// true时的格式：1,234,567,890
+                        val = nf.format(cell.getNumericCellValue());// 数值类型的数据为double，所以需要转换一下
+                    }
+                } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                    val = cell.getStringCellValue();
+                } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+                    val = cell.getCellFormula();
+                } else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+                    val = cell.getBooleanCellValue();
+                } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
+                    val = cell.getErrorCellValue();
+                }
+            }
+        } catch (Exception e) {
+            return val;
+        }
+        return val;
+    }
 }
