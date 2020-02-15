@@ -50,7 +50,7 @@ public class FileController {
             return new R().setCode((int)ApiErrorCode.FAILED.getCode()).setMsg("文件为空");
         }
         if (StringUtils.isBlank(bizKey)) {
-            return new R().setCode((int)ApiErrorCode.FAILED.getCode()).setMsg("业务分类为空");
+           bizKey="other";
         }
         String originalFilename = file.getOriginalFilename();
         String fileName = originalFilename.substring(0, originalFilename.lastIndexOf("."));

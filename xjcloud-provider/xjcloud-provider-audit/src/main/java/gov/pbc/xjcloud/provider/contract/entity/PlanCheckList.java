@@ -133,9 +133,7 @@ public class PlanCheckList implements Serializable,Cloneable{
     /**
      * 计划整改时长
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
-    private Date planTime;
+    private String planTime;
     /**
      * 整改结果
      */

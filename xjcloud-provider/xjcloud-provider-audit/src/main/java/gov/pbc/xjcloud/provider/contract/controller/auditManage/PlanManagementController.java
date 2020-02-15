@@ -293,7 +293,7 @@ public class PlanManagementController {
             if (planCheckListOld != null) {
                 planCheckListOld.setFrequency(planCheckList.getFrequency());
                 planCheckListOld.setRectifyWay(planCheckList.getRectifyWay());
-                planCheckListOld.setPlanTime(planCheckList.getPlanTime());
+//                planCheckListOld.setPlanTime(planCheckList.getPlanTime());
                 planCheckListOld.setRectifyResult(planCheckList.getRectifyResult());
                 planManagementService.updateById(planCheckListOld);
             }

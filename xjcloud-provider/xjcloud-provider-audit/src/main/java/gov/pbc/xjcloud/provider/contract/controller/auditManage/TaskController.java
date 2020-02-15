@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
@@ -13,6 +14,7 @@ import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
@@ -322,6 +324,18 @@ public class TaskController {
 
             planTimeTempService.updateById(planTimeTemp);
 
+            if (StringUtils.isNotBlank((String) params.get("fileUri"))){
+                PlanFile planFile = new PlanFile();
+                planFile.setId(IdGenUtil.uuid());
+                planFile.setTaskId(Integer.parseInt(taskId));
+                planFile.setTaskName("");
+                planFile.setFileUri(params.get("fileUri").toString());
+                planFile.setBizKey( Integer.parseInt(planId));
+                planFile.setUploadUser(params.get("uploadUser").toString());
+                planFile.setCreatedTime(new Date());
+                planManagementService.addFileLog(planFile);
+            }
+
             params.remove("bizKey");
             params.remove("opinion");
             complete = activitiService.complete(taskId, params);
@@ -449,5 +463,16 @@ public class TaskController {
         // 根据相差的毫秒数计算
         int daysPart = (int) ((oDate.getTime() - fDate.getTime()) / (24 * 3600 * 1000));
         return daysPart;
+    }
+    @GetMapping("/plan/costdays/{bizKey}")
+    public R<PlanTimeTemp> getBizWasteDay(@PathVariable Integer bizKey){
+        try {
+            PlanTimeTemp byPlanId = planTimeTempService.getByPlanId(bizKey);
+            return new R<>(byPlanId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new R().setMsg(e.getMessage()).setCode(1);
+        }
+
     }
 }

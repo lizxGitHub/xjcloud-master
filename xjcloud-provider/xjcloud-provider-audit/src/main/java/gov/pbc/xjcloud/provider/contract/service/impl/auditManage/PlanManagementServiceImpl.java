@@ -207,11 +207,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
             planFile.setCreatedTime(new Date());
             this.addFileLog(planFile);
         }
-        Map<String,Object> actVars = new HashMap<>();
-        actVars.put("rectifyResult",params.get("rectifyResult"));
-        actVars.put("auditStatus",params.get("status"));
-        actVars.put("status",params.get("status"));
-        auditActivitiService.complete(params.get("taskId").toString(),actVars);
+//        Map<String,Object> actVars = new HashMap<>();
+//        actVars.put("rectifyResult",params.get("rectifyResult"));
+//        actVars.put("auditStatus",params.get("status"));
+//        actVars.put("status",params.get("status"));
+//        auditActivitiService.complete(params.get("taskId").toString(),actVars);
     }
 
     /**
@@ -223,13 +223,13 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         originalPlan.setRectifyResult(params.get("rectifyResult").toString());
         originalPlan.setStatus(params.get("status").toString());
         originalPlan.setId(Integer.parseInt(params.get("id").toString()));
-        originalPlan.setPlanTime(new Date(params.get("planTime").toString()));
+        originalPlan.setPlanTime(params.get("planTime").toString());
         originalPlan.setRectifyWay(params.get("rectifyWay").toString());
         originalPlan.setStatus(params.get("status").toString());
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("plan_time",params.get("planTime"));
         updateWrapper.set("rectify_way",params.get("rectifyWay"));
-        updateWrapper.set("status",params.get("status"));
+//        updateWrapper.set("status",params.get("status"));
 //        updateWrapper.set("audit_status",params.get("status"));
         updateWrapper.eq("id",params.get("id"));
         this.update(originalPlan,updateWrapper);
@@ -245,11 +245,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
             planFile.setCreatedTime(new Date());
             this.addFileLog(planFile);
         }
-        Map<String,Object> actVars = new HashMap<>();
-        actVars.put("planTime",params.get("planTime"));
-        actVars.put("rectifyWay",params.get("rectifyWay"));
-        actVars.put("auditStatus",params.get("status"));
-        actVars.put("status",params.get("status"));
-        auditActivitiService.complete(params.get("taskId").toString(),actVars);
+//        Map<String,Object> actVars = new HashMap<>();
+//        actVars.put("planTime",params.get("planTime"));
+//        actVars.put("rectifyWay",params.get("rectifyWay"));
+//        actVars.put("auditStatus",params.get("status"));
+//        actVars.put("status",params.get("status"));
+//        auditActivitiService.complete(params.get("taskId").toString(),actVars);
     }
 }

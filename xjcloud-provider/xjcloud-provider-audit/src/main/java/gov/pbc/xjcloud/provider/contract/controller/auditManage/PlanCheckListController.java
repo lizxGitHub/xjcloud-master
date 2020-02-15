@@ -4,21 +4,27 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R2;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +43,8 @@ public class PlanCheckListController {
     @Autowired
     private AuditActivitiService auditActivitiService;
 
+    @Autowired
+    private PlanManagementServiceImpl planManagementService;
     /**
      * 获取审计计划
      *
@@ -65,6 +73,7 @@ public class PlanCheckListController {
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
                 planCheckList.setProjectCode("PROJECT-" + code);
             }
+            String fileUri= planCheckList.getFileUri();
             planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
             if (planCheckList.getId() == 0) {
                 planCheckList.setDelFlag(DelConstants.EXITED);
@@ -81,6 +90,17 @@ public class PlanCheckListController {
                 planInfoService.saveBatch(planInfoList);
             } else {
                 planCheckListService.updatePlanById(planCheckList);
+            }
+            if(StringUtils.isNotBlank(fileUri)){
+                PlanFile planFile = new PlanFile();
+                planFile.setId(IdGenUtil.uuid());
+                planFile.setTaskId(0);
+                planFile.setTaskName("计划呈报");
+                planFile.setFileUri(fileUri);
+                planFile.setBizKey(planCheckList.getId());
+                planFile.setUploadUser(planCheckList.getCreatedUsername());
+                planFile.setCreatedTime(new Date());
+                planManagementService.addFileLog(planFile);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -147,4 +147,11 @@ public class PlanCheckListNew implements Serializable,Cloneable{
 
     private Set<PlanInfo> planInfos;
 
+    @TableField(exist = false)
+    private String fileUri;
+    @TableField(exist = false)
+    private String createdUsername;
+
+
+
 }
