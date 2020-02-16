@@ -56,6 +56,15 @@
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
         </if>
+        <if test="query.auditYear!=null and query.auditYear!=''">
+            and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
+        </if>
+        <if test="query.projectType!=null and query.projectType!=''">
+            and a.project_type like concat('%',concat(#{query.projectType},'%'))
+        </if>
+        <if test="query.auditNatureId!=null and query.auditNatureId!=''">
+            and a.audit_nature_id like concat('%',concat(#{query.auditNatureId},'%'))
+        </if>
         <if test="query.status!=null and query.status!=''">
             and a.status like concat('%',concat(#{query.status},'%'))
         </if>
@@ -190,6 +199,15 @@
         right JOIN plan_info b on a.id = b.plan_id where b.type = #{type} and b.user_id = #{userId}
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
+        </if>
+        <if test="query.auditYear!=null and query.auditYear!=''">
+            and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
+        </if>
+        <if test="query.projectType!=null and query.projectType!=''">
+            and a.project_type like concat('%',concat(#{query.projectType},'%'))
+        </if>
+        <if test="query.auditNatureId!=null and query.auditNatureId!=''">
+            and a.audit_nature_id like concat('%',concat(#{query.auditNatureId},'%'))
         </if>
         <if test="status!=null and status!=''">
             and b.status_user = #{status}

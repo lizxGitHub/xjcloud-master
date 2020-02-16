@@ -205,7 +205,7 @@ public class PlanCheckListController {
                             planInfo1.setType(0);
                             planInfoService.save(planInfo1);
                         } else {
-                            planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), "1002");
+                            planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), "1001");
                         }
                     }
                 }

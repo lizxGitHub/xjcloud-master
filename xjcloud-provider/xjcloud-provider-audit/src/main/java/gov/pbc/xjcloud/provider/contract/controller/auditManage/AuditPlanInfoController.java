@@ -266,6 +266,6 @@ public class AuditPlanInfoController {
 
     @GetMapping("/getDeptInfoById")
     public R getDeptInfoById(@RequestParam(name = "id", required = true) int id) {
-        return R.ok(remoteDeptService.dept(id));
+        return R.ok(remoteDeptService.dept(id).getData());
     }
 }
