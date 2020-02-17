@@ -24,7 +24,7 @@ import java.util.Random;
 @RequestMapping("/audit-api/file")
 /**
  * 文件上传控制器
- * @author zhengkai.blog.csdn.net
+ * @author paungmiao@163.com
  **/
 public class FileController {
 
