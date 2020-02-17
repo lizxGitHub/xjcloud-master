@@ -159,4 +159,12 @@ public class PlanCheckList implements Serializable,Cloneable{
      * auditStatus
      */
     private String auditStatus;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date startTime;
+
+
+    public Date getStartTime() {
+        return startTime;
+    }
 }
