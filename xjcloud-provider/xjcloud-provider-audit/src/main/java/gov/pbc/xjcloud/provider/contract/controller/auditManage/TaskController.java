@@ -238,6 +238,8 @@ public class TaskController {
                     planInfo1.setType(1);
                     planInfoService.save(planInfo1);
                 }
+                //添加审计对象员工
+                params.put("auditUserAssignee", plan.getAuditUserId());
             } else if (PlanStatusEnum.COMPLETE_TOBE_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getImpUserId()), opinion);
                 endTimePartTwo = new Date();
