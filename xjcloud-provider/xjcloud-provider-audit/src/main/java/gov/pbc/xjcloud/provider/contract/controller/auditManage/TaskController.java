@@ -10,6 +10,7 @@ import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
+import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
@@ -18,6 +19,7 @@ import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,6 +64,9 @@ public class TaskController {
 
     @Resource
     private PlanTimeTempServiceImpl planTimeTempService;
+
+    @Autowired
+    private UserCenterService userCenterService;
 
     /**
      * 流程页面
@@ -286,13 +292,13 @@ public class TaskController {
 
             planTimeTempService.updateById(planTimeTemp);
 
-            if (StringUtils.isNotBlank((String) params.get("fileUri"))){
+            if (StringUtils.isNotBlank((String) params.get("fileUri"))) {
                 PlanFile planFile = new PlanFile();
                 planFile.setId(IdGenUtil.uuid());
                 planFile.setTaskId(Integer.parseInt(taskId));
                 planFile.setTaskName("");
                 planFile.setFileUri(params.get("fileUri").toString());
-                planFile.setBizKey( Integer.parseInt(planId));
+                planFile.setBizKey(Integer.parseInt(planId));
                 planFile.setUploadUser(params.get("uploadUser").toString());
                 planFile.setCreatedTime(new Date());
                 planManagementService.addFileLog(planFile);
@@ -431,16 +437,52 @@ public class TaskController {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateString = formatter.format(currentTime);
         return dateString;
-     }
+    }
+
     @GetMapping("/plan/costdays/{bizKey}")
-    public R<PlanTimeTemp> getBizWasteDay(@PathVariable Integer bizKey){
+    public R<PlanTimeTemp> getBizWasteDay(@PathVariable Integer bizKey) {
         try {
             PlanTimeTemp byPlanId = planTimeTempService.getByPlanId(bizKey);
             return new R<>(byPlanId);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new R().setMsg(e.getMessage()).setCode(1);
         }
 
+    }
+
+
+    /**
+     * 获取部门用户的一般用户
+     *
+     * @param bizKey
+     * @param deptId
+     * @return
+     */
+    @GetMapping("dept/normal/user")
+    public R getNormalUserByDept(String bizKey, Integer deptId) {
+
+        if (StringUtils.isBlank(bizKey)) {
+            return new R().setCode(0).setMsg("业务ID为空");
+        }
+        try {
+            //获取实施部门的一般人员
+            R r = userCenterService.getUsersByRoleNameAndDept(deptId, "一般用户");
+            return r;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new R().setCode(0).setMsg(e.getMessage());
+        }
+    }
+
+    @PostMapping("commitImpUser")
+    public R commitImpUser(Integer bizKey,Integer impUserId){
+        if(null ==(bizKey)||null == (impUserId)){
+            return new R().setMsg("参数错误").setCode(1).setData(false);
+        }
+        PlanCheckListNew planCheckListNew = planCheckListService.selectById(bizKey);
+        planCheckListNew.setImpUserId(impUserId);
+        planCheckListService.updatePlanById(planCheckListNew);
+        return new R().setData(true);
     }
 }

@@ -221,6 +221,7 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     public void completePlan(Map<String, Object> params) {
         PlanCheckList originalPlan = this.getById(params.get("id").toString());
         originalPlan.setRectifyResult(params.get("rectifyResult").toString());
+        originalPlan.setAuditUserId(Integer.parseInt(params.get("auditUserId").toString()));
         originalPlan.setStatus(params.get("status").toString());
         originalPlan.setId(Integer.parseInt(params.get("id").toString()));
         originalPlan.setPlanTime(params.get("planTime").toString());
