@@ -460,14 +460,17 @@ public class TaskController {
      * @return
      */
     @GetMapping("dept/normal/user")
-    public R getNormalUserByDept(String bizKey, Integer deptId) {
+    public R getNormalUserByDept(String bizKey, Integer deptId, @RequestParam(required = false) String roleName) {
 
         if (StringUtils.isBlank(bizKey)) {
             return new R().setCode(0).setMsg("业务ID为空");
         }
         try {
+            if (StringUtils.isBlank(roleName)) {
+                roleName = "一般用户";
+            }
             //获取实施部门的一般人员
-            R r = userCenterService.getUsersByRoleNameAndDept(deptId, "一般用户");
+            R r = userCenterService.getUsersByRoleNameAndDept(deptId, roleName);
             return r;
         } catch (Exception e) {
             e.printStackTrace();
@@ -475,13 +478,13 @@ public class TaskController {
         }
     }
 
-    @PostMapping("commitImpUser")
-    public R commitImpUser(Integer bizKey,Integer impUserId){
-        if(null ==(bizKey)||null == (impUserId)){
+    @PostMapping("commitAuditAdminUser")
+    public R commitImpUser(Integer bizKey, Integer auditAdminId) {
+        if (null == (bizKey) || null == (auditAdminId)) {
             return new R().setMsg("参数错误").setCode(1).setData(false);
         }
         PlanCheckListNew planCheckListNew = planCheckListService.selectById(bizKey);
-        planCheckListNew.setImpUserId(impUserId);
+        planCheckListNew.setAuditAdminId(auditAdminId);
         planCheckListService.updatePlanById(planCheckListNew);
         return new R().setData(true);
     }
