@@ -406,7 +406,7 @@ public class TaskController {
     @PostMapping("completePlan")
     public R<Boolean> completePlan(@RequestBody Map<String, Object> params) {
         try {
-            if (null == params.get("taskId") || null == params.get("id") || null == params.get("auditStatus")) {
+            if (null == params.get("id") ) {
                 return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
             }
             planManagementService.completePlan(params);

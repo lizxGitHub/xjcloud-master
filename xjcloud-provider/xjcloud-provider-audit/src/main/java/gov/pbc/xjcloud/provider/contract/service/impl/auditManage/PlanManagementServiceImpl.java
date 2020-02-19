@@ -14,6 +14,7 @@ import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementServi
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -220,20 +221,19 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      */
     public void completePlan(Map<String, Object> params) {
         PlanCheckList originalPlan = this.getById(params.get("id").toString());
-        originalPlan.setRectifyResult(params.get("rectifyResult").toString());
-        originalPlan.setAuditUserId(Integer.parseInt(params.get("auditUserId").toString()));
-        originalPlan.setStatus(params.get("status").toString());
-        originalPlan.setId(Integer.parseInt(params.get("id").toString()));
-        originalPlan.setPlanTime(params.get("planTime").toString());
-        originalPlan.setRectifyWay(params.get("rectifyWay").toString());
-        originalPlan.setStatus(params.get("status").toString());
-        UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("plan_time",params.get("planTime"));
-        updateWrapper.set("rectify_way",params.get("rectifyWay"));
-//        updateWrapper.set("status",params.get("status"));
-//        updateWrapper.set("audit_status",params.get("status"));
-        updateWrapper.eq("id",params.get("id"));
-        this.update(originalPlan,updateWrapper);
+        if(null != params.get("rectifyResult")){
+            originalPlan.setRectifyResult(params.get("rectifyResult").toString());
+        }
+        if(null != params.get("auditUserId")){
+            originalPlan.setAuditUserId(Integer.parseInt(params.get("auditUserId").toString()));
+        }
+        if(null != params.get("planTime")){
+            originalPlan.setPlanTime(params.get("planTime").toString());
+        }
+        if(null != params.get("rectifyWay")){
+            originalPlan.setRectifyWay(params.get("rectifyWay").toString());
+        }
+        this.updateById(originalPlan);
         //提交文件
         if(null!=params.get("fileUri")){
             PlanFile planFile = new PlanFile();
