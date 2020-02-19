@@ -200,6 +200,12 @@ public class TaskController {
                 //审计对象管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
+                if (plan.getAuditUserId() == 0) {
+                    return complete.setData(false);
+                }
+                //流程添加审计对象员工
+                params.put("auditUserAssignee", plan.getAuditUserId());
+
                 startTimePartOne = new Date();
                 planTimeTemp.setStartTimePartOne(startTimePartOne);
                 //实施部门管理员
@@ -238,13 +244,13 @@ public class TaskController {
                     planInfo1.setType(1);
                     planInfoService.save(planInfo1);
                 }
-                //添加审计对象员工
-                params.put("auditUserAssignee", plan.getAuditUserId());
             } else if (PlanStatusEnum.COMPLETE_TOBE_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
-                planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getImpUserId()), opinion);
-                endTimePartTwo = new Date();
-                daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
-                planTimeTemp.setDays(daysPart);
+                if ("1".equals(mark)) {
+                    planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getImpUserId()), opinion);
+                    endTimePartTwo = new Date();
+                    daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                    planTimeTemp.setDays(daysPart);
+                }
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
             } else if (PlanStatusEnum.IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {

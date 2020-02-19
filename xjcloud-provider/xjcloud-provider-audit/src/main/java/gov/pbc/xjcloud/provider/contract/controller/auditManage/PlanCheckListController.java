@@ -144,8 +144,10 @@ public class PlanCheckListController {
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
                 if (userId == plan.getImpAdminId()) {
-                    planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), statusUser);
                     if (statusUser.equals("1002")) { //确认
+                        if (plan.getAuditAdminId() == 0) {
+                            return r.setData(false);
+                        }
                         planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1003");
 
                         //实施一般员工
@@ -190,9 +192,8 @@ public class PlanCheckListController {
                         }
                         planInfo.setStatusUser("1004");
                         planInfoService.updateById(planInfo);
-
-//                        planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1004");
                     }
+                    planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), statusUser);
                 } else if (userId == plan.getImpUserId()) {
                     planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), statusUser);
                     if (statusUser.equals("1002")) { //上报
@@ -211,7 +212,7 @@ public class PlanCheckListController {
                 }
 
                 //启动流程
-                if (userId == plan.getImpAdminId() && statusUser.equals("1002")) {
+                if (userId == plan.getImpAdminId() && statusUser.equals("1002") && plan.getAuditAdminId() != 0) {
                     int createdBy = plan.getCreatedBy(); //创建人
                     int impUserAssignee = plan.getImpUserId(); //
                     int implLeaderAssignee = plan.getImpAdminId(); //
