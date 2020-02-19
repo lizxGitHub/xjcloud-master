@@ -68,6 +68,7 @@
         <if test="query.status!=null and query.status!=''">
             and a.status like concat('%',concat(#{query.status},'%'))
         </if>
+        ORDER BY a.created_time desc
     </select>
 
     <update id="updatePlanById">
@@ -212,6 +213,7 @@
         <if test="status!=null and status!=''">
             and b.status_user = #{status}
         </if>
+        ORDER BY a.created_time desc
     </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew" useGeneratedKeys="true" keyProperty="planCheckList.id" keyColumn="id">
