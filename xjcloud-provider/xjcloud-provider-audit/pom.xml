@@ -246,20 +246,18 @@
     <build>
         <resources>
             <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>template/**</exclude>
-                </excludes>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <filtering>false</filtering>
             </resource>
             <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <filtering>false</filtering>
+                <directory>src/main/webapp</directory>
                 <includes>
-                    <include>template/**</include>
+                    <include>**/**</include>
                 </includes>
             </resource>
-
         </resources>
         <plugins>
             <plugin>

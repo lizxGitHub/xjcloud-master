@@ -17,6 +17,7 @@ import gov.pbc.xjcloud.provider.contract.enumutils.OptEnum;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryCategoryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryFlowServiceIml;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.FileUtil;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.entry.EntryFlowVO;
@@ -374,21 +375,17 @@ public class EntryFlowController {
     @GetMapping("template/download")
     public void getWordFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String fileNameString = "词条导入模板.xlsx"; //声明要下载的文件名
-        //String fileName = new String(fileNameString.getBytes("ISO8859-1"), "UTF-8");
-        response.setContentType("application/octet-stream");
-        // URLEncoder.encode(fileNameString, "UTF-8") 下载文件名为中文的，文件名需要经过url编码
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileNameString, "UTF-8"));
         ServletOutputStream out = null;
-        InputStream resourceAsStream= null;
         try {
-            resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("template/" + fileNameString);
-            DataInputStream dis = new DataInputStream(resourceAsStream);
-            byte[] keyBytes = new byte[resourceAsStream.available()];
-            dis.readFully(keyBytes);
-            dis.close();
-            resourceAsStream.close();
+            InputStream fis = FileUtil.getResourcesFileInputStream("template/"+fileNameString);
+            XSSFWorkbook workbook = new XSSFWorkbook(fis);
+            response.setContentType("application/binary;charset=ISO8859-1");
+            String fileName = java.net.URLEncoder.encode("词条导入模板", "UTF-8");
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");
             out = response.getOutputStream();
-            out.write(keyBytes);
+            workbook.write(out);
+            out.flush();
+            out.close();
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
