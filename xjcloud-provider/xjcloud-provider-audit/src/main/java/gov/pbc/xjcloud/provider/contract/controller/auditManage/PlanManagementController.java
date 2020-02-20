@@ -7,11 +7,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
-import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
@@ -45,7 +46,7 @@ public class PlanManagementController {
     private PlanManagementServiceImpl planManagementService;
 
     @Resource
-    private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
+    private PlanCheckListServiceImpl planCheckListService;
 
     @Autowired
     private DeptUtil deptUtil;

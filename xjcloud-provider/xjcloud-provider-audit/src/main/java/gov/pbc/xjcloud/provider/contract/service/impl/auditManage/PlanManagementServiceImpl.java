@@ -188,10 +188,8 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     public void reportPlanAndTask(Map<String, Object> params) {
         PlanCheckList originalPlan = this.getById(params.get("id").toString());
         originalPlan.setRectifyResult(params.get("rectifyResult").toString());
-        originalPlan.setStatus(params.get("status").toString());
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("rectify_result",params.get("rectifyResult"));
-        updateWrapper.set("status",params.get("status"));
         updateWrapper.eq("id",params.get("id"));
 //        updateWrapper.set("audit_status",params.get("status"));
         this.update(originalPlan,updateWrapper);

@@ -404,7 +404,7 @@ public class TaskController {
     @PostMapping("submitReport")
     public R<Boolean> submitReport(@RequestBody Map<String, Object> params) {
         try {
-            if (null == params.get("taskId") || null == params.get("id") || null == params.get("status")) {
+            if (null == params.get("taskId") || null == params.get("id") ) {
                 return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
             }
             planManagementService.reportPlanAndTask(params);
@@ -508,5 +508,18 @@ public class TaskController {
         planCheckListNew.setAuditAdminId(auditAdminId);
         planCheckListService.updatePlanById(planCheckListNew);
         return new R().setData(true);
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("user/{id}")
+    public R getUserById(@PathVariable(name="id") Integer id){
+        if(null == id){
+            return new R().setCode(1).setData(null).setMsg("参数为空");
+        }
+        return userCenterService.user(id);
     }
 }

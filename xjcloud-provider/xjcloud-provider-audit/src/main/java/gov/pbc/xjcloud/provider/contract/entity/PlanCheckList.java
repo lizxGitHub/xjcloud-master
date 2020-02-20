@@ -19,6 +19,7 @@ public class PlanCheckList implements Serializable,Cloneable{
     private int createdBy ;
     /** 创建时间 */
     @Column(name = "created_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createdTime ;
     /** 更新人 */
     @Column(name = "update_by")
@@ -141,7 +142,6 @@ public class PlanCheckList implements Serializable,Cloneable{
     /**
      * 延期时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
     private Date delayDate;
 
@@ -159,7 +159,6 @@ public class PlanCheckList implements Serializable,Cloneable{
      * auditStatus
      */
     private String auditStatus;
-
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date startTime;
 
