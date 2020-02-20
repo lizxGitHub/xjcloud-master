@@ -167,4 +167,8 @@ public class PlanCheckList implements Serializable,Cloneable{
     public Date getStartTime() {
         return startTime;
     }
+
+    private String project_type;
+
+    private String audit_nature_id;
 }
