@@ -19,4 +19,19 @@ public enum AuditStatusEnum {
 
     private String tip;
 
+    /**
+     *
+     * @param code
+     * @return
+     */
+    public static AuditStatusEnum getOptByCode(Integer code) {
+        AuditStatusEnum[] values = AuditStatusEnum.values();
+        for (AuditStatusEnum value : values) {
+            if (value.code == code) {
+                return value;
+            }
+        }
+        return ADD;
+    }
+
 }

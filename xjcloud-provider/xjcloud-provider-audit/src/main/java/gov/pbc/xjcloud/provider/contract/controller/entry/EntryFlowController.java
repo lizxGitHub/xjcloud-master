@@ -32,6 +32,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.joda.time.DateTime;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +48,7 @@ import javax.validation.ConstraintViolationException;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -377,7 +381,7 @@ public class EntryFlowController {
         String fileNameString = "词条导入模板.xlsx"; //声明要下载的文件名
         ServletOutputStream out = null;
         try {
-            InputStream fis = FileUtil.getResourcesFileInputStream("template/"+fileNameString);
+            InputStream fis = FileUtil.getResourcesFileInputStream("template/" + fileNameString);
             XSSFWorkbook workbook = new XSSFWorkbook(fis);
             response.setContentType("application/binary;charset=ISO8859-1");
             String fileName = java.net.URLEncoder.encode("词条导入模板", "UTF-8");
@@ -397,7 +401,7 @@ public class EntryFlowController {
 
     @PostMapping("import")
     public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdUser") String createdUser) {
-        Sheet modelSheet=null;
+        Sheet modelSheet = null;
         if (null == file) {
             return R.failed("上传文件不能为空");
         }
@@ -423,7 +427,7 @@ public class EntryFlowController {
             }
             int maxRow = modelSheet.getLastRowNum();
             int cell = 6;//6列 ，指定模板,从0 开始读取
-            List<EntryFlow> entryFlows = new ArrayList<>(maxRow-1);
+            List<EntryFlow> entryFlows = new ArrayList<>(maxRow - 1);
             for (int startRow = 2; startRow <= maxRow; startRow++) {
                 Row row = modelSheet.getRow(startRow);
                 String category = row.getCell(0).getStringCellValue();
@@ -452,7 +456,7 @@ public class EntryFlowController {
                 //乐观锁
                 entryFlow.setRevision(1);
                 //类型编码
-                entryFlow.setTypeCode(entryMap.get(category).getDefKey() + DateTime.now().toDate().getTime());
+                entryFlow.setTypeCode(entryMap.get(category).getDefKey() + new Date().getTime());
                 entryFlow.setId(IdGenUtil.uuid());
                 entryFlow.setEntryFk(IdGenUtil.uuid());
                 entryFlow.setUserOpt(OptConstants.ADD);
@@ -510,5 +514,67 @@ public class EntryFlowController {
             return val;
         }
         return val;
+    }
+
+    @GetMapping("download/entry")
+    public void downloadEntry(HttpServletResponse response) {
+        List<EntryFlow> list = entryFlowService.list();
+        Map<Integer, String> collect = categoryService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(1000);
+        sxssfWorkbook.createSheet("数据");
+        SXSSFSheet sheet = sxssfWorkbook.getSheetAt(0);
+        String[] strings = new String[]
+                {"词条编号","词条类型","一级词条","二级词条","三级词条","四级词条","备注","审核状态"};
+        //添加结果数据
+        int excelRowNum = 0;
+        int count = list.size();
+        ListIterator<EntryFlow> rs = list.listIterator();
+        SXSSFRow row = sheet.createRow(excelRowNum++);
+        for (int i = 0; i <strings.length; i++) {
+            row.createCell(i).setCellValue(parseText(strings[i]));
+        }
+        while (rs.hasNext()) {
+            EntryFlow entryFlow = rs.next();
+            if(excelRowNum>=1048576){
+                break;
+            }
+            row = sheet.createRow(excelRowNum++);
+            row.createCell(0).setCellValue(parseText(entryFlow.getTypeCode()));
+            row.createCell(1).setCellValue(parseText(collect.get(entryFlow.getCategoryFk())));
+            row.createCell(2).setCellValue(parseText(entryFlow.getName()));
+            row.createCell(3).setCellValue(parseText(entryFlow.getName1()));
+            row.createCell(4).setCellValue(parseText(entryFlow.getName2()));
+            row.createCell(5).setCellValue(parseText(entryFlow.getName3()));
+            row.createCell(6).setCellValue(parseText(entryFlow.getRemarks()));
+            row.createCell(7).setCellValue(parseText(AuditStatusEnum.getOptByCode(Integer.parseInt(entryFlow.getAuditStatus())).getTip()));
+        }
+        OutputStream out =null;
+        try {
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode("词条导出列表.xlsx", "UTF-8"));
+            out = response.getOutputStream();
+            sxssfWorkbook.write(out);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                out.flush();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 处理空字符串
+     *
+     * @param string
+     * @return
+     */
+    private String parseText(String string) {
+        if (string == null) {
+            return "";
+        }
+        return string.trim();
     }
 }
