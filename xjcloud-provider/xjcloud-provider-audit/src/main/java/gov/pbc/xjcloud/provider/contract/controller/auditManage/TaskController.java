@@ -245,6 +245,9 @@ public class TaskController {
                     planInfo1.setPlanId(plan.getId());
                     planInfo1.setType(1);
                     planInfoService.save(planInfo1);
+                } else {
+                    //审计对象管理员
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                 }
             } else if (PlanStatusEnum.COMPLETE_TOBE_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if ("1".equals(mark)) {
@@ -309,6 +312,21 @@ public class TaskController {
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1004");
 //                //审计对象管理员
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
+            } else if (PlanStatusEnum.DELAY_APPLY.getCode() == status && StringUtils.isNotBlank(planId)) {
+                //审计对象员工
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
+                //审计对象领导
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
+            } else if (PlanStatusEnum.DELAY_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
+                //审计对象员工
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
+                //审计对象领导
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+            } else if (PlanStatusEnum.DELAY_IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
+//                //审计对象领导
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+//                //审计对象员工
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
             }
 
             planTimeTempService.updateById(planTimeTemp);
