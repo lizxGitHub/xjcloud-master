@@ -1,9 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
-import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
@@ -13,9 +10,6 @@ import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
-import gov.pbc.xjcloud.provider.contract.utils.R;
-import io.swagger.models.auth.In;
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Service
 @Transactional(rollbackFor = {Exception.class})
@@ -172,6 +168,9 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param planFile
      */
     public void addFileLog(PlanFile planFile) {
+        if(StringUtils.isBlank(planFile.getFileUri())){
+            return;
+        }
         planManagementMapper.addFileLog(planFile);
     }
 /**
@@ -186,25 +185,25 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param params
      */
     public void reportPlanAndTask(Map<String, Object> params) {
-        PlanCheckList originalPlan = this.getById(params.get("id").toString());
+        PlanCheckList originalPlan = planManagementMapper.selectById(params.get("id").toString());
         originalPlan.setRectifyResult(params.get("rectifyResult").toString());
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("rectify_result",params.get("rectifyResult"));
         updateWrapper.eq("id",params.get("id"));
 //        updateWrapper.set("audit_status",params.get("status"));
-        this.update(originalPlan,updateWrapper);
+        planManagementMapper.update(originalPlan,updateWrapper);
         //提交文件
 
-        if(null!=params.get("fileUri")){
+        if(null!=params.get("fileUri") && StringUtils.isNotBlank(params.get("fileUri").toString())){
             PlanFile planFile = new PlanFile();
             planFile.setId(IdGenUtil.uuid());
-            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
+//            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
             planFile.setTaskName(params.get("taskName").toString());
             planFile.setFileUri(params.get("fileUri").toString());
             planFile.setBizKey(Integer.parseInt(params.get("id").toString()));
             planFile.setUploadUser(params.get("uploadUser").toString());
             planFile.setCreatedTime(new Date());
-            this.addFileLog(planFile);
+            addFileLog(planFile);
         }
 //        Map<String,Object> actVars = new HashMap<>();
 //        actVars.put("rectifyResult",params.get("rectifyResult"));
@@ -218,31 +217,36 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param params
      */
     public void completePlan(Map<String, Object> params) {
-        PlanCheckList originalPlan = this.getById(params.get("id").toString());
+        PlanCheckList originalPlan = planManagementMapper.selectById(params.get("id").toString());
+        UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
         if(null != params.get("rectifyResult")){
             originalPlan.setRectifyResult(params.get("rectifyResult").toString());
+            updateWrapper.set("rectify_result",originalPlan.getRectifyResult());
         }
         if(null != params.get("auditUserId")){
             originalPlan.setAuditUserId(Integer.parseInt(params.get("auditUserId").toString()));
+            updateWrapper.set("audit_user_id",originalPlan.getAuditUserId());
         }
         if(null != params.get("planTime")){
             originalPlan.setPlanTime(params.get("planTime").toString());
+            updateWrapper.set("plan_time",originalPlan.getPlanTime());
         }
         if(null != params.get("rectifyWay")){
             originalPlan.setRectifyWay(params.get("rectifyWay").toString());
+            updateWrapper.set("rectify_way",originalPlan.getRectifyWay());
         }
-        this.updateById(originalPlan);
+        planManagementMapper.update(originalPlan,updateWrapper);
         //提交文件
         if(null!=params.get("fileUri")){
             PlanFile planFile = new PlanFile();
             planFile.setId(IdGenUtil.uuid());
-            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
+//            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
             planFile.setTaskName(params.get("taskName").toString());
             planFile.setFileUri(params.get("fileUri").toString());
             planFile.setBizKey(Integer.parseInt(params.get("id").toString()));
             planFile.setUploadUser(params.get("uploadUser").toString());
             planFile.setCreatedTime(new Date());
-            this.addFileLog(planFile);
+            addFileLog(planFile);
         }
 //        Map<String,Object> actVars = new HashMap<>();
 //        actVars.put("planTime",params.get("planTime"));

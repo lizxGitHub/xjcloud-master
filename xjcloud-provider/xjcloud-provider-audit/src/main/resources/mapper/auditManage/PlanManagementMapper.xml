@@ -286,9 +286,9 @@
         count(1)
         FROM
         `plan_check_list` a
+         left join plan_time_temp t on a.id = t.plan_id
         where a.del_flag='0'
-        and a.plan_time is not null
-        and date_add(a.plan_time,interval 1 month)&lt;=( SELECT now( ))
+        and t.days>30
         and (imp_user_id=#{userId} or imp_admin_id=#{userId} or audit_user_id=#{userId}
         or audit_admin_id=#{userId})
         and status!=#{status}
@@ -299,9 +299,9 @@
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
+        left join plan_time_temp t on a.id = t.plan_id
         where a.del_flag='0'
-        and a.plan_time is not null
-        and date_add(a.plan_time,interval 1 month)&lt;=( SELECT now( ))
+        and t.days>30
         and (imp_user_id=#{query.userId} or imp_admin_id=#{query.userId} or audit_user_id=#{query.userId}
         or audit_admin_id=#{query.userId})
         and status!=#{query.status}
@@ -316,7 +316,7 @@
         created_time createdTime,
         upload_user uploadUser
         from plan_files
-        where biz_key=#{0}
+        where biz_key=#{0} and length(file_uri)>0
     </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList"

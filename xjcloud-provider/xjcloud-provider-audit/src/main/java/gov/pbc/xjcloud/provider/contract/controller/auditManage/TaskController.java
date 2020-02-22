@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
@@ -19,7 +20,6 @@ import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,6 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -334,7 +333,7 @@ public class TaskController {
             if (StringUtils.isNotBlank((String) params.get("fileUri"))) {
                 PlanFile planFile = new PlanFile();
                 planFile.setId(IdGenUtil.uuid());
-                planFile.setTaskId(Integer.parseInt(taskId));
+//                planFile.setTaskId(Integer.parseInt(taskId));
                 planFile.setTaskName("");
                 planFile.setFileUri(params.get("fileUri").toString());
                 planFile.setBizKey(Integer.parseInt(planId));
@@ -405,8 +404,25 @@ public class TaskController {
     @GetMapping("taskHistory")
     public R taskHistory(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
         try {
-            R history = activitiService.history(processDefKey, businessId);
-            return history;
+            R<List<Map<String,Object>>> history = activitiService.history(processDefKey, businessId);
+            List<Map<String, Object>> data = history.getData();
+            Map<String,Object> start = new HashMap<>();
+            PlanCheckList planCheckList = planManagementService.getById(Integer.valueOf(businessId));
+            R<Map<String,Object>> user = userCenterService.user(planCheckList.getCreatedBy());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            start.put("taskId",0);
+            start.put("taskName","项目启动");
+            start.put("startTime", sdf.format(planCheckList.getStartTime()));
+            start.put("endTime",sdf.format(planCheckList.getStartTime()));
+            start.put("assigneeName",user.getData().get("username"));
+            start.put("assigneeId",user.getData().get("userId"));
+            data.add(start);
+            List<Map<String, Object>> collect = data.stream().sorted((e1, e2) -> {
+                Integer var1 = Integer.parseInt(e1.get("taskId").toString());
+                Integer var2 = Integer.parseInt(e2.get("taskId").toString());
+                return var2 - var1;
+            }).collect(Collectors.toList());
+            return history.setData(collect);
         } catch (Exception e) {
             e.printStackTrace();
             return new R().setData(new ArrayList<>());
@@ -422,7 +438,7 @@ public class TaskController {
     @PostMapping("submitReport")
     public R<Boolean> submitReport(@RequestBody Map<String, Object> params) {
         try {
-            if (null == params.get("taskId") || null == params.get("id") ) {
+            if (null == params.get("taskId") || null == params.get("id")) {
                 return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
             }
             planManagementService.reportPlanAndTask(params);
@@ -443,7 +459,7 @@ public class TaskController {
     @PostMapping("completePlan")
     public R<Boolean> completePlan(@RequestBody Map<String, Object> params) {
         try {
-            if (null == params.get("id") ) {
+            if (null == params.get("id")) {
                 return new R().setCode((int) ApiErrorCode.FAILED.getCode()).setMsg("参数缺失").setData(false);
             }
             planManagementService.completePlan(params);
@@ -529,13 +545,12 @@ public class TaskController {
     }
 
     /**
-     *
      * @param id
      * @return
      */
     @GetMapping("user/{id}")
-    public R getUserById(@PathVariable(name="id") Integer id){
-        if(null == id){
+    public R getUserById(@PathVariable(name = "id") Integer id) {
+        if (null == id) {
             return new R().setCode(1).setData(null).setMsg("参数为空");
         }
         return userCenterService.user(id);
