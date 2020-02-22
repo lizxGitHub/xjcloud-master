@@ -187,8 +187,9 @@
             `result_enter_time`=#{plan.resultEnterTime,jdbcType=TIMESTAMP},
         </if>
         <if test="plan.projectName!=null and plan.projectName!=''">
-            `project_name`=#{plan.projectName}
+            `project_name`=#{plan.projectName},
         </if>
+        `id`=#{plan.id}
         WHERE
             (`id`=#{plan.id})
     </update>
