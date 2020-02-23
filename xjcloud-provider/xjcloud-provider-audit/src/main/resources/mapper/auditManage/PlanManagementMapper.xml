@@ -184,7 +184,8 @@
             and a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%'))
         </if>
         <if test="query.problemDescription!=null and query.problemDescription!=''">
-            and a.problem_description like concat('%',concat(#{query.problemDescription},'%'))
+            and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or
+            a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
         <if test="query.deptId!=null and query.deptId!=''">
             and a.implementing_agency_id =#{query.deptId}
@@ -252,9 +253,12 @@
         FROM
         user_attention_check b
         left join `plan_check_list` a on a.id = b.check_id
-        left join entry_info rectify_situation_entry on pcl.rectify_situation_id=rectify_situation_entry.id and
+        left join entry_info rectify_situation_entry on a.rectify_situation_id=rectify_situation_entry.id and
         rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6
         where a.del_flag='0'
+        <if test="query.auditYear!=null and query.auditYear!=''">
+            and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
+        </if>
         <if test="query.projectName!=null and query.projectName!=''">
             and a.project_name like concat('%',concat(#{query.projectName},'%'))
         </if>
