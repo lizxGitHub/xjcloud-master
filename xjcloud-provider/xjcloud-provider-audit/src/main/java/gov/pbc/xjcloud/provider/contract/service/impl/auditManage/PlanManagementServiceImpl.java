@@ -235,6 +235,7 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
             originalPlan.setRectifyWay(params.get("rectifyWay").toString());
             updateWrapper.set("rectify_way",originalPlan.getRectifyWay());
         }
+        updateWrapper.eq("id",originalPlan.getId());
         planManagementMapper.update(originalPlan,updateWrapper);
         //提交文件
         if(null!=params.get("fileUri")){
