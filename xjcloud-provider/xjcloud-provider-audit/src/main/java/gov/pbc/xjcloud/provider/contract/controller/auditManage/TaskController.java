@@ -285,13 +285,13 @@ public class TaskController {
                         //审计对象管理员
                         PlanInfo planInfo1 = new PlanInfo();
                         planInfo1.setUserId(plan.getAuditUserId());
-                        planInfo1.setStatusUser("1001"); //待审核
+                        planInfo1.setStatusUser("1002"); //待审核
                         planInfo1.setPlanId(plan.getId());
                         planInfo1.setType(1);
                         planInfoService.save(planInfo1);
                     } else {
                         //审计对象管理员
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
                     }
                 }
             } else if (PlanStatusEnum.COMPLETE_TOBE_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
@@ -306,8 +306,11 @@ public class TaskController {
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                 //实施机构员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1002");
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
             } else if (PlanStatusEnum.IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
+                if (StringUtils.isBlank(plan.getRectifyResult())) {
+                    return complete.setData(false);
+                }
                 startTimePartTwo = new Date();
                 planTimeTemp.setStartTimePartTwo(startTimePartTwo);
                 //实施部门一般员工
@@ -362,8 +365,8 @@ public class TaskController {
                 //审计对象领导
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             } else if (PlanStatusEnum.DELAY_IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
-                //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+//                //实施部门一般员工
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             }

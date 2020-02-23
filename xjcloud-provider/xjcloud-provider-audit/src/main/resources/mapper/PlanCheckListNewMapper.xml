@@ -26,6 +26,7 @@
         <result column="risk_assessment_id" property="riskAssessmentId"/>
 <!--        <result column="instance_id" property="instanceId"/>-->
         <result column="plan_time" property="planTime"/>
+        <result column="rectify_result" property="rectifyResult"/>
         <result column="imp_user_id" property="impUserId"/>
         <result column="imp_admin_id" property="impAdminId"/>
         <result column="audit_user_id" property="auditUserId"/>
@@ -361,6 +362,7 @@
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,
+        a.rectify_result,
         a.risk_assessment_id,
         a.imp_user_id,
         a.imp_admin_id,
@@ -394,6 +396,7 @@
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,
+        a.rectify_result,
         a.risk_assessment_id,
         a.imp_user_id,
         a.imp_admin_id,
