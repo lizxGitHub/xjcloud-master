@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
-import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
@@ -33,7 +32,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -473,29 +476,54 @@ public class PlanManagementController {
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e));
         JSONObject jsonObject = new JSONObject();
-        List<String> deptKey=Arrays.asList("implementingAgencyId","auditObjectId");
+        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId");
+        AtomicBoolean isGroupByDept = new AtomicBoolean(false);
+        deptKey.forEach(e -> {
+            if ("all".equals(params.get(e))) {
+                isGroupByDept.set(true);
+                return;
+            }
+        });
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.forEach(e -> {
-                e.entrySet().stream().forEach(x -> {
-                    if (deptKey.contains(x.getKey())) {
-                        gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(x.getKey()));
-                        JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
-                        if (null != deptJSON && "0".equals(deptJSON.get("code"))) {
-                            JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
-                            x.setValue(deptData.get("name"));
-                        }
-                    }else{
-                        if(entryMap.containsKey(x.getKey())){
-                            x.setValue(entryMap.get(x.getKey()).getConcatName());
-                        }
+                if (isGroupByDept.get()) {
+                    gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(e.get("name").toString()));
+                    JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                    if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                        JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                        e.put("name",deptData.get("name"));
                     }
-                });
+                } else {
+                    if (entryMap.containsKey(e.get("name"))) {
+                        e.put("name",entryMap.get(e.get("name")).getConcatName());
+                    }
+                }
             });
 
         }
-        jsonObject.put("records", mapList);
+        List<Object> legend = new ArrayList<>();
+        List<Map<String, Object>> tableData = new ArrayList<>();
+        AtomicInteger total = new AtomicInteger();
+        NumberFormat numberFormat = NumberFormat.getPercentInstance();
+        numberFormat.setMinimumFractionDigits(2);
+        mapList.forEach(e -> {
+            int num =Integer.parseInt(e.get("value").toString());
+            total.getAndAdd(num);
+        });
+        mapList.forEach(e -> {
+            legend.add(e.get("name"));
+            int num = Integer.parseInt(e.get("value").toString());
+            Map<String, Object> row = new HashMap<>();
+            e.entrySet().stream().forEach(es ->row.put(es.getKey(), es.getValue()));
+            String percent = numberFormat.format(((double) num) / ((double) total.get()));
+            row.put("percent", percent);
+            tableData.add(row);
+        });
         jsonObject.put("count", mapList.size());
+        jsonObject.put("tableData", tableData);
+        jsonObject.put("legend", legend);
+        jsonObject.put("records", mapList);
         return new R().setData(jsonObject);
     }
 }
