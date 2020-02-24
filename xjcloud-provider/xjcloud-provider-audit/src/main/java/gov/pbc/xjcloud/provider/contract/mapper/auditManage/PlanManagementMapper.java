@@ -131,10 +131,12 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "select pcl.implementing_agency_id implementingAgencyId,count(*) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"
                     +"sum(case when pcl.status!='1003' then 1 else 0 end) noFinishCount,sum(case when pcl.delay_date is not null then 1 else 0 end) timeoutCount"
                     +" from plan_check_list pcl "
-                    +" where pcl.del_flag='0' group by pcl.implementing_agency_id "
+                    +" where pcl.del_flag='0'" +
+                     " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"+
+                    " group by pcl.implementing_agency_id "
                     +" <if test='pageStart!=null and pageNo!=null'> limit ${pageStart},${pageNo}</if>",
             "</script>"})
-    List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo);
+    List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear);
     @Select({"<script>",
             "select count(*) count from (select pcl.implementing_agency_id id,count(*) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"
                     +"sum(case when pcl.status!='1003' then 1 else 0 end) noFinishCount,sum(case when pcl.delay_date is not null then 1 else 0 end) timeoutCount"

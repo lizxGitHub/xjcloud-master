@@ -9,9 +9,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
+import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**   
  * @Description:           
@@ -34,6 +39,8 @@ public class PlanStatisticController {
 
     @Resource
     private PlanManagementService planManagementService;
+    @Autowired
+    private DeptUtil deptUtil;
 
     /**
      * 审计统计图表
@@ -171,10 +178,30 @@ public class PlanStatisticController {
     }
     @ApiOperation("审计查询")
     @GetMapping(value = {"report", ""})
-    public R planList(Page<Map<String, Object>> page){
+    public R planList(Page<Map<String, Object>> page, String auditYear){
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         try {
-            resultList =  planManagementService.statisticPlanReport(page.getCurrent()-1, page.getSize());
+            //获取机构
+            //按dept查询问题数 key
+            List<DeptVO> deptChild = deptUtil.findChildBank(0, "中支");
+            List<Map<String, Object>>  resultListStatis =  planManagementService.statisticPlanReport(page.getCurrent()-1, page.getSize(), auditYear);
+            Map<Integer, Map<String, Object>> datagroup = new HashMap<>();
+            for(Map<String, Object> statisData : resultListStatis){
+                datagroup.put(Integer.valueOf(statisData.get("implementingAgencyId").toString()),statisData);
+            }
+            for (DeptVO deptVO : deptChild) {
+                Map<String, Object> data = new HashMap<>();
+                if(datagroup.containsKey(deptVO.getDeptId())){
+                    resultList.add(datagroup.get(deptVO.getDeptId()));
+                }else{
+                    data.put("implementingAgencyId", deptVO.getDeptId());
+                    data.put("projectCount", "0");
+                    data.put("finishCount", "0");
+                    data.put("noFinishCount", "0");
+                    data.put("timeoutCount", "0");
+                    resultList.add(data);
+                }
+            }
             page.setRecords(resultList);
             page.setTotal(Long.valueOf(planManagementService.countStatisticPlanReport()));
         } catch (Exception e) {

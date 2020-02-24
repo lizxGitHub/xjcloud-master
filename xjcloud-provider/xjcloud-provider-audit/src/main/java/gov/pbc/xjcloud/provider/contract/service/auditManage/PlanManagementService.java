@@ -26,7 +26,7 @@ public interface PlanManagementService extends IService<PlanCheckList> {
 
     List<Map<String, Object>> countPlan(String agencyId,String auditYear);
 
-    List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo);
+    List<Map<String, Object>> statisticPlanReport(  Long pageStart, Long pageNo,  String auditYear);
 
     int countStatisticPlanReport();
 
