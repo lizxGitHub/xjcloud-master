@@ -256,4 +256,12 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 //        actVars.put("status",params.get("status"));
 //        auditActivitiService.complete(params.get("taskId").toString(),actVars);
     }
+
+    /**
+     * 分组统计
+     * @param params
+     */
+    public List<Map<String,Object>> groupCount(Map<String, Object> params) {
+        return planManagementMapper.groupCount(params);
+    }
 }

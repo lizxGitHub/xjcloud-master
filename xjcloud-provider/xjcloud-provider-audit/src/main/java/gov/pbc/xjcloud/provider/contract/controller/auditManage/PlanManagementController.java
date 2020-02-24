@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,8 +23,9 @@ import gov.pbc.xjcloud.provider.contract.vo.PlanCheckListVO;
 import gov.pbc.xjcloud.provider.contract.vo.TreeVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -168,15 +171,15 @@ public class PlanManagementController {
             List<EntryInfo> list = entryService.list();
             Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                     .collect(Collectors.toMap(e -> e.getId(), e -> e));
-            for (Map<String, Object> plan: planListold) {
+            for (Map<String, Object> plan : planListold) {
                 PlanCheckListVO planCheckListDTO = changeToDTO(null);
                 Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
                 for (Field field : declaredFields) {
                     String name = field.getName();
-                    if(null!=plan.get(name)){
+                    if (null != plan.get(name)) {
                         String objVal = plan.get(name).toString();
-                        if(StringUtils.isNotBlank(objVal)&&null != entryMap.get(objVal)){
-                            plan.put(name,entryMap.get(objVal).getConcatName());
+                        if (StringUtils.isNotBlank(objVal) && null != entryMap.get(objVal)) {
+                            plan.put(name, entryMap.get(objVal).getConcatName());
                         }
                     }
                 }
@@ -428,5 +431,71 @@ public class PlanManagementController {
         query.put("status", PlanStatusEnum.FILE.getCode());
         Page<PlanCheckList> result = planManagementService.getDeadlinePlanPage(query, page);
         return R.ok(result);
+    }
+
+    @GetMapping("findAllDeptGroup")
+    public R findAllDeptGroup() {
+        List<PlanCheckList> list = planManagementService.list();
+        JSONObject data = new JSONObject();
+        JSONArray impData = new JSONArray();
+        JSONArray auditData = new JSONArray();
+        Map<String, List<PlanCheckList>> impCollect = list.stream().filter(e -> StringUtils.isNotBlank(e.getImplementingAgencyId())).collect(Collectors.groupingBy(e -> e.getImplementingAgencyId()));
+        Map<String, List<PlanCheckList>> auditCollect = list.stream().filter(e -> StringUtils.isNotBlank(e.getAuditObjectId())).collect(Collectors.groupingBy(e -> e.getAuditObjectId()));
+        impCollect.entrySet().stream().forEach(e -> {
+            gov.pbc.xjcloud.provider.contract.utils.R impR = userCenterService.dept(Integer.parseInt(e.getKey()));
+            impData.add(impR.getData());
+        });
+        auditCollect.entrySet().stream().forEach(e -> {
+            gov.pbc.xjcloud.provider.contract.utils.R impR = userCenterService.dept(Integer.parseInt(e.getKey()));
+            auditData.add(impR.getData());
+        });
+        data.put("impData", impData);
+        data.put("auditData", auditData);
+        return new R().setData(data);
+    }
+
+
+    private boolean isInteger(String str) {
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
+
+    /**
+     * 分组
+     *
+     * @param params
+     * @return
+     */
+    @GetMapping("planList/groupList")
+    public R planListGroup(@RequestParam Map<String, Object> params) {
+        List<Map<String, Object>> mapList = planManagementService.groupCount(params);
+        List<EntryInfo> list = entryService.list();
+        Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
+                .collect(Collectors.toMap(e -> e.getId(), e -> e));
+        JSONObject jsonObject = new JSONObject();
+        List<String> deptKey=Arrays.asList("implementingAgencyId","auditObjectId");
+        if (null != mapList && !mapList.isEmpty()) {
+
+            mapList.forEach(e -> {
+                e.entrySet().stream().forEach(x -> {
+                    if (deptKey.contains(x.getKey())) {
+                        gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(x.getKey()));
+                        JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                        if (null != deptJSON && "0".equals(deptJSON.get("code"))) {
+                            JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                            x.setValue(deptData.get("name"));
+                        }
+                    }else{
+                        if(entryMap.containsKey(x.getKey())){
+                            x.setValue(entryMap.get(x.getKey()).getConcatName());
+                        }
+                    }
+                });
+            });
+
+        }
+        jsonObject.put("records", mapList);
+        jsonObject.put("count", mapList.size());
+        return new R().setData(jsonObject);
     }
 }

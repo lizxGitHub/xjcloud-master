@@ -325,6 +325,36 @@
         from plan_files
         where biz_key=#{0} and length(file_uri)>0
     </select>
+    <!--分组统计-->
+    <select id="groupCount" resultType="java.util.Map">
+        select
+        count(1) counts
+        <if test="params.auditObjectId!=null and params.auditObjectId!=''">
+            ,a.audit_object_id auditObjectId
+        </if>
+        <if test="params.implementingAgencyId!=null and params.implementingAgencyId!=''">
+            ,a.implementing_agency_id implementingAgencyId
+        </if>
+        <if test="params.questionEntryId!=null and params.questionEntryId!=''">
+            ,a.question_entry_id questionEntryId
+        </if>
+        <if test="params.projectType!=null and params.projectType!=''">
+            ,a.project_type projecttype
+        </if>
+        <if test="params.problemSeverityId!=null and params.problemSeverityId!=''">
+            ,a.problem_severity_id problemSeverityId
+        </if>
+        from plan_check_list a where a.del_flag = '0'
+        <if test="params.projectName!=null and params.projectName!=''">
+            and a.projectName like concat('%',#{params.projectName},'%')
+        </if>
+        <if test="params.problemDescription!=null and params.problemDescription!=''">
+            and a.problem_description like concat('%',#{params.problemDescription},'%')
+        </if>
+        <if test="params.groupBy!=null and params.groupBy!=''">
+            group_by ${params.groupBy}
+        </if>
+    </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList"
             useGeneratedKeys="true" keyProperty="planCheckList.id" keyColumn="id">
