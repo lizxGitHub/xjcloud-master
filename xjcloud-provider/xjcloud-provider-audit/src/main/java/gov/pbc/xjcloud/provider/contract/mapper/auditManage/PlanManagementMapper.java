@@ -184,4 +184,11 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     List<PlanFileVO> findFilesByBizKey(String bizKey);
+
+    /**
+     * 分组统计
+     * @param params
+     * @return
+     */
+    List<Map<String, Object>> groupCount(@Param("params") Map<String, Object> params);
 }
