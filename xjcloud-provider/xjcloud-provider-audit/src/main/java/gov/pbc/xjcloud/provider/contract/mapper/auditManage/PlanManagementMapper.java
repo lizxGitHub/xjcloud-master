@@ -104,8 +104,9 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * 根据字段分组查询
      */
     @Select({"<script>",
-            "select ${groupName} name ,count(1) value"
+            "select <if test='groupName!=null and groupName!=\"\"'>${groupName} name ,</if>pcl.${groupField} id, count(1) value"
                     + " from plan_check_list pcl"
+                    + " left join entry_info project_type_entry on pcl.project_type=project_type_entry.id and project_type_entry.del_flag=0 and project_type_entry.category_fk=3"
                     + " left join entry_info audit_nature_entry on pcl.audit_nature_id=audit_nature_entry.id and audit_nature_entry.del_flag=0 and audit_nature_entry.category_fk=4"
                     + " left join entry_info problem_severity_entry on pcl.problem_severity_id=problem_severity_entry.id and problem_severity_entry.del_flag=0 and problem_severity_entry.category_fk=5"
                     + " left join entry_info rectify_situation_entry on pcl.rectify_situation_id=rectify_situation_entry.id and rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6"
@@ -119,12 +120,12 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + " <if test='query.auditObjectId!=null and query.auditObjectId!=\"\"'> and (pcl.audit_object_id = '${query.auditObjectId}')</if>"
                     + " <if test='query.problemSeverityId!=null and query.problemSeverityId!=\"\"'> and (pcl.problem_severity_id = '${query.problemSeverityId}')</if>"
                     + " <if test='query.rectifySituationId!=null and query.rectifySituationId!=\"\"'> and (pcl.rectify_situation_id = '${query.rectifySituationId}')</if>"
-                    + " group by pcl.${groupField}",
+                    + " group by pcl.${groupField} order by count(1) desc",
             "</script>"})
     List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupName")String groupName, @Param("groupField")String groupField);
 
 
-    List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId);
+    List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId, @Param("auditYear")String auditYear);
 
     @Select({"<script>",
             "select pcl.implementing_agency_id implementingAgencyId,count(*) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"

@@ -96,8 +96,8 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
-    public List<Map<String, Object>> countPlan(String agencyId) {
-        return planManagementMapper.countPlan(agencyId);
+    public List<Map<String, Object>> countPlan(String agencyId, String auditYear) {
+        return planManagementMapper.countPlan(agencyId, auditYear);
     }
 
     @Override

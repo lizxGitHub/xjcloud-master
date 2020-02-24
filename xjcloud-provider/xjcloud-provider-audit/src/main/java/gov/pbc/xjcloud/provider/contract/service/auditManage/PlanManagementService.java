@@ -24,7 +24,7 @@ public interface PlanManagementService extends IService<PlanCheckList> {
 
     List<Map<String, Object>> groupCountEntryByQuery(PlanCheckList query, String groupName, String groupField);
 
-    List<Map<String, Object>> countPlan(String agencyId);
+    List<Map<String, Object>> countPlan(String agencyId,String auditYear);
 
     List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo);
 

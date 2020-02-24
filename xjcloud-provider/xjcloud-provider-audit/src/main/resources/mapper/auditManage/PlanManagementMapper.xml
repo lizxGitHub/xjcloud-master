@@ -228,6 +228,9 @@
         <if test='agencyId!=null and agencyId!=""'>
             and implementing_agency_id='${agencyId}'
         </if>
+        <if test='auditYear!=null and auditYear!=""'>
+            and audit_year='${auditYear}'
+        </if>
     </select>
     <select id="selectAttentionPage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT

@@ -77,6 +77,13 @@ public class PlanStatisticController {
                 groupFieldFilters.add("rectify_situation_entry.name");
                 subtitles.add("整改情况");
             }
+            if(StringUtils.equals(query.getProjectType(),"all")){
+                query.setProjectType("");
+                groupFilters.add("project_type");
+                groupFieldFilters.add("project_type_entry.name");
+                subtitles.add("项目类型");
+            }
+
             JSONObject data = new JSONObject();
 
             if(null!=groupFilters){
@@ -94,6 +101,12 @@ public class PlanStatisticController {
                             nameList.add(groupData.get("name").toString());
                             JSONObject statisticJson = new JSONObject();
                             statisticJson.put("name", groupData.get("name"));
+                            statisticJson.put("value", groupData.get("value"));
+                            statisticJArr.add(statisticJson);
+                        }else{
+                            nameList.add(groupData.get("id").toString());
+                            JSONObject statisticJson = new JSONObject();
+                            statisticJson.put("name", groupData.get("id"));
                             statisticJson.put("value", groupData.get("value"));
                             statisticJArr.add(statisticJson);
                         }
@@ -142,11 +155,11 @@ public class PlanStatisticController {
      */
     @ApiOperation("不同状态审计统计个数")
     @PostMapping("/countOfPlan")
-    public R countOfPlan(String agenceId, HttpServletResponse response) {
+    public R countOfPlan(String agenceId, String auditYear, HttpServletResponse response) {
         R<JSONObject> r = new R<>();
         try {
             JSONObject data = new JSONObject();
-            List<Map<String,Object>> resultList = planManagementService.countPlan(agenceId);
+            List<Map<String,Object>> resultList = planManagementService.countPlan(agenceId, auditYear);
             if(null!=resultList&&resultList.size()>0){
                 data = JSONObject.parseObject(JSONObject.toJSONString(resultList.get(0)));
             }
