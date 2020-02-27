@@ -8,13 +8,14 @@ spring:
     config:
       fail-fast: true
       name: ${spring.application.name}
-      uri: http://172.18.47.232:8888
+      uri: http://xjcloud-config:8888
       discovery:
         enabled: true
         service-id: xjcloud-config
   redis:
     database: 1
-    host: 127.0.0.1
+    host: xjcloud-redis
+#    host: 127.0.0.1
     port: 6379
     timeout: 5000
     jedis:
@@ -83,7 +84,7 @@ audit:
   gate-way:
     service-id: xjcloud-gateway
 #    url: http://39.108.50.114:9999
-    url: xjcloud-gateway
+    url: http://xjcloud-gateway:9999
   auth-url: ${audit.gate-way.url}/auth/oauth/token
   user-url: ${audit.gate-way.url}/admin/users/info
   users-url: ${audit.gate-way.url}/admin/users
