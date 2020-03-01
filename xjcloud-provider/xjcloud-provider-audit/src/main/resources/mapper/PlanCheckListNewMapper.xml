@@ -157,8 +157,8 @@
         <if test="plan.delayRemarks!=null and plan.delayRemarks!=''">
             `delay_remarks`=#{plan.delayRemarks},
         </if>
-        <if test="plan.delayDate!=null">
-            `delay_date`=#{plan.delayDate,jdbcType=TIMESTAMP},
+        <if test="plan.delayDate!=null and plan.delayDate!=''">
+            `delay_date`=#{plan.delayDate},
         </if>
         <if test="plan.impUserId!=null and plan.impUserId!=''">
             `imp_user_id`=#{plan.impUserId},

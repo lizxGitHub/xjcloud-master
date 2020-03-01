@@ -221,6 +221,10 @@ public class TaskController {
             if (params.get("opinion") != null) {
                 opinion = (String) params.get("opinion");
             }
+            String delayDate = ""; //延迟天数
+            if (params.get("delayDate") != null) {
+                delayDate = (String) params.get("delayDate");
+            }
             int status = (int) params.get("auditStatus");
             String statusStr = params.get("auditStatus").toString();
             String mark = "";
@@ -350,7 +354,7 @@ public class TaskController {
                 planCheckListService.updatePlanById(plan);
             } else if (PlanStatusEnum.DELAY_APPLY.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //更新延迟时间与说明
-                plan.setDelayDate(new Date());
+                plan.setDelayDate(delayDate);
                 plan.setDelayRemarks(opinion);
                 planCheckListService.updatePlanById(plan);
                 startTimePartTwo = new Date();
@@ -366,7 +370,7 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
             } else if (PlanStatusEnum.DELAY_IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
 //                //实施部门一般员工
-//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 //实施部门管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
             }
