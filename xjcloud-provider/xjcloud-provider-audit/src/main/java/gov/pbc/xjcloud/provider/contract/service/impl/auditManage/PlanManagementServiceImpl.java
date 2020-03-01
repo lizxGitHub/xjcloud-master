@@ -7,19 +7,24 @@ import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
+import gov.pbc.xjcloud.provider.contract.service.IBaseService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -262,6 +267,150 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
      * @param params
      */
     public List<Map<String,Object>> groupCount(Map<String, Object> params) {
+        //超时统计
+        if(null!=params.get("overTime")&&params.get("overTime").toString().equals("all")){
+            List<Map<String, Object>> list = this.planManagementMapper.listAllWithDays(params);
+            List<Map<String,Object>> result = calculateOverTime(list);
+            return result;
+        }else if(null!=params.get("overTime")&&!(params.get("overTime")).equals("all")&&StringUtils.isNotBlank((String)params.get("overTime")))
+            dealtOverTimeParams(params);
+        else if(null!=params.get("costTime")&&params.get("costTime").toString().equals("all")){
+            List<Map<String, Object>> list = this.planManagementMapper.listAllWithDays(params);
+            List<Map<String,Object>> result = calculateCostTime(list);
+            return result;
+        }else if(null!=params.get("costTime")&&!(params.get("costTime")).equals("all")&&StringUtils.isNotBlank((String)params.get("costTime"))){
+            dealtCostTimeParams(params);
+        }
         return planManagementMapper.groupCount(params);
+    }
+
+    private void dealtOverTimeParams(Map<String, Object> params) {
+        String overTimeStr =(String) params.get("overTime");
+        int caseTime = Integer.parseInt(overTimeStr);
+        for (AtomicInteger month=new AtomicInteger(1);month.get()<=7;month.addAndGet(1)){
+            if(month.get()==7){//超过6个月，第七个月开始计算
+                int overTimeStart = (month.get()*30);
+                params.put("overTimeStart",overTimeStart);
+                break;
+            }
+            int overTimeStart = (month.get()*30);
+            int overTimeEnd= (month.get()*30+30);
+            params.put("overTimeStart",overTimeStart);
+            params.put("overTimeEnd",overTimeEnd);
+        }
+    }
+
+    private void dealtCostTimeParams(Map<String, Object> params) {
+        String costTimeStr =(String) params.get("costTime");
+        int caseTime = Integer.parseInt(costTimeStr);
+        for (AtomicInteger month=new AtomicInteger(1);month.get()<=8;month.addAndGet(1)){
+            if(month.get()==7){//半年到一年
+                int overTimeStart = (month.get()*30);
+                int overTimeEnd = 365;
+                params.put("costTimeStart",overTimeStart);
+                params.put("costTimeEnd",overTimeEnd);
+                break;
+            }
+            if(month.get()==8){//一年以上
+                int overTimeStart = 365;
+                params.put("overTimeStart",overTimeStart);
+                break;
+            }
+            int overTimeStart = (month.get()*30);
+            int overTimeEnd= (month.get()*30+30);
+            params.put("overTimeStart",overTimeStart);
+            params.put("overTimeEnd",overTimeEnd);
+        }
+    }
+
+    private List<Map<String, Object>> calculateCostTime(List<Map<String, Object>> list) {
+        List<Map<String, Object>> result=new ArrayList<>(list.size()/2);
+        for (AtomicInteger month = new AtomicInteger(1); month.get()<=8; month.addAndGet(1)) {
+            long count = list.stream().filter(e -> {
+                Date startTimeAll = (Date) e.get("startTimeAll");
+                Date endTimeAll = (Date) e.get("endTimeAll");
+                if (null == endTimeAll) {
+                    endTimeAll = new Date();
+                }
+                long costTime = diffDays(startTimeAll, endTimeAll);
+                if (month.get() == 7) {
+                    boolean lg = (costTime - 0 - 0) >= (month.get() * 30 - 30);
+                    boolean gt = (costTime - 0 - 0) < 365;
+                    return lg & gt;
+                }
+                if (month.get() == 8) {
+                    return (costTime - 0 - 0) >= 365;
+                }
+                boolean lg = (costTime - 0 - 0) >= (month.get() * 30 - 30);
+                boolean gt = (costTime - 0 - 0) < (month.get() * 30);
+                return lg & gt;
+            }).count();
+            Map<String, Object> value = new HashMap<>();
+            value.put("value", count);
+            if (month.get() == 7) {
+                value.put("name", String.format("整改%d个月小于一年", month.get() - 1));
+            } else if (month.get() == 8) {
+                value.put("name", String.format("整改%d一年以上", month.get() - 1));
+            } else {
+                value.put("name", String.format("整改%d个月", month.get()));
+            }
+            result.add(value);
+        }
+        return result;
+    }
+
+    private List<Map<String, Object>> calculateOverTime(List<Map<String, Object>> list) {
+        List<Map<String,Object>> result =new ArrayList<>();
+        for (AtomicInteger month=new AtomicInteger(1);month.get()<=7;month.addAndGet(1)){
+            long count = list.stream().filter(e -> {
+                Long planTime = Long.parseLong(e.get("planTime").toString());
+                Date startTimeAll = (Date) e.get("startTimeAll");
+                Date endTimeAll =(Date) e.get("endTimeAll");
+                if(null == endTimeAll){
+                    endTimeAll=new Date();
+                }
+                long costTime =diffDays(startTimeAll,endTimeAll);
+                long delayDate =  Long.parseLong(e.get("delayDate").toString());
+                if(month.get()==7){
+                    return (costTime-planTime+delayDate)>=(month.get()*30);
+                }
+                boolean lg= (costTime-planTime+delayDate)>=(month.get()*30);
+                boolean gt= (costTime-planTime+delayDate)<(month.get()*30+30);
+                return lg&gt;
+            }).count();
+            Map<String, Object> value = new HashMap<>();
+            value.put("value",count);
+            if(month.get()==7){
+                value.put("name",String.format("超时%d个月以上",month.get()-1));
+            }else {
+                value.put("name",String.format("超时%d个月",month.get()));
+            }
+            result.add(value);
+        }
+        return result;
+    }
+
+    private long diffDays(Date startTimeAll, Date endTimeAll) {
+        long start= (startTimeAll).getTime();
+        long end = (endTimeAll).getTime();
+        return (end-start)/(24*60*60*1000);
+    }
+
+
+    /**
+     * Date转换为LocalDateTime
+     * @param date
+     */
+    public LocalDateTime date2LocalDateTime(Date date){
+        Instant instant = date.toInstant();//An instantaneous point on the time-line.(时间线上的一个瞬时点。)
+        ZoneId zoneId = ZoneId.systemDefault();//A time-zone ID, such as {@code Europe/Paris}.(时区)
+        LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+
+        System.out.println(localDateTime.toString());//2018-03-27T14:07:32.668
+        System.out.println(localDateTime.toLocalDate() + " " +localDateTime.toLocalTime());//2018-03-27 14:48:57.453
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");//This class is immutable and thread-safe.@since 1.8
+        System.out.println(dateTimeFormatter.format(localDateTime));//2018-03-27 14:52:57
+        return localDateTime;
     }
 }

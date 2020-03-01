@@ -142,8 +142,8 @@ public class PlanCheckList implements Serializable,Cloneable{
     /**
      * 延期时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
-    private Date delayDate;
+//    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
+    private String delayDate;
 
     /**
      * taskId

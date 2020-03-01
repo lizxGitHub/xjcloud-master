@@ -295,7 +295,7 @@
         `plan_check_list` a
          left join plan_time_temp t on a.id = t.plan_id
         where a.del_flag='0'
-        and t.days>30
+         and (TIMESTAMPDIFF( DAY, t.start_time_all, IFNULL( t.end_time_all, NOW( ) ) )-ifnull(a.plan_time,0)+ifnull(a.delay_date,0))<![CDATA[>=]]>30
         and (imp_user_id=#{userId} or imp_admin_id=#{userId} or audit_user_id=#{userId}
         or audit_admin_id=#{userId})
         and status!=#{status}
@@ -308,7 +308,7 @@
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
         left join plan_time_temp t on a.id = t.plan_id
         where a.del_flag='0'
-        and t.days>30
+        and (TIMESTAMPDIFF( DAY, t.start_time_all, IFNULL( t.end_time_all, NOW( ) ) )-ifnull(a.plan_time,0)+ifnull(a.delay_date,0))<![CDATA[>=]]>30
         and (imp_user_id=#{query.userId} or imp_admin_id=#{query.userId} or audit_user_id=#{query.userId}
         or audit_admin_id=#{query.userId})
         and status!=#{query.status}
@@ -347,16 +347,51 @@
         <if test="params.problemSeverityId!=null and params.problemSeverityId=='all'">
             ,a.problem_severity_id `name`
         </if>
-        from plan_check_list a where a.del_flag = '0'
+        from plan_check_list a
+         left join plan_time_temp b on a.id=b.plan_id
+         where a.del_flag = '0'
         <if test="params.projectName!=null  and params.projectName!=''and params.projectName!='all'">
-            and a.projectName like concat('%',#{params.projectName},'%')
+            and a.project_Name like concat('%',#{params.projectName},'%')
         </if>
         <if test="params.problemDescription!=null and params.problemDescription!='' and params.problemDescription!='all'">
+            and a.problem_description like concat('%',#{params.problemDescription},'%')
+        </if>
+        <if test="params.costTimeEnd!=null and params.costTimeEnd!=''">
+            and TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )<![CDATA[<=]]>#{params.costTimeEnd}
+        </if>
+        <if test="params.costTimeStart!=null and params.costTimeStart!=''">
+            and TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )<![CDATA[>]]>#{params.costTimeStart}
+        </if>
+        <if test="params.overTimeEnd!=null and params.overTimeEnd!=''">
+            and (TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )-ifnull(a.plan_time,0)+ifnull(a.delay_date,0))<![CDATA[<=]]>#{params.costTimeEnd}
+        </if>
+        <if test="params.overTimeStart!=null and params.overTimeStart!=''">
+            and (TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )-ifnull(a.plan_time,0)+ifnull(a.delay_date,0))<![CDATA[>]]>#{params.costTimeStart}
+        </if>
+        <if test="params.overTime!=null and params.overTime!='' and params.overTime!='all'">
             and a.problem_description like concat('%',#{params.problemDescription},'%')
         </if>
         <if test="params.groupBy!=null and params.groupBy!=''">
             group by ${params.groupBy}
         </if>
+    </select>
+    <select id="listAllWithDays" resultType="java.util.Map">
+        select
+        a.id,
+        ifnull(a.plan_time,0) planTime,
+        b.start_time_all startTimeAll,
+        b.end_time_all endTimeAll,
+        ifnull(a.delay_date,0) delayDate
+        from plan_check_list a
+        left join plan_time_temp b on a.id=b.plan_id
+        where a.del_flag = '0' and b.start_time_all is not null
+        <if test="params.projectName!=null  and params.projectName!=''and params.projectName!='all'">
+            and a.project_Name like concat('%',#{params.projectName},'%')
+        </if>
+        <if test="params.problemDescription!=null and params.problemDescription!='' and params.problemDescription!='all'">
+            and a.problem_description like concat('%',#{params.problemDescription},'%')
+        </if>
+        GROUP BY a.id
     </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList"

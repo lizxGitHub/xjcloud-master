@@ -191,4 +191,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     List<Map<String, Object>> groupCount(@Param("params") Map<String, Object> params);
+
+    List<Map<String,Object>> listAllWithDays(@Param("params") Map<String, Object> params);
 }

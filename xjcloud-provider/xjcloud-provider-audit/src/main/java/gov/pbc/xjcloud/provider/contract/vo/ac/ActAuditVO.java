@@ -12,7 +12,7 @@ public class ActAuditVO extends ActVO {
 
     private int auditStatus;
 
-    private Date delayDate;
+    private String delayDate;
 
     private String delayRemarks;
 

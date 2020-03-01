@@ -486,7 +486,7 @@ public class PlanManagementController {
         });
         if (null != mapList && !mapList.isEmpty()) {
 
-            mapList.forEach(e -> {
+            mapList.stream().forEach(e -> {
                 if (isGroupByDept.get()) {
                     gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(e.get("name").toString()));
                     JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
@@ -516,7 +516,10 @@ public class PlanManagementController {
             int num = Integer.parseInt(e.get("value").toString());
             Map<String, Object> row = new HashMap<>();
             e.entrySet().stream().forEach(es ->row.put(es.getKey(), es.getValue()));
-            String percent = numberFormat.format(((double) num) / ((double) total.get()));
+            String percent = "0%";
+            if(total.get()!=0){
+                percent = numberFormat.format(((double) num) / ((double) total.get()));
+            }
             row.put("percent", percent);
             tableData.add(row);
         });
@@ -525,5 +528,14 @@ public class PlanManagementController {
         jsonObject.put("legend", legend);
         jsonObject.put("records", mapList);
         return new R().setData(jsonObject);
+    }
+
+    private boolean filterOverTime(Map<String, Object> e, Map<String, Object> params) {
+        boolean result=true;
+        String overTime =(String) params.get("overTime");
+        if(null!=overTime&&!"all".equals(overTime)){
+
+        }
+        return true;
     }
 }

@@ -142,11 +142,11 @@ public class PlanCheckListVO  {
      */
     private String rectifyResult;
     /**
-     * 延期时间
+     * 延期时间(天)
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
-    private Date delayDate;
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+//    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")
+    private String delayDate;
 
     private String implementingAgencyName;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
