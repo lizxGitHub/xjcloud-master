@@ -178,28 +178,38 @@ public class PlanStatisticController {
     }
     @ApiOperation("审计查询")
     @GetMapping(value = {"report", ""})
-    public R planList(Page<Map<String, Object>> page, String auditYear){
+    public R planList(Page<Map<String, Object>> page, String auditYear, int deptId){
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         try {
-            //获取机构
-            //按dept查询问题数 key
-            List<DeptVO> deptChild = deptUtil.findChildBank(0, "中支");
-            List<Map<String, Object>>  resultListStatis =  planManagementService.statisticPlanReport(page.getCurrent()-1, page.getSize(), auditYear);
-            Map<Integer, Map<String, Object>> datagroup = new HashMap<>();
-            for(Map<String, Object> statisData : resultListStatis){
-                datagroup.put(Integer.valueOf(statisData.get("implementingAgencyId").toString()),statisData);
-            }
-            for (DeptVO deptVO : deptChild) {
+            if (deptId != 0) {
                 Map<String, Object> data = new HashMap<>();
-                if(datagroup.containsKey(deptVO.getDeptId())){
-                    resultList.add(datagroup.get(deptVO.getDeptId()));
-                }else{
-                    data.put("implementingAgencyId", deptVO.getDeptId());
-                    data.put("projectCount", "0");
-                    data.put("finishCount", "0");
-                    data.put("noFinishCount", "0");
-                    data.put("timeoutCount", "0");
-                    resultList.add(data);
+                data.put("implementingAgencyId", deptId);
+                data.put("projectCount", "0");
+                data.put("finishCount", "0");
+                data.put("noFinishCount", "0");
+                data.put("timeoutCount", "0");
+                resultList.add(data);
+            } else {
+                //获取机构
+                //按dept查询问题数 key
+                List<DeptVO> deptChild = deptUtil.findChildBank(0, "中支");
+                List<Map<String, Object>>  resultListStatis =  planManagementService.statisticPlanReport(page.getCurrent()-1, page.getSize(), auditYear);
+                Map<Integer, Map<String, Object>> datagroup = new HashMap<>();
+                for(Map<String, Object> statisData : resultListStatis){
+                    datagroup.put(Integer.valueOf(statisData.get("implementingAgencyId").toString()),statisData);
+                }
+                for (DeptVO deptVO : deptChild) {
+                    Map<String, Object> data = new HashMap<>();
+                    if(datagroup.containsKey(deptVO.getDeptId())){
+                        resultList.add(datagroup.get(deptVO.getDeptId()));
+                    }else{
+                        data.put("implementingAgencyId", deptVO.getDeptId());
+                        data.put("projectCount", "0");
+                        data.put("finishCount", "0");
+                        data.put("noFinishCount", "0");
+                        data.put("timeoutCount", "0");
+                        resultList.add(data);
+                    }
                 }
             }
             page.setRecords(resultList);
