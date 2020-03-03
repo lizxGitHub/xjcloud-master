@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.constants.PlanConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.entry.EntryFlow;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
@@ -18,21 +20,29 @@ import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
+import gov.pbc.xjcloud.provider.contract.vo.KeyValue;
 import gov.pbc.xjcloud.provider.contract.vo.PlanCheckListVO;
 import gov.pbc.xjcloud.provider.contract.vo.TreeVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -559,7 +569,10 @@ public class PlanManagementController {
             total.getAndAdd(num);
         });
         mapList.forEach(e -> {
-            legend.add(e.get("name"));
+            String name = (String) e.get("name");
+            name = name==null?"全部":name;
+            e.put("name",name);
+            legend.add(name==null?"全部":name);
             int num = Integer.parseInt(e.get("value").toString());
             Map<String, Object> row = new HashMap<>();
             e.entrySet().stream().forEach(es ->row.put(es.getKey(), es.getValue()));
@@ -584,5 +597,217 @@ public class PlanManagementController {
 
         }
         return true;
+    }
+
+    /**
+     * 导出统计表
+     * @param params
+     * @param response
+     */
+    @GetMapping("export/groupcount")
+    public void export(@RequestParam Map<String, Object> params, HttpServletResponse response){
+        List<Map<String, Object>> mapList = planManagementService.groupCount(params);
+        List<EntryInfo> list = entryService.list();
+        Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
+                .collect(Collectors.toMap(e -> e.getId(), e -> e));
+        JSONObject jsonObject = new JSONObject();
+        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId");
+        AtomicBoolean isGroupByDept = new AtomicBoolean(false);
+        deptKey.forEach(e -> {
+            if ("all".equals(params.get(e))) {
+                isGroupByDept.set(true);
+                return;
+            }
+        });
+        if (null != mapList && !mapList.isEmpty()) {
+
+            mapList.stream().forEach(e -> {
+                if (isGroupByDept.get()) {
+                    gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(e.get("name").toString()));
+                    JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                    if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                        JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                        e.put("name",deptData.get("name"));
+                    }
+                } else {
+                    if (entryMap.containsKey(e.get("name"))) {
+                        e.put("name",entryMap.get(e.get("name")).getConcatName());
+                    }
+                }
+            });
+
+        }
+        List<Map<String, Object>> tableData = new ArrayList<>();
+        List<KeyValue> queryList = initQuery(params,deptKey,entryMap);
+
+        AtomicInteger total = new AtomicInteger();
+        NumberFormat numberFormat = NumberFormat.getPercentInstance();
+        numberFormat.setMinimumFractionDigits(2);
+        mapList.forEach(e -> {
+            int num =Integer.parseInt(e.get("value").toString());
+            total.getAndAdd(num);
+        });
+        mapList.forEach(e -> {
+            String name = (String) e.get("name");
+            name = name==null?"全部":name;
+            e.put("name",name);
+            int num = Integer.parseInt(e.get("value").toString());
+            Map<String, Object> row = new HashMap<>();
+            e.entrySet().stream().forEach(es ->row.put(es.getKey(), es.getValue()));
+            String percent = "0%";
+            if(total.get()!=0){
+                percent = numberFormat.format(((double) num) / ((double) total.get()));
+            }
+            row.put("percent", percent);
+            tableData.add(row);
+        });
+        jsonObject.put("tableData", tableData);
+
+        exportFile(response,queryList,tableData);
+
+    }
+
+    private void exportFile(HttpServletResponse response, List<KeyValue> queryList, List<Map<String, Object>> tableData) {
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(1000);
+        sxssfWorkbook.createSheet("数据");
+        SXSSFSheet sheet = sxssfWorkbook.getSheetAt(0);
+        //添加结果数据
+        AtomicInteger lastRowNumber = new AtomicInteger(0);
+        createQueryHeader(lastRowNumber,sxssfWorkbook,sheet,queryList);
+        createTableData(lastRowNumber,sxssfWorkbook,sheet,tableData);
+        OutputStream out =null;
+        try {
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode("统计查询列表.xlsx", "UTF-8"));
+            out = response.getOutputStream();
+            sxssfWorkbook.write(out);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                out.flush();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createTableData(AtomicInteger lastRowNum, SXSSFWorkbook sxssfWorkbook, SXSSFSheet sheet, List<Map<String, Object>> tableData) {
+        Iterator<Map<String, Object>> dataIt = tableData.iterator();
+        SXSSFRow dataTipRow = sheet.createRow(lastRowNum.getAndIncrement());
+        SXSSFCell dataHeadCell = dataTipRow.createCell(0);
+        dataHeadCell.setCellValue("查询结果");
+        dataHeadCell.setCellStyle(getCellStyle(sxssfWorkbook,true));
+        SXSSFRow dataHeader = sheet.createRow(lastRowNum.getAndIncrement());
+        String[] strings = new String[]
+                {"序号","类型","个数","占比"};
+        initHeader(strings,dataHeader,getCellStyle(sxssfWorkbook,true));
+        CellStyle normalStyle = getCellStyle(sxssfWorkbook,false);
+        int index =1;
+        while (dataIt.hasNext()){
+            Map<String, Object> data = dataIt.next();
+            SXSSFRow row = sheet.createRow(lastRowNum.getAndIncrement());
+            SXSSFCell var0 = row.createCell(0);
+            SXSSFCell var1 = row.createCell(1);
+            SXSSFCell var2 = row.createCell(2);
+            SXSSFCell var3 = row.createCell(3);
+            var0.setCellValue(index++);
+            var1.setCellValue((String) data.get("name"));
+            var2.setCellValue((long)data.get("value"));
+            var3.setCellValue((String) data.get("percent"));
+        }
+    }
+
+    private void initHeader(String[] tip, SXSSFRow dataHeader,CellStyle cellStyle) {
+        for(int i = 0 ; i<tip.length;i++){
+            SXSSFCell cell = dataHeader.createCell(i);
+            cell.setCellStyle(cellStyle);
+            cell.setCellValue(tip[i]);
+        }
+    }
+
+    private int createQueryHeader(AtomicInteger rowNum, SXSSFWorkbook sxssfWorkbook, SXSSFSheet sheet, List<KeyValue> queryList) {
+        if(null!=queryList&&!queryList.isEmpty()){
+            Row row=sheet.createRow(rowNum.getAndIncrement());
+            Cell cell = row.createCell(0);
+            cell.setCellValue("查询条件");
+            cell.setCellStyle(getCellStyle(sxssfWorkbook,true));
+            for (KeyValue e:queryList){
+                int curCellIndex = 0;
+                Row queryRow=sheet.createRow(rowNum.getAndIncrement());
+                Cell var1 = queryRow.createCell(curCellIndex++);
+                var1.setCellValue(e.getKey()+":");
+                var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
+                Cell var2 = queryRow.createCell(curCellIndex++);
+                var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
+                var2.setCellValue((String) e.getValue());
+            }
+        }
+
+        return rowNum.get();
+    }
+
+    private CellStyle getCellStyle(Workbook workbook,boolean bold){
+        CellStyle cellStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(bold);//加粗
+        font.setFontHeightInPoints((short) 10);
+        font.setColor(IndexedColors.BLACK.getIndex());
+        cellStyle.setFont(font);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        return cellStyle;
+    }
+
+
+    /**
+     * 处理空字符串
+     *
+     * @param string
+     * @return
+     */
+    private String parseText(String string) {
+        if (string == null) {
+            return "";
+        }
+        return string.trim();
+    }
+
+    /**
+     * 导出查询列表字段
+     *
+     * @param params
+     * @param deptKey
+     * @param entryMap
+     * @return
+     */
+    private List<KeyValue> initQuery(Map<String, Object> params, List<String> deptKey, Map<String, EntryInfo> entryMap) {
+        params.remove("groupBy");
+        List<KeyValue> result=new ArrayList<>();
+        Map<String,String> keyMap = JSONUtil.toBean(JSONUtil.toJsonStr(new PlanConstants()),Map.class);
+        params.keySet().stream().forEach(e->{
+            String key = e;
+            Object value = params.get(key);
+            KeyValue keyValue =new KeyValue();
+            keyValue.setValue(value);
+            keyValue.setKey(keyMap.get(key));
+            result.add(keyValue);
+            if(deptKey.contains(key)){
+                gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt((String) value));
+                JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                    JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                    keyValue.setValue(deptData.get("name"));
+                }
+            }else {
+                if(entryMap.containsKey(value)){
+                    keyValue.setValue(entryMap.get(value));
+                }
+            }
+        });
+        return result;
     }
 }

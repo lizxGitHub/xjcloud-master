@@ -388,6 +388,12 @@
         <if test="params.costTimeStart!=null and params.costTimeStart!=''">
             and TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )<![CDATA[>]]>#{params.costTimeStart}
         </if>
+        <if test="params.auditYearStart!=null and params.auditYearStart!=''">
+            and a.audit_year<![CDATA[>=]]>#{params.auditYearStart}
+        </if>
+        <if test="params.auditYearEnd!=null and params.auditYearEnd!=''">
+            and a.audit_year<![CDATA[<=]]>#{params.auditYearEnd}
+        </if>
         <if test="params.overTimeEnd!=null and params.overTimeEnd!=''">
             and (TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )-ifnull(a.plan_time,0)+ifnull(a.delay_date,0))<![CDATA[<=]]>#{params.costTimeEnd}
         </if>
