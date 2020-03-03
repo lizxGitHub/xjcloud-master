@@ -155,11 +155,41 @@ public class PlanManagementController {
 
     @ApiOperation("取消关注")
     @PutMapping(value = {"uncheck/attention"})
-    public R<Boolean> uncheck(@RequestBody List<Map<String, String>> uncheckList) {
-
+    public R<Boolean> uncheck(String userId, String checkStr) {
+        if (StringUtils.isBlank(checkStr)) {
+            return R.failed("关注列数为空");
+        }
+        if (StringUtils.isBlank(userId)) {
+            return R.failed("用户不存在");
+        }
+        try {
+            planManagementService.cancelCheckAttention(userId, checkStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return R.ok(Boolean.TRUE);
     }
-
+    @ApiOperation("保存报告")
+    @PutMapping(value = {"deptYearReport/save"})
+    public R<Boolean> deptYearReportSave(String deptId, String auditYear, String content) {
+        try {
+            planManagementService.saveDeptYearReport(deptId, auditYear, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(Boolean.TRUE);
+    }
+    @ApiOperation("获取报告")
+    @PutMapping(value = {"deptYearReport/load"})
+    public R<String> deptYearReportLoad(String deptId, String auditYear) {
+        String content = "";
+        try {
+            content = planManagementService.loadDeptYearReportContent(deptId, auditYear);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(content);
+    }
     /**
      * 获取审计计划
      *
@@ -329,7 +359,24 @@ public class PlanManagementController {
         }
         return r.setData(b);
     }
-
+    /**
+     * 用户行为：删除问题
+     *
+     * @param id
+     * @return
+     */
+    @ApiOperation("用户删除问题")
+    @DeleteMapping("deletePlan")
+    public R<Boolean> deletePlan(String ids) {
+        R<Boolean> r = new R<>();
+        Boolean b;
+        if (StringUtils.isBlank(ids)) {
+            throw new NullArgumentException("请求参数不存在");
+        } else {
+            b = planManagementService.removeByIds(Arrays.asList(StringUtils.split(ids,",")));
+        }
+        return r.setData(b);
+    }
     /**
      * 根据id获取问题信息
      *

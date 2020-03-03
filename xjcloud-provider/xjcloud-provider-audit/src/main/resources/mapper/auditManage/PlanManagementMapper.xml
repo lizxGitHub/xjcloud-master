@@ -39,7 +39,33 @@
             #{checkId}
         </foreach>
     </delete>
-
+    <!--机构汇总报告start-->
+    <insert id="addDeptYearReport">
+        insert into dept_year_report(dept_id,audit_year,content)
+         values(#{deptId},#{auditYear},#{content})
+    </insert>
+    <update id="updateDeptYearReport">
+        UPDATE dept_year_report
+        SET
+         `content` = #{content}
+        WHERE
+            dept_id = #{deptId}
+            and audit_year = #{auditYear}
+    </update>
+    <select id="selectDeptYearReport" resultType="java.util.Map">
+        SELECT
+        a.content
+        FROM
+        `dept_year_report` a
+        where 1=1
+        <if test="deptId!=null and deptId!=''">
+            and a.`dept_id` = #{deptId}
+        </if>
+        <if test="auditYear!=null and auditYear!=''">
+            and a.`audit_year` = #{auditYear}
+        </if>
+    </select>
+    <!--机构汇总报告end-->
     <sql id="select">
         a.id,
         a.project_code,
@@ -219,10 +245,10 @@
     <select id="countPlan" resultType="java.util.Map">
         select
         count(1) planSum,
-        sum(case when status='1013' then 1 else 0 end) finishCount,
-        sum(case when status!='1013'
-        then 1 else 0 end) nofinishCount,
-        sum(case when delay_date is not null then 1 else 0 end) timeoutCount
+        IFNULL(sum(case when status='1003' then 1 else 0 end),0) finishCount,
+        IFNULL(sum(case when status!='1003'
+        then 1 else 0 end),0) nofinishCount,
+        IFNULL(sum(case when delay_date is not null then 1 else 0 end),0) timeoutCount
         from
         plan_check_list where del_flag='0'
         <if test='agencyId!=null and agencyId!=""'>

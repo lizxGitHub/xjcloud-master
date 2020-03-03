@@ -100,6 +100,10 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
     void cancelCheckAttention(@Param("userId") String userId, @Param("checkArr") String[] checkArr);
 
     void addCheckAttention(@Param("userId") String userId, @Param("checkArr") String[] checkArr);
+
+    void addDeptYearReport(@Param("deptId") String deptId, @Param("auditYear") String auditYear, @Param("content") String content);
+    void updateDeptYearReport(@Param("deptId") String deptId, @Param("auditYear") String auditYear, @Param("content") String content);
+    List<Map<String, Object>> selectDeptYearReport(@Param("deptId") String deptId, @Param("auditYear") String auditYear);
     /**
      * 根据字段分组查询
      */
@@ -120,16 +124,17 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + " <if test='query.auditObjectId!=null and query.auditObjectId!=\"\"'> and (pcl.audit_object_id = '${query.auditObjectId}')</if>"
                     + " <if test='query.problemSeverityId!=null and query.problemSeverityId!=\"\"'> and (pcl.problem_severity_id = '${query.problemSeverityId}')</if>"
                     + " <if test='query.rectifySituationId!=null and query.rectifySituationId!=\"\"'> and (pcl.rectify_situation_id = '${query.rectifySituationId}')</if>"
-                    + " group by pcl.${groupField} order by count(1) desc",
+                    + " group by pcl.${groupField} having pcl.${groupField} is not null order by count(1) desc",
             "</script>"})
     List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupName")String groupName, @Param("groupField")String groupField);
 
 
     List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId, @Param("auditYear")String auditYear);
 
+
     @Select({"<script>",
-            "select pcl.implementing_agency_id implementingAgencyId,count(*) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"
-                    +"sum(case when pcl.status!='1003' then 1 else 0 end) noFinishCount,sum(case when pcl.delay_date is not null then 1 else 0 end) timeoutCount"
+            "select pcl.implementing_agency_id implementingAgencyId,count(*) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
+                    +"IFNULL(sum(case when pcl.status!='1003' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.delay_date is not null then 1 else 0 end),0) timeoutCount"
                     +" from plan_check_list pcl "
                     +" where pcl.del_flag='0'" +
                      " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"+

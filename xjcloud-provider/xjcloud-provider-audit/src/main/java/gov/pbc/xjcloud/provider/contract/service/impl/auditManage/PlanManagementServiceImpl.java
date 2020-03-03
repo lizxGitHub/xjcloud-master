@@ -143,7 +143,26 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         planManagementMapper.cancelCheckAttention(userId, checkArr);
         planManagementMapper.addCheckAttention(userId, checkArr);
     }
-
+    public void cancelCheckAttention(String userId, String checkStr) {
+        String[] checkArr = checkStr.split(",");
+        planManagementMapper.cancelCheckAttention(userId, checkArr);
+    }
+    public void saveDeptYearReport(String deptId, String auditYear, String content) {
+        List<Map<String, Object>> report = planManagementMapper.selectDeptYearReport(deptId, auditYear);
+        if(null!=report&&report.size()>0){
+            planManagementMapper.updateDeptYearReport(deptId, auditYear, content);
+        }else {
+            planManagementMapper.addDeptYearReport(deptId, auditYear, content);
+        }
+    }
+    public String loadDeptYearReportContent(String deptId, String auditYear) {
+        String content = "";
+        List<Map<String, Object>> report = planManagementMapper.selectDeptYearReport(deptId, auditYear);
+        if(null!=report&&report.size()>0){
+            return report.get(0).get("content")!=null?report.get(0).get("content").toString():"";
+        }
+        return content;
+    }
     /**
      * 关注列表
      *
