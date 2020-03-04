@@ -3,20 +3,18 @@ package gov.pbc.xjcloud.provider.contract.controller.login;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.google.common.collect.Maps;
+import gov.pbc.xjcloud.provider.contract.service.authority.AuthorityService;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @RestController
@@ -34,6 +32,9 @@ public class LoginController {
 
     @Value("${audit.token-name:Authorization}")
     private String tokenName;
+
+    @Resource
+    private AuthorityService authorityService;
 
     @GetMapping("token")
     public R<String> getToken(@RequestParam Map<String, String> params) {
@@ -72,6 +73,15 @@ public class LoginController {
         return jsStr;
     }
 
+    @GetMapping("/getPermission")
+    public R getDeptInfoById(@RequestParam(name = "roleIds", required = true) String roleIds) {
+        R r = new R<>();
+        String[] roleIdArray = roleIds.split(",");
+        int[] array = Arrays.asList(roleIdArray).stream().mapToInt(Integer::parseInt).toArray();
+        List<String> permissionList = authorityService.getMenuByRoleId(array);
+        return r.setData(permissionList);
+    }
+
     public String getParams(Map<String, String> map) {
         Objects.nonNull(map);
         Function<Map<String, String>, String> f1 = (t) -> {
@@ -84,5 +94,7 @@ public class LoginController {
         };
         return f1.apply(map);
     }
+
+
 
 }
