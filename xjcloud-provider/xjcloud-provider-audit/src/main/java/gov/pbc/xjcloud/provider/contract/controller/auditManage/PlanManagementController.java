@@ -715,6 +715,9 @@ public class PlanManagementController {
             var1.setCellValue((String) data.get("name"));
             var2.setCellValue((long)data.get("value"));
             var3.setCellValue((String) data.get("percent"));
+            var0.setCellStyle(getCellStyle(sxssfWorkbook,false));
+            var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
+            var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
         }
     }
 
@@ -740,7 +743,8 @@ public class PlanManagementController {
                 var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
                 Cell var2 = queryRow.createCell(curCellIndex++);
                 var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
-                var2.setCellValue((String) e.getValue());
+                String value =(String) e.getValue();
+                var2.setCellValue("all".equalsIgnoreCase(value)?"全部条件":value);
             }
         }
 
