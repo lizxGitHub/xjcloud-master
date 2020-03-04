@@ -9,7 +9,6 @@ import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.PlanConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
-import gov.pbc.xjcloud.provider.contract.entity.entry.EntryFlow;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
@@ -372,7 +371,7 @@ public class PlanManagementController {
     /**
      * 用户行为：删除问题
      *
-     * @param id
+     * @param ids
      * @return
      */
     @ApiOperation("用户删除问题")
@@ -718,6 +717,7 @@ public class PlanManagementController {
             var0.setCellStyle(getCellStyle(sxssfWorkbook,false));
             var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
             var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
+            var3.setCellStyle(getCellStyle(sxssfWorkbook,false));
         }
     }
 
@@ -743,12 +743,46 @@ public class PlanManagementController {
                 var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
                 Cell var2 = queryRow.createCell(curCellIndex++);
                 var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
-                String value =(String) e.getValue();
+                String value =e.getValue().toString();
                 var2.setCellValue("all".equalsIgnoreCase(value)?"全部条件":value);
             }
         }
 
         return rowNum.get();
+    }
+
+    /**
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    private String changeKeyValue(String key, String value) {
+        if("all".equals(value)){
+            return value;
+        }
+        if("overTime".equals(key)){
+            switch (value){
+                case "7":
+                    value="6个月以上";
+                    break;
+                default:
+                    value+="个月";
+            }
+        }
+        if("costTime".equals(key)){
+            switch (value){
+                case "7":
+                    value="6个月以上一年以内";
+                    break;
+                case "8":
+                    value="超过一年";
+                    break;
+                default:
+                    value+="个月";
+            }
+        }
+        return value;
     }
 
     private CellStyle getCellStyle(Workbook workbook,boolean bold){
@@ -790,14 +824,20 @@ public class PlanManagementController {
      */
     private List<KeyValue> initQuery(Map<String, Object> params, List<String> deptKey, Map<String, EntryInfo> entryMap) {
         params.remove("groupBy");
+        params.remove("overTimeStart");
+        params.remove("overTimeEnd");
         List<KeyValue> result=new ArrayList<>();
         Map<String,String> keyMap = JSONUtil.toBean(JSONUtil.toJsonStr(new PlanConstants()),Map.class);
+        List<String> yearGroup = Arrays.asList("overTime","costTime");
         params.keySet().stream().forEach(e->{
             String key = e;
             Object value = params.get(key);
             KeyValue keyValue =new KeyValue();
             keyValue.setValue(value);
             keyValue.setKey(keyMap.get(key));
+            if(null==keyMap.get(key)){
+                return;
+            }
             result.add(keyValue);
             if(deptKey.contains(key)){
                 gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt((String) value));
@@ -809,6 +849,9 @@ public class PlanManagementController {
             }else {
                 if(entryMap.containsKey(value)){
                     keyValue.setValue(entryMap.get(value));
+                }else if(yearGroup.contains(key)){
+                    value=changeKeyValue(key,value.toString());
+                    keyValue.setValue(value);
                 }
             }
         });
