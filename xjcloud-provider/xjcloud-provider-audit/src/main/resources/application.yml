@@ -25,9 +25,12 @@ spring:
         max-wait: -1
   datasource:
     name: xj_cloud
-    url: jdbc:mysql://39.108.50.114:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
-    username: lrst
-    password: lrst7089
+#    url: jdbc:mysql://39.108.50.114:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+#    username: lrst
+#    password: lrst7089
+    url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: miao
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver  #mysql-connector 6  需要指定时区
     filters: stat
@@ -50,6 +53,9 @@ spring:
       file-size-threshold: 0
       max-request-size: 100MB
       resolve-lazily: false
+  http:
+    encoding:
+      force: true
 #      max-file-size: ${spring.servlet.multipart.max-file-size:100MB}
 #      spring.servlet.multipart.enabled=true，是否支持 multipart 上传文件
 #      spring.servlet.multipart.file-size-threshold=0，支持文件写入磁盘
@@ -101,10 +107,10 @@ audit:
   flow-key: auditApply
   file:
     uploadPrefix: audit-upload
-    staticAccessPath: /${audit.file.uploadPrefix:audit-upload}/** # 静态资源访问配置
-    #uploadFolder: D:/java-project/audit-upload/ #windows上传地址
+    staticAccessPath: /${audit.file.uploadPrefix}/** # 静态资源访问配置
+    uploadFolder: D:/java-project/${audit.file.uploadPrefix}/ #windows上传地址
     appUrl: ${eureka.instance.ip-address}:${server.port} #返回给前端的访问地址
-    uploadFolder: /xjcloud/audit-upload/ #linux上传地址
+#    uploadFolder: /xjcloud/${audit.file.uploadPrefix}/ #linux上传地址
 
 feign:
   hystrix:
