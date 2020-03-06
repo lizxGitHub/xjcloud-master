@@ -856,7 +856,7 @@ public class PlanManagementController {
                 }
             }else {
                 if(entryMap.containsKey(value)){
-                    keyValue.setValue(entryMap.get(value));
+                    keyValue.setValue(entryMap.get(value).getConcatName());
                 }else if(yearGroup.contains(key)){
                     value=changeKeyValue(key,value.toString());
                     keyValue.setValue(value);
