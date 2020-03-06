@@ -379,6 +379,27 @@
         <if test="params.projectName!=null  and params.projectName!=''and params.projectName!='all'">
             and a.project_Name like concat('%',#{params.projectName},'%')
         </if>
+        <if test="params.auditNatureId!=null  and params.auditNatureId!=''and params.auditNatureId!='all'">
+            and a.audit_Nature_Id = #{params.auditNatureId}
+        </if>
+        <if test="params.projectType!=null  and params.projectType!=''and params.projectType!='all'">
+            and a.project_Type = #{params.projectType}
+        </if>
+        <if test="params.problemSeverityId!=null  and params.problemSeverityId!=''and params.problemSeverityId!='all'">
+            and a.problem_Severity_Id = #{params.problemSeverityId}
+        </if>
+        <if test="params.auditObjectId!=null  and params.auditObjectId!=''and params.auditObjectId!='all'">
+            and a.audit_Object_Id = #{params.auditObjectId}
+        </if>
+        <if test="params.questionEntryId!=null  and params.questionEntryId!=''and params.questionEntryId!='all'">
+            and a.question_Entry_Id = #{params.questionEntryId}
+        </if>
+        <if test="params.rectifySituationId!=null  and params.rectifySituationId!=''and params.rectifySituationId!='all'">
+            and a.rectify_Situation_Id = #{params.rectifySituationId}
+        </if>
+        <if test="params.implementingAgencyId!=null  and params.implementingAgencyId!=''and params.implementingAgencyId!='all'">
+            and a.implementing_Agency_Id = #{params.implementingAgencyId}
+        </if>
         <if test="params.problemDescription!=null and params.problemDescription!='' and params.problemDescription!='all'">
             and a.problem_description like concat('%',#{params.problemDescription},'%')
         </if>

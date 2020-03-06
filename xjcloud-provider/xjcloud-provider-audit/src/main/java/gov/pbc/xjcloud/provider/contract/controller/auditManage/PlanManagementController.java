@@ -543,6 +543,10 @@ public class PlanManagementController {
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.stream().forEach(e -> {
+                if(null==e.get("name")){
+                    e.put("name","未选择");
+                    return;
+                }
                 if (isGroupByDept.get()) {
                     gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(e.get("name").toString()));
                     JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
@@ -621,6 +625,10 @@ public class PlanManagementController {
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.stream().forEach(e -> {
+                if(null==e.get("name")){
+                    e.put("name","未选择");
+                    return;
+                }
                 if (isGroupByDept.get()) {
                     gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(e.get("name").toString()));
                     JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
