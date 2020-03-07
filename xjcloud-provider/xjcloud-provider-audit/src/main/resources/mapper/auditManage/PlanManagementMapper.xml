@@ -15,6 +15,7 @@
         <result column="question_entry_id" property="questionEntryId"/>
         <result column="problem_severity_id" property="problemSeverityId"/>
         <result column="rectify_situation_id" property="rectifySituationId"/>
+        <result column="rectify_way" property="rectifyWay"/>
         <result column="problem_characterization" property="problemCharacterization"/>
         <result column="problem_description" property="problemDescription"/>
         <result column="may_affect" property="mayAffect"/>
@@ -79,6 +80,7 @@
         a.question_entry_id,
         a.problem_severity_id,
         a.rectify_situation_id,
+        a.rectify_way,
         a.problem_characterization,
         a.problem_description,
         a.may_affect,

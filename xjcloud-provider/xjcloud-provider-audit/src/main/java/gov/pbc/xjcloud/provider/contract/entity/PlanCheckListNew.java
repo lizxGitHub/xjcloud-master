@@ -24,8 +24,10 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     /** 创建人 */
     private int createdBy ;
     /** 创建时间 */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createdTime ;
     /** 更新时间 */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date updatedTime ;
     /** 项目编号 */
     private String projectCode ;

@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 
 @RestController
 @RequestMapping("/${audit.file.uploadPrefix}")
@@ -37,7 +35,11 @@ public class ResourceController {
         {
             String downloadFile=fileRootPath+File.separator+bizKey+File.separator+fileName;
             response.setContentType("application/force-download");
-            response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
+            try {
+                response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName,"UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             FileInputStream inStream=null;
             BufferedInputStream bufferInStream=null;
             try {
