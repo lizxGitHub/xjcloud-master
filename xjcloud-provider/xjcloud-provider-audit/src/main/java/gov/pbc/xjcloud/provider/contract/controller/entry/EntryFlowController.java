@@ -422,7 +422,7 @@ public class EntryFlowController {
             if (modelSheet == null) {
                 throw new RuntimeException("请使用模板导入!");
             }
-            if (modelSheet.getLastRowNum() < 3) {
+            if (modelSheet.getLastRowNum() < 2) {
                 throw new RuntimeException("文档中没有工作表!");
             }
             int maxRow = modelSheet.getLastRowNum();
