@@ -116,6 +116,16 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
+    public List<Map<String, Object>> statisticPlanReportByDeptId(Long pageStart, Long pageNo, String auditYear, int deptId) {
+        return planManagementMapper.statisticPlanReportByDeptId(pageStart, pageNo, auditYear, deptId);
+    }
+
+    @Override
+    public int countStatisticPlanReportByDeptId(int deptId) {
+        return Integer.valueOf(planManagementMapper.countStatisticPlanReportByDeptId(deptId).get(0).get("count").toString());
+    }
+
+    @Override
     public List<Map<String, Object>> getShortPlans(List deptChild, String status, String auditYear) {
         return planManagementMapper.getShortPlans(deptChild, status, auditYear);
     }

@@ -180,15 +180,11 @@ public class PlanStatisticController {
     @GetMapping(value = {"report", ""})
     public R planList(Page<Map<String, Object>> page, String auditYear, int deptId){
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        Long resultCount = 0L;
         try {
             if (deptId != 0) {
-                Map<String, Object> data = new HashMap<>();
-                data.put("implementingAgencyId", deptId);
-                data.put("projectCount", "0");
-                data.put("finishCount", "0");
-                data.put("noFinishCount", "0");
-                data.put("timeoutCount", "0");
-                resultList.add(data);
+                resultList =  planManagementService.statisticPlanReportByDeptId(page.getCurrent()-1, page.getSize(), auditYear, deptId);
+                resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
             } else {
                 //获取机构
                 //按dept查询问题数 key
@@ -211,9 +207,10 @@ public class PlanStatisticController {
                         resultList.add(data);
                     }
                 }
+                resultCount = Long.valueOf(planManagementService.countStatisticPlanReport());
             }
             page.setRecords(resultList);
-            page.setTotal(Long.valueOf(planManagementService.countStatisticPlanReport()));
+            page.setTotal(resultCount);
         } catch (Exception e) {
             e.printStackTrace();
         }

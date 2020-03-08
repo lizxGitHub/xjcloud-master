@@ -228,9 +228,9 @@ public class AuditPlanInfoController {
             int notRectified = 0; //未整改问题个数
             for (Map<String, Object> shortPlan : shortPlans) {
                 int status = Integer.valueOf(shortPlan.get("status").toString());
-                if (PlanStatusEnum.PLAN_UN_SUBMIT.getCode() != status) {
+                if (0 != status) {
                     total += 1;
-                    if (PlanStatusEnum.FILE.getCode() != status) {
+                    if (1003 != status) {
                         notRectified += 1;
                     }
                 }

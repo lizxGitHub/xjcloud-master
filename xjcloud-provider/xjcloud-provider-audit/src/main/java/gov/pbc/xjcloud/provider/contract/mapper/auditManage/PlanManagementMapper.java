@@ -133,8 +133,8 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
 
     @Select({"<script>",
-            "select pcl.implementing_agency_id implementingAgencyId,count(*) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
-                    +"IFNULL(sum(case when pcl.status!='1003' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.delay_date is not null then 1 else 0 end),0) timeoutCount"
+            "select pcl.implementing_agency_id implementingAgencyId,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
+                    +"IFNULL(sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount"
                     +" from plan_check_list pcl "
                     +" where pcl.del_flag='0'" +
                      " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"+
@@ -143,12 +143,29 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "</script>"})
     List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear);
     @Select({"<script>",
-            "select count(*) count from (select pcl.implementing_agency_id id,count(*) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"
-                    +"sum(case when pcl.status!='1003' then 1 else 0 end) noFinishCount,sum(case when pcl.delay_date is not null then 1 else 0 end) timeoutCount"
+            "select pcl.implementing_agency_id implementingAgencyId,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
+                    +"IFNULL(sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount"
+                    +" from plan_check_list pcl "
+                    +" where pcl.del_flag='0'" +
+                     " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"+
+                    " and pcl.implementing_agency_id = '${deptId}' "
+                    +" <if test='pageStart!=null and pageNo!=null'> limit ${pageStart},${pageNo}</if>",
+            "</script>"})
+    List<Map<String, Object>> statisticPlanReportByDeptId( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear, @Param("deptId")int deptId);
+    @Select({"<script>",
+            "select count(*) count from (select pcl.implementing_agency_id id,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"
+                    +"sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end) noFinishCount,sum(case when pcl.status='1004' then 1 else 0 end) timeoutCount"
                     +" from plan_check_list pcl "
                     +" where pcl.del_flag='0' group by pcl.implementing_agency_id ) a",
             "</script>"})
     List<Map<String, Object>> countStatisticPlanReport();
+    @Select({"<script>",
+            "select count(*) count from (select pcl.implementing_agency_id id,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,sum(case when pcl.status='1003' then 1 else 0 end) finishCount,"
+                    +"sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end) noFinishCount,sum(case when pcl.status='1004' then 1 else 0 end) timeoutCount"
+                    +" from plan_check_list pcl "
+                    +" where pcl.del_flag='0' and pcl.implementing_agency_id = '${deptId}' ) a",
+            "</script>"})
+    List<Map<String, Object>> countStatisticPlanReportByDeptId(@Param("deptId")int deptId);
 
     /**
      * 关注列表
