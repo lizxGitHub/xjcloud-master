@@ -39,7 +39,7 @@ public class CustomHeaderFilter implements Filter {
         Enumeration<String> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             String name = parameterNames.nextElement();
-            System.out.println(name);
+//            System.out.println(name);
             String value = request.getParameter(name);
             if (StringUtils.isNotBlank(value) && name.startsWith(customHeaderPrefix)) {
                 requestWrapper.addHeader(name.replace(customHeaderPrefix,""), value);

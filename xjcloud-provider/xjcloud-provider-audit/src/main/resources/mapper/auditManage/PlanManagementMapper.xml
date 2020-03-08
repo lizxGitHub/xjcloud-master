@@ -235,10 +235,10 @@
                 and a.`status` !='1003'
             </when>
             <when test="query.type=='done'">
-                and a.`status` =='1003'
+                AND a.`status`!='1003' and a.`status`!='0'
             </when>
             <when test="query.type=='delay'">
-                and a.delay_date is not null
+                and a.`status`='1004'
             </when>
 
         </choose>
@@ -246,7 +246,7 @@
     </select>
     <select id="countPlan" resultType="java.util.Map">
         select
-        IFNULL(sum(CASE WHEN STATUS != '0' THEN 1 ELSE 0 END),0) planSum,
+        count(1) planSum,
         IFNULL(sum(case when status='1003' then 1 else 0 end),0) finishCount,
         IFNULL(sum(case when STATUS != '1003' and STATUS != '0' then 1 else 0 end),0) nofinishCount,
         IFNULL(sum(case when status='1004' then 1 else 0 end),0) timeoutCount
