@@ -235,7 +235,7 @@
                 and a.`status` !='1003'
             </when>
             <when test="query.type=='done'">
-                AND a.`status`!='1003' and a.`status`!='0'
+                AND a.`status`='1003' and a.`status`!='0'
             </when>
             <when test="query.type=='delay'">
                 and a.`status`='1004'
