@@ -438,7 +438,11 @@ public class EntryFlowController {
                 if (!entryMap.containsKey(category)) {
                     continue;
                 }
-                String remarks = row.getCell(5).getStringCellValue();
+                Cell remarksCell = row.getCell(5);
+                String remarks =new String();
+                if(null!= remarksCell){
+                    remarks = row.getCell(5).getStringCellValue();
+                }
                 EntryFlow entryFlow = new EntryFlow();
                 entryFlow.setRemarks(remarks);
                 entryFlow.setApplyUser(createdUser);
@@ -446,12 +450,15 @@ public class EntryFlowController {
                 entryFlow.setCategoryFk(entryMap.get(category).getId());
                 entryFlow.setName(name);
                 if (entryMap.get(category).getLevel() == 4) {
-                    String name1 = row.getCell(2).getStringCellValue();
-                    String name2 = row.getCell(3).getStringCellValue();
-                    String name3 = row.getCell(4).getStringCellValue();
-                    entryFlow.setName1(name1);
-                    entryFlow.setName2(name2);
-                    entryFlow.setName3(name3);
+                    String name1 = new String();
+                    String name2 = new String();
+                    String name3 = new String();
+                    Cell nameCell1 = row.getCell(2);
+                    Cell nameCell2 = row.getCell(3);
+                    Cell nameCell3 = row.getCell(4);
+                    entryFlow.setName1(null==nameCell1?name1:nameCell1.getStringCellValue());
+                    entryFlow.setName2(null==nameCell1?name2:nameCell2.getStringCellValue());
+                    entryFlow.setName2(null==nameCell1?name3:nameCell3.getStringCellValue());
                 }
                 //乐观锁
                 entryFlow.setRevision(1);
