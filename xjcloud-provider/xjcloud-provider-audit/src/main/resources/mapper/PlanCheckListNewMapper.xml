@@ -31,6 +31,7 @@
         <result column="imp_admin_id" property="impAdminId"/>
         <result column="audit_user_id" property="auditUserId"/>
         <result column="audit_admin_id" property="auditAdminId"/>
+        <result column="delay_remarks" property="delayRemarks"/>
         <collection property="planInfos" ofType="gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo">
             <id property="id" column="id"/>
             <result property="statusUser" column="status_user"/>
@@ -44,7 +45,7 @@
     <select id="selectById" resultMap="PlanCheckListMapper">
         SELECT
         <include refid="selectOnly"/>
-        from plan_check_list a  where a.id = #{id}
+        from plan_check_list a  where a.id = #{id} and a.del_flag = 0
     </select>
 
     <select id="selectByStatuses" resultMap="PlanCheckListMapper">
@@ -69,6 +70,7 @@
         <if test="query.status!=null and query.status!=''">
             and a.status like concat('%',concat(#{query.status},'%'))
         </if>
+        and a.del_flag = 0
         ORDER BY a.created_time desc
     </select>
 
@@ -215,6 +217,7 @@
         <if test="status!=null and status!=''">
             and b.status_user = #{status}
         </if>
+        and a.del_flag = 0
         ORDER BY a.created_time desc
     </select>
 
@@ -364,6 +367,7 @@
         a.plan_time,
         a.rectify_result,
         a.risk_assessment_id,
+        a.delay_remarks,
         a.imp_user_id,
         a.imp_admin_id,
         a.audit_user_id,
@@ -401,6 +405,7 @@
         a.imp_user_id,
         a.imp_admin_id,
         a.audit_user_id,
-        a.audit_admin_id
+        a.audit_admin_id,
+        a.delay_remarks
     </sql>
 </mapper>

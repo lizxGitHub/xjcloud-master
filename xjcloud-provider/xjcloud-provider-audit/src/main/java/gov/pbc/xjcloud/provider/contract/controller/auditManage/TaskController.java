@@ -269,6 +269,8 @@ public class TaskController {
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1003");
                     //实施机构员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1005");
+                    //实施机构领导
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
                 } else {
                     endTimePartOne = new Date();
                     daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
@@ -286,16 +288,16 @@ public class TaskController {
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
                     PlanInfo planInfo = planInfoService.getProjectByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getAuditUserId()));
                     if (planInfo == null) {
-                        //审计对象管理员
+                        //审计对象一般员工
                         PlanInfo planInfo1 = new PlanInfo();
                         planInfo1.setUserId(plan.getAuditUserId());
-                        planInfo1.setStatusUser("1002"); //待审核
+                        planInfo1.setStatusUser("1001"); //待审核
                         planInfo1.setPlanId(plan.getId());
                         planInfo1.setType(1);
                         planInfoService.save(planInfo1);
                     } else {
-                        //审计对象管理员
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
+                        //审计对象一般员工
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                     }
                 }
             } else if (PlanStatusEnum.COMPLETE_TOBE_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
@@ -311,6 +313,8 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                 //实施机构员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
+                //实施机构领导
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
             } else if (PlanStatusEnum.IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (StringUtils.isBlank(plan.getRectifyResult())) {
                     return complete.setData(false);
