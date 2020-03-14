@@ -5,6 +5,9 @@
     <resultMap id="EntryInfoVOMap" type="gov.pbc.xjcloud.provider.contract.vo.entry.EntryInfoVO">
         <result column="id" property="id"/>
         <result column="name" property="name"/>
+        <result column="name1" property="name1"/>
+        <result column="name2" property="name2"/>
+        <result column="name3" property="name3"/>
         <result column="created_by" property="createdBy"/>
         <result column="created_time" property="createdTime"/>
         <result column="update_by" property="updatedBy"/>
@@ -34,6 +37,9 @@
         select
         a.id,
         a.name,
+        a.name1,
+        a.name2,
+        a.name3,
         a.type_code,
         a.created_by,
         a.created_time,

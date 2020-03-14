@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.entity.entry;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
@@ -93,6 +94,11 @@ public class EntryInfo implements Serializable, Cloneable {
     @Column(name = "del_flag")
     @TableLogic
     private String delFlag;
+    /**
+     * 组合名称
+     */
+    @TableField(exist = false)
+    private String concatName;
 
     public Object getConcatName() {
         String name =this.name;
