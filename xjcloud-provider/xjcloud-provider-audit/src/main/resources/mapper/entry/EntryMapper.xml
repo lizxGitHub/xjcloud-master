@@ -38,10 +38,7 @@
         a.created_by,
         a.created_time,
         a.category_fk,
-        b.name category_name,
-        a.opt_type,
-        a.audit_status,
-        a.instance_id
+        b.name category_name
         from entry_info a
         left join entry_category b on a.category_fk = b.id
         where a.del_flag='0'
