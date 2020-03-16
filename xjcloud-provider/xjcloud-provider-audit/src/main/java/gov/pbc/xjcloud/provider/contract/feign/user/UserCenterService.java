@@ -24,8 +24,11 @@ public interface UserCenterService {
     @GetMapping({"/users/{id}"})
     R user(@PathVariable("id") Integer paramInteger);
 
-    @GetMapping({"/users/info/{username}"})
-    R<UserVO> info(@PathVariable("username") String paramString1, @RequestHeader("from") String paramString2);
+//    @GetMapping({"/users/info/{username}"})
+//    R<UserVO> info(@PathVariable("username") String paramString1, @RequestHeader("from") String paramString2);
+
+    @GetMapping({"admin/users/info/{id}"})
+    R<UserVO> info(@PathVariable("id") String paramString1, @RequestHeader("from") String paramString2);
 
     @GetMapping({"/users/ancestor/{username}"})
     R ancestorUsers(@PathVariable("username") String paramString);
