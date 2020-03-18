@@ -23,6 +23,7 @@ public enum PlanStatusEnum {
     DELAY_APPLY(1014,"延期申请"),
     DELAY_AUDIT_PASS(1015,"审计领导同意延期"),
     DELAY_IMP_AUDIT(1016,"实施领导审核"),
+    DELAY_AUDIT(1017,"实施领导审核"),
     FILE(1013,"已归档");
 
 
