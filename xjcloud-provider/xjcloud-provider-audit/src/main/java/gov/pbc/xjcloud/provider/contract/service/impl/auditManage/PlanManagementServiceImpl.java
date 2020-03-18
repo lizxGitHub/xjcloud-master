@@ -257,6 +257,10 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
             originalPlan.setRectifyResult(params.get("rectifyResult").toString());
             updateWrapper.set("rectify_result",originalPlan.getRectifyResult());
         }
+        if(null != params.get("auditUser")){
+            originalPlan.setRectifyResult(params.get("auditUser").toString());
+            updateWrapper.set("auditUser",originalPlan.getRectifyResult());
+        }
         if(null != params.get("auditUserId")){
             originalPlan.setAuditUserId(Integer.parseInt(params.get("auditUserId").toString()));
             updateWrapper.set("audit_user_id",originalPlan.getAuditUserId());
