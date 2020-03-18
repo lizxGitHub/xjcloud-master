@@ -51,7 +51,7 @@ public class LoginController {
             params.entrySet().stream().forEach(e -> {
                 try {
                     if (e.getKey().equals("password")) {
-                        e.setValue(URLEncoder.encode("U8N49WynHAGTioUFDcPiOA==", "UTF-8"));
+                        e.setValue(URLEncoder.encode(e.getValue(), "UTF-8"));
                     }
                     if (e.getKey().equals("username")) { //登陆过滤
                         e.setValue(URLEncoder.encode(usernameSchedule.getUsername(e.getValue()), "UTF-8"));
