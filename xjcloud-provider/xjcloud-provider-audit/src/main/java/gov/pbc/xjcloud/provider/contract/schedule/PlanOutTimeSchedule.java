@@ -50,6 +50,9 @@ public class PlanOutTimeSchedule {
                 e.setFrequency(String.valueOf(collect.get(key).size()));
             }
         });
+        if(list.isEmpty()){
+            return;
+        }
         planManagementService.updateBatchById(list);
         System.out.println(String.format("更新频次成功,共更新 %d 个",list.size()));
     }
