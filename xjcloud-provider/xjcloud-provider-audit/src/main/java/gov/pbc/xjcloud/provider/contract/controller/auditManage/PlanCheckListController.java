@@ -160,14 +160,14 @@ public class PlanCheckListController {
                         //实施管理员
                         PlanInfo planInfo2 = new PlanInfo();
                         planInfo2.setUserId(plan.getImpAdminId());
-                        planInfo2.setStatusUser("1001"); //待审核
+                        planInfo2.setStatusUser("1003"); //已批准
                         planInfo2.setPlanId(plan.getId());
                         planInfo2.setType(1);
                         planInfoService.save(planInfo2);
                         //审计对象管理员
                         PlanInfo planInfo3 = new PlanInfo();
                         planInfo3.setUserId(plan.getAuditAdminId());
-                        planInfo3.setStatusUser("1004"); //待审核
+                        planInfo3.setStatusUser("1004"); //待完善
                         planInfo3.setPlanId(plan.getId());
                         planInfo3.setType(1);
                         planInfoService.save(planInfo3);
@@ -225,7 +225,7 @@ public class PlanCheckListController {
                     varsJSONObject.put("auditUserAssignee", auditUserAssignee);
                     varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
                     varsJSONObject.put("createdBy", createdBy);
-                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_AUDIT_PASS.getCode());
+                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_IMP_REJECT.getCode());
                     varsJSONObject.put("delayDate", null);
                     varsJSONObject.put("projectName", plan.getProjectName());
                     varsJSONObject.put("projectCode", plan.getProjectCode());
