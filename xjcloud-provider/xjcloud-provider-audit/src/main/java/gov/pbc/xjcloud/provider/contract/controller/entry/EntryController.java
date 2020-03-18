@@ -166,13 +166,16 @@ public class EntryController {
      */
     @ApiOperation("根据分类获取词条列表")
     @GetMapping("/list_by_category/{cateKey}")
-    public R<List<EntryInfo>> findEntryInfoByCateKey(@PathVariable String cateKey) {
+    public R<List<EntryInfo>> findEntryInfoByCateKey(@PathVariable("cateKey") String cateKey) {
         R<List<EntryInfo>> r = new R<>();
         QueryWrapper<EntryCategory> cateQuery = new QueryWrapper<>();
         QueryWrapper<EntryInfo> entryInfoQueryWrapper = new QueryWrapper<>();
         cateQuery.eq("def_key", cateKey);
         try {
             EntryCategory category = categoryService.getOne(cateQuery);
+            if(null == category){
+                return new R<>();
+            }
             entryInfoQueryWrapper.eq("category_fk", category.getId());
             List<EntryInfo> list = entryService.list(entryInfoQueryWrapper);
             r.setData(list);
