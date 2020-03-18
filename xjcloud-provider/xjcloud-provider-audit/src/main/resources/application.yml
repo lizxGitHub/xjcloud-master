@@ -103,6 +103,7 @@ audit:
   auth-url: ${audit.gate-way.url}/auth/oauth/token
   user-url: ${audit.gate-way.url}/admin/users/info
   users-url: ${audit.gate-way.url}/admin/users
+  tenant-url: ${audit.gate-way.url}/admin/users/tenant/1   # 这个1 是租户id
   Authorization: Basic eGpjbG91ZDp4amNsb3Vk
   token-name: Authorization
   flow-key: auditApply

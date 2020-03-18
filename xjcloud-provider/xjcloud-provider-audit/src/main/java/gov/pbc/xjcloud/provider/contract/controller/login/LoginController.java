@@ -3,9 +3,11 @@ package gov.pbc.xjcloud.provider.contract.controller.login;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.google.common.collect.Maps;
+import gov.pbc.xjcloud.provider.contract.schedule.UsernameSchedule;
 import gov.pbc.xjcloud.provider.contract.service.authority.AuthorityService;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Function;
 
@@ -36,12 +40,25 @@ public class LoginController {
     @Resource
     private AuthorityService authorityService;
 
+    @Autowired
+    private UsernameSchedule usernameSchedule;
+
     @GetMapping("token")
     public R<String> getToken(@RequestParam Map<String, String> params) {
         R<String> r = new R<>();
         try {
             StringBuffer sb = new StringBuffer();
             params.entrySet().stream().forEach(e -> {
+                try {
+                    if (e.getKey().equals("password")) {
+                        e.setValue(URLEncoder.encode("U8N49WynHAGTioUFDcPiOA==", "UTF-8"));
+                    }
+                    if (e.getKey().equals("username")) { //登陆过滤
+                        e.setValue(URLEncoder.encode(usernameSchedule.getUsername(e.getValue()), "UTF-8"));
+                    }
+                } catch (UnsupportedEncodingException ex) {
+                    ex.printStackTrace();
+                }
                 sb.append(e.getKey() + "=" + e.getValue() + "&");
             });
             sb.deleteCharAt(sb.length() - 1);
@@ -58,6 +75,7 @@ public class LoginController {
         }
         return r;
     }
+
     @RequestMapping("user/info")
     public JSONObject getUserInfo(HttpServletRequest request) {
         Map<String, String> headers = Maps.newHashMap();
@@ -95,6 +113,8 @@ public class LoginController {
         return f1.apply(map);
     }
 
-
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        System.out.println(URLEncoder.encode("123456", "UTF-8"));
+    }
 
 }

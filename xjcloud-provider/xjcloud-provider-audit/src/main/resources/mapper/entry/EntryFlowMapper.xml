@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="gov.pbc.xjcloud.provider.contract.mapper.entry.EntryFlowMapper">
-
     <resultMap id="EntryFlowVOMap" type="gov.pbc.xjcloud.provider.contract.vo.entry.EntryFlowVO">
         <result column="id" property="id"/>
         <result column="name" property="name"/>

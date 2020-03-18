@@ -27,7 +27,7 @@ public interface UserCenterService {
 //    @GetMapping({"/users/info/{username}"})
 //    R<UserVO> info(@PathVariable("username") String paramString1, @RequestHeader("from") String paramString2);
 
-    @GetMapping({"admin/users/info/{id}"})
+    @GetMapping({"/users/info/{id}"})
     R<UserVO> info(@PathVariable("id") String paramString1, @RequestHeader("from") String paramString2);
 
     @GetMapping({"/users/ancestor/{username}"})

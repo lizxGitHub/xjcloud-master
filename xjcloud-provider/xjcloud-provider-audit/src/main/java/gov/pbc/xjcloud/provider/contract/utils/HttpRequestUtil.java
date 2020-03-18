@@ -6,10 +6,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.net.URLEncoder;
+import java.util.*;
 
 public class HttpRequestUtil {
     /**
@@ -20,7 +18,7 @@ public class HttpRequestUtil {
      * @return URL 所代表远程资源的响应结果
      */
     public static String sendGet(String url, String param) {
-       return sendGet(url,param,null);
+       return sendGet(url,param,new HashMap<>());
     }
 
     public static String sendGet(String url, String param, Map<String, String> headers) {
@@ -92,7 +90,7 @@ public class HttpRequestUtil {
         BufferedReader in = null;
         String result = "";
         try {
-            URL realUrl = new URL(url);
+            URL realUrl = new URL(url+"?"+param);
             // 打开和URL之间的连接
             HttpURLConnection conn =(HttpURLConnection) realUrl.openConnection();
             // 设置通用的请求属性
