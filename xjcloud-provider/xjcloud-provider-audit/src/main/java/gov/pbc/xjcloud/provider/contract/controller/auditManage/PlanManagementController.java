@@ -478,29 +478,32 @@ public class PlanManagementController {
                 Method methodSetter = planCheckListDTO.getClass().getDeclaredMethod(fieldSetter, type);
                 if (type.equals(String.class)) {
                     Object invoke = field.get(planCheckListDTO);
-                    if (null != entryMap.get(invoke)) {
+                    if (null != entryMap.get(invoke) && !field.getName().toUpperCase().equals("rectifySituationId".toUpperCase())) {
                         methodSetter.invoke(planCheckListDTO,new Object[]{ entryMap.get(invoke).getConcatName()});
-                    }else {
-                        Integer invokeDept ;
-                        try {
-                            invokeDept = Integer.parseInt((String) invoke);
-
-                        gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(invokeDept);
-                        JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
-                        if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
-                            JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
-                            methodSetter.invoke(planCheckListDTO, new Object[]{deptData.get("name")});
-                        }
-                        }catch (ClassCastException e){
-                            e.printStackTrace();
-                            continue;
-                        }
-                        catch (Exception e){
-                            e.printStackTrace();
-                        }
                     }
                 }
             }
+            try {
+                gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getImplementingAgencyId()));
+                JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                    JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                    planCheckListDTO.setImplementingAgencyName(deptData.get("name").toString());
+                }
+                gov.pbc.xjcloud.provider.contract.utils.R adept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getAuditObjectId()));
+                JSONObject adeptJSON = (JSONObject) JSONObject.toJSON(adept);
+                if (null != adeptJSON && "0".equals(adeptJSON.get("code").toString())) {
+                    JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
+                    planCheckListDTO.setAuditObjectName(adeptData.get("name").toString());
+                }
+                if(StringUtils.isNotBlank(planCheckListDTO.getRiskAssessmentId())){
+                    EntryInfo entryInfo = entryMap.get(planCheckListDTO.getRectifySituationId());
+                    planCheckListDTO.setRectifySituationName(entryInfo.getConcatName());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             r.setData(planCheckListDTO);
         } catch (Exception e) {
             r.failed(e.getMessage());

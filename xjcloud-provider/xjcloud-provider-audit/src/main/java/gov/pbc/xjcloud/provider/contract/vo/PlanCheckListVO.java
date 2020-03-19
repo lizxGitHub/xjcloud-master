@@ -52,6 +52,10 @@ public class PlanCheckListVO  {
     /** 审计对象 */
     @Column(name = "audit_object_id")
     private String auditObjectId ;
+
+    /** 审计对象 */
+    @TableField(exist = false)
+    private String auditObjectName ;
     /** 审计性质 */
     @Column(name = "audit_nature_id")
     private String auditNatureId ;
@@ -70,6 +74,15 @@ public class PlanCheckListVO  {
     /** 整改情况 */
     @Column(name = "rectify_situation_id")
     private String rectifySituationId ;
+
+    @TableField(exist = false)
+    private String rectifySituationName ;
+
+    /**
+     * 整改评价
+     */
+    private String rectifyEvaluation;
+
     /** 问题定性 */
     @Column(name = "problem_characterization")
     private String problemCharacterization ;

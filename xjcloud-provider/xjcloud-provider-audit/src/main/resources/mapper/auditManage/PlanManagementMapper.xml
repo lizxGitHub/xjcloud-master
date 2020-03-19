@@ -26,6 +26,7 @@
         <result column="risk_assessment_id" property="riskAssessmentId"/>
         <result column="instance_id" property="instanceId"/>
         <result column="plan_time" property="planTime"/>
+        <result column="rectify_Evaluation" property="rectifyEvaluation"/>
     </resultMap>
     <insert id="addCheckAttention">
         insert into user_attention_check (user_id,check_id) values
@@ -69,6 +70,7 @@
     <!--机构汇总报告end-->
     <sql id="select">
         a.id,
+        a.rectify_Evaluation,
         a.project_code,
         a.project_name,
         a.project_type,

@@ -100,7 +100,7 @@ public class EntryInfo implements Serializable, Cloneable {
     @TableField(exist = false)
     private String concatName;
 
-    public Object getConcatName() {
+    public String getConcatName() {
         String name =this.name;
         if(StringUtils.isNotBlank(this.name1)){
             name+='-'+this.name1;

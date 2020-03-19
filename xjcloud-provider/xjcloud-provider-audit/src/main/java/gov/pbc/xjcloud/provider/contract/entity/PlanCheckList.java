@@ -21,6 +21,9 @@ public class PlanCheckList implements Serializable,Cloneable{
     @Column(name = "created_time")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createdTime ;
+
+
+    private String rectifyEvaluation;
     /** 更新人 */
     @Column(name = "update_by")
     @TableField(exist = false)
