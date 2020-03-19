@@ -438,11 +438,29 @@ public class PlanManagementController {
                 field.setAccessible(true);
                 String fieldSetter = getFieldMethodType(name, CommonConstants.SETTER);
                 Class<?> type = field.getType();
+                Method methodSetter = planCheckListDTO.getClass().getDeclaredMethod(fieldSetter, type);
                 if (type.equals(String.class)) {
                     Object invoke = field.get(planCheckListDTO);
                     if (null != entryMap.get(invoke)) {
-                        Method methodSetter = planCheckListDTO.getClass().getDeclaredMethod(fieldSetter, type);
-                        methodSetter.invoke(planCheckListDTO, (Object) entryMap.get(invoke).getConcatName());
+                        methodSetter.invoke(planCheckListDTO,new Object[]{ entryMap.get(invoke).getConcatName()});
+                    }else {
+                        Integer invokeDept ;
+                        try {
+                            invokeDept = Integer.parseInt((String) invoke);
+
+                        gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(invokeDept);
+                        JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                        if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                            JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                            methodSetter.invoke(planCheckListDTO, new Object[]{deptData.get("name")});
+                        }
+                        }catch (ClassCastException e){
+                            e.printStackTrace();
+                            continue;
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
