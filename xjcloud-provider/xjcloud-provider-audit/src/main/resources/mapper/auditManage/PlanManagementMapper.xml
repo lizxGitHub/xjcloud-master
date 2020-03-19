@@ -26,6 +26,7 @@
         <result column="risk_assessment_id" property="riskAssessmentId"/>
         <result column="instance_id" property="instanceId"/>
         <result column="plan_time" property="planTime"/>
+        <result column="archive_time" property="archiveTime"/>
         <result column="rectify_Evaluation" property="rectifyEvaluation"/>
     </resultMap>
     <insert id="addCheckAttention">
@@ -91,6 +92,7 @@
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,
+        a.archive_time,
         a.risk_assessment_id
     </sql>
 
