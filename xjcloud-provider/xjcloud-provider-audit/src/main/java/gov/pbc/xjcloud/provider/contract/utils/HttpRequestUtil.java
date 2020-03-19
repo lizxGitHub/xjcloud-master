@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.utils;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -8,7 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
-
+@Log4j2
 public class HttpRequestUtil {
     /**
      * 向指定URL发送GET方法的请求
@@ -48,7 +49,7 @@ public class HttpRequestUtil {
             Map<String, List<String>> map = connection.getHeaderFields();
             // 遍历所有的响应头字段
             for (String key : map.keySet()) {
-                System.out.println(key + "--->" + map.get(key));
+//                System.out.println(key + "--->" + map.get(key));
             }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
@@ -58,7 +59,7 @@ public class HttpRequestUtil {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送GET请求出现异常！" + e);
+            log.error("发送GET请求出现异常！" + e.getMessage());
             e.printStackTrace();
         }
         // 使用finally块来关闭输入流
@@ -120,7 +121,7 @@ public class HttpRequestUtil {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送 POST 请求出现异常！" + e);
+            log.error("发送 POST 请求出现异常！" + e);
             e.printStackTrace();
         }
         //使用finally块来关闭输出流、输入流

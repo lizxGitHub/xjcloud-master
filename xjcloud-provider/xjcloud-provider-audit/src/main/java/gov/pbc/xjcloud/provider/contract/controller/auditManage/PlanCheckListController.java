@@ -95,7 +95,7 @@ public class PlanCheckListController {
                 planCheckList.setAuditYear(year);
             }
             String fileUri= planCheckList.getFileUri();
-            planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
+//            planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
             if (planCheckList.getId() == 0) {
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planCheckList.setStatus("0");

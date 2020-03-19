@@ -35,9 +35,9 @@ public class UsernameSchedule {
         }, e -> (String) e.get("username"),(e1,e2)->e1));
         userMap.clear();
         userMap.putAll(collectUsername);
-        userMap.entrySet().forEach(e->{
-            System.out.println(String.format("%s 用户名:%s登录名",e.getKey(),e.getValue()));
-        });
+//        userMap.entrySet().forEach(e->{
+//            System.out.println(String.format("%s 用户名:%s登录名",e.getKey(),e.getValue()));
+//        });
     }
 
     public String getUsername(String username) {
