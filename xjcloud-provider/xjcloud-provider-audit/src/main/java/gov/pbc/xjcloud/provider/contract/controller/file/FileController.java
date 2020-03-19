@@ -42,6 +42,7 @@ public class FileController {
 
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @CrossOrigin(origins="*",maxAge = 60*5)
     public R upload(HttpServletRequest req,
                          @RequestParam("file") MultipartFile file,
                          @RequestParam("bizKey") String bizKey) {
