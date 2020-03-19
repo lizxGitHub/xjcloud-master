@@ -113,6 +113,10 @@ public class PlanCheckListNew implements Serializable,Cloneable{
      */
     private String rectifyResult;
     /**
+     * 整改评价
+     */
+    private String rectifyEvaluation;
+    /**
      * 延期时间
      */
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -32,6 +32,8 @@
         <result column="audit_user_id" property="auditUserId"/>
         <result column="audit_admin_id" property="auditAdminId"/>
         <result column="delay_remarks" property="delayRemarks"/>
+        <result column="rectify_way" property="rectifyWay"/>
+        <result column="rectify_evaluation" property="rectifyEvaluation"/>
         <collection property="planInfos" ofType="gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo">
             <id property="id" column="id"/>
             <result property="statusUser" column="status_user"/>
@@ -149,6 +151,9 @@
         </if>
         <if test="plan.rectifyWay!=null and plan.rectifyWay!=''">
             `rectify_way`=#{plan.rectifyWay},
+        </if>
+        <if test="plan.rectifyEvaluation!=null and plan.rectifyEvaluation!=''">
+            `rectify_evaluation`=#{plan.rectifyEvaluation},
         </if>
         <if test="plan.planTime!=null">
             `plan_time`=#{plan.planTime,jdbcType=TIMESTAMP},
@@ -372,6 +377,8 @@
         a.imp_admin_id,
         a.audit_user_id,
         a.audit_admin_id,
+        a.rectify_way,
+        a.rectify_evaluation,
         b.id,
         b.status_user,
         b.user_id,
@@ -406,6 +413,8 @@
         a.imp_admin_id,
         a.audit_user_id,
         a.audit_admin_id,
-        a.delay_remarks
+        a.delay_remarks,
+        a.rectify_way,
+        a.rectify_evaluation
     </sql>
 </mapper>
