@@ -170,4 +170,16 @@ public class PlanCheckList implements Serializable,Cloneable{
     private String project_type;
 
     private String audit_nature_id;
+
+    /**
+     * 整改时长
+     */
+    @TableField(exist = false)
+    private String costTime;
+    /**
+     * 超时情况
+     */
+    @TableField(exist = false)
+    private String overTime;
+
 }

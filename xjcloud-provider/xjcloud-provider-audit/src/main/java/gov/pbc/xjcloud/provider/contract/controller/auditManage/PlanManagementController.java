@@ -9,6 +9,7 @@ import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.PlanConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
@@ -207,6 +208,42 @@ public class PlanManagementController {
     @ApiOperation("审计查询")
     @GetMapping(value = {"planList", ""})
     public R planList(PlanCheckList query, Page<Map<String, Object>> page) {
+        List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
+        try {
+            List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
+            List<EntryInfo> list = entryService.list();
+            Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
+                    .collect(Collectors.toMap(e -> e.getId(), e -> e));
+            for (Map<String, Object> plan : planListold) {
+                PlanCheckListVO planCheckListDTO = changeToDTO(null);
+                Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
+                for (Field field : declaredFields) {
+                    String name = field.getName();
+                    if (null != plan.get(name)) {
+                        String objVal = plan.get(name).toString();
+                        if (StringUtils.isNotBlank(objVal) && null != entryMap.get(objVal)) {
+                            plan.put(name, entryMap.get(objVal).getConcatName());
+                        }
+                    }
+                }
+                planList.add(plan);
+            }
+            page.setRecords(planList);
+            page.setTotal(Long.valueOf(planManagementService.countEntryByQuery(query)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(page);
+    }
+
+    /**
+     * 获取审计计划
+     *
+     * @return
+     */
+    @ApiOperation("审计查询")
+    @GetMapping(value = {"/search/planList", ""})
+    public R searchPlanList(PlanCheckList query, Page<Map<String, Object>> page) {
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
             List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
