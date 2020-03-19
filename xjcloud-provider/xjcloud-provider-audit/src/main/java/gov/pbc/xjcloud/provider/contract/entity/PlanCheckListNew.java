@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -78,19 +79,19 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     /**
      * 实施机构一般员工
      */
-    private int impUserId;
+    private Integer impUserId;
     /**
      * 实施机构管理员
      */
-    private int impAdminId;
+    private Integer impAdminId;
     /**
      * 审计对象一般员工
      */
-    private int auditUserId;
+    private Integer auditUserId;
     /**
      * 审计对象管理员
      */
-    private int auditAdminId;
+    private Integer auditAdminId;
     /**
      * 出现频次
      */
