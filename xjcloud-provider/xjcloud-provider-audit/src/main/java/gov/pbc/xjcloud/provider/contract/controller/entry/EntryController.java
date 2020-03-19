@@ -336,8 +336,8 @@ public class EntryController {
                     Cell nameCell2 = row.getCell(3);
                     Cell nameCell3 = row.getCell(4);
                     entryFlow.setName1(null==nameCell1?name1:nameCell1.getStringCellValue());
-                    entryFlow.setName2(null==nameCell1?name2:nameCell2.getStringCellValue());
-                    entryFlow.setName2(null==nameCell1?name3:nameCell3.getStringCellValue());
+                    entryFlow.setName2(null==nameCell2?name2:nameCell2.getStringCellValue());
+                    entryFlow.setName3(null==nameCell3?name3:nameCell3.getStringCellValue());
                 }
                 //乐观锁
                 entryFlow.setRevision(1);
