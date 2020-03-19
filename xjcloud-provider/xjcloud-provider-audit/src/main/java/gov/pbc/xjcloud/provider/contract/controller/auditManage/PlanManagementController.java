@@ -496,14 +496,12 @@ public class PlanManagementController {
                     JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
                     planCheckListDTO.setAuditObjectName(adeptData.get("name").toString());
                 }
-                if(StringUtils.isNotBlank(planCheckListDTO.getRiskAssessmentId())){
-                    EntryInfo entryInfo = entryMap.get(planCheckListDTO.getRectifySituationId());
-                    planCheckListDTO.setRectifySituationName(entryInfo.getConcatName());
-                }
             }catch (Exception e){
                 e.printStackTrace();
             }
-
+            if(StringUtils.isNotBlank(planCheckListDTO.getRectifySituationId())){
+                planCheckListDTO.setRectifySituationName(entryMap.get(planCheckListDTO.getRectifySituationId()).getConcatName());
+            }
             r.setData(planCheckListDTO);
         } catch (Exception e) {
             r.failed(e.getMessage());
