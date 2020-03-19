@@ -137,12 +137,29 @@ public class PlanCheckListController {
      * @return
      */
     @PostMapping("/changePlanStatusByIds")
-    public R<Boolean> changePlanStatusByIds(HttpServletRequest request, @RequestParam(name = "ids", required = true) String ids, @RequestParam(name = "statusUser", required = true) String statusUser, @RequestParam(name = "userId", required = true) int userId) {
+    public R<Boolean> changePlanStatusByIds(
+            HttpServletRequest request,
+            @RequestParam(name = "ids", required = true) String ids,
+            @RequestParam(name = "statusUser", required = true) String statusUser,
+            @RequestParam(name = "userId", required = true) int userId,
+            @RequestParam(name = "fileUri", required = false) String fileUri,
+            @RequestParam(name = "uploadUser", required = false) String uploadUser) {
         R<Boolean> r = new R<>();
         try {
             String[] idArray = ids.split(",");
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+                if(StringUtils.isNotBlank(fileUri)){
+                    PlanFile planFile = new PlanFile();
+                    planFile.setId(IdGenUtil.uuid());
+                    planFile.setTaskId(0);
+                    planFile.setTaskName("驳回文件");
+                    planFile.setFileUri(fileUri);
+                    planFile.setBizKey(plan.getId());
+                    planFile.setUploadUser(uploadUser);
+                    planFile.setCreatedTime(new Date());
+                    planManagementService.addFileLog(planFile);
+                }
                 if (userId == plan.getImpAdminId()) {
                     if (statusUser.equals("1002")) { //确认
                         if (plan.getAuditAdminId() == 0) {
