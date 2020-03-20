@@ -8,14 +8,13 @@ spring:
     config:
       fail-fast: true
       name: ${spring.application.name}
-      uri: http://xjcloud-config:8888
+      uri: http://xjcloud-config
       discovery:
         enabled: true
         service-id: xjcloud-config
   redis:
     database: 1
     host: xjcloud-redis
-#    host: 127.0.0.1
     port: 6379
     timeout: 5000
     jedis:
@@ -27,8 +26,6 @@ spring:
   datasource:
     name: xj_cloud
     url: jdbc:mysql://xjcloud-mysql:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
-#    username: lrst
-#    password: lrst7089
     username: root
     password: password
     type: com.alibaba.druid.pool.DruidDataSource
@@ -46,13 +43,16 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
-#    springboot上传配置
+  #    springboot上传配置
   servlet:
     multipart:
       enabled: true
       file-size-threshold: 0
       max-request-size: 100MB
       resolve-lazily: false
+  http:
+    encoding:
+      force: true
 server:
   port: 8666
   undertow:
@@ -66,12 +66,11 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: xjcloud-audit
-#    ip-address: 39.108.50.114
   client:
     fetch-registry: true
     service-url:
       defaultZone: http://root:root@${EUREKA_HOST:xjcloud-eureka}:${EUREKA_PORT:8761}/eureka/
-#      defaultZone: http://root:root@xjcloud-eureka:8761/eureka/
+#      defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -81,22 +80,23 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
 audit:
+  custom-header-prefix: auditHeader
   gate-way:
     service-id: xjcloud-gateway
-#    url: http://39.108.50.114:9999
     url: http://xjcloud-gateway:9999
   auth-url: ${audit.gate-way.url}/auth/oauth/token
   user-url: ${audit.gate-way.url}/admin/users/info
   users-url: ${audit.gate-way.url}/admin/users
+  tenant-url: ${audit.gate-way.url}/admin/users/tenant/1   # 这个1 是租户id
   Authorization: Basic eGpjbG91ZDp4amNsb3Vk
   token-name: Authorization
   flow-key: auditApply
   file:
     uploadPrefix: audit-upload
-    staticAccessPath: /${audit.file.uploadPrefix:audit-upload}/** # 静态资源访问配置
-    #uploadFolder: D:/java-project/audit-upload/ #windows上传地址
-    appUrl: http://xjcloud-audit:${server.port} #返回给前端的访问地址
-    uploadFolder: /usr/xjcloud/audit-upload/ #linux上传地址
+    staticAccessPath: /${audit.file.uploadPrefix}/** # 静态资源访问配置
+    #    uploadFolder: D:/java-project/${audit.file.uploadPrefix}/ #windows上传地址
+    appUrl: ${eureka.instance.ip-address}:${server.port} #返回给前端的访问地址
+    uploadFolder: /xjcloud/${audit.file.uploadPrefix}/ #linux上传地址
 
 feign:
   hystrix:
