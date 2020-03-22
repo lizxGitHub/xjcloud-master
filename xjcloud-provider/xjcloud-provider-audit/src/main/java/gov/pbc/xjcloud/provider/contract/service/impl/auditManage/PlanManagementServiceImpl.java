@@ -72,8 +72,8 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         String agencyId = query.getImplementingAgencyId();
         if (StringUtils.contains(agencyId, "all")) {
             agencyId = "";
+            query.setImplementingAgencyId(agencyId);
         }
-        query.setImplementingAgencyId(StringUtils.join(StringUtils.split(agencyId, ","), "','"));
         if (StringUtils.equals(query.getAuditNatureId(), "all")) {
             query.setAuditNatureId("");
         }
