@@ -86,8 +86,60 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         if (StringUtils.equals(query.getRectifySituationId(), "all")) {
             query.setRectifySituationId("");
         }
+        if (StringUtils.equals(query.getProjectType(), "all")) {
+            query.setProjectType("");
+        }
+        if (StringUtils.equals(query.getAuditNatureId(), "all")) { //审计性质
+            query.setAuditNatureId("");
+        }
+        if (StringUtils.equals(query.getCostTime(), "all")) { //审计性质
+            query.setCostTime("");
+        }else if(StringUtils.isNotBlank(query.getCostTime())){
+            dealtCostTimeParams(query);
+        }
+        if (StringUtils.equals(query.getOverTime(), "all")) { //审计性质
+            query.setOverTime("");
+        }else if(StringUtils.isNotBlank(query.getOverTime())){
+            calculateOverTime(query);
+        }
 
         return planManagementMapper.selectEntryByQuery(query, pageStart, pageNo);
+    }
+    private void calculateOverTime(PlanCheckList query) {
+        String overTime = query.getOverTime();
+        Integer overTimeCase = Integer.parseInt(overTime);
+        Integer overTimeStart = 0;
+        Integer overTimeEnd = 0;
+        switch (overTimeCase){
+            case 7:
+                overTimeStart = (overTimeCase*30);
+                break;
+            default:
+                overTimeStart = (overTimeCase*30);
+                overTimeEnd= (overTimeCase*30+30);
+        }
+        query.setOverTimeStart(overTimeStart==0?"":overTimeStart.toString());
+        query.setOverTimeEnd(overTimeStart==0?"":overTimeEnd.toString());
+    }
+    private void dealtCostTimeParams(PlanCheckList query) {
+        String costTimeStr = query.getCostTime();
+        int caseTime = Integer.parseInt(costTimeStr);
+        Integer overTimeStart=0;
+        Integer overTimeEnd=0;
+        switch (caseTime){
+            case 7:
+                 overTimeStart = (caseTime*30);
+                 overTimeEnd = 365;
+                break;
+            case 8:
+                 overTimeStart = 365;
+                break;
+            default:
+             overTimeStart = (caseTime*30);
+             overTimeEnd= (caseTime*30+30);
+        }
+        query.setCostTimeStart(overTimeStart==0?"":overTimeStart.toString());
+        query.setCostTimeEnd(overTimeStart==0?"":overTimeEnd.toString());
     }
 
     @Override

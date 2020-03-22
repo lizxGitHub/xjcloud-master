@@ -61,6 +61,44 @@ public class ExportController {
             if(StringUtils.isNotBlank(query.getProjectName())){
                 filterListMap.add("项目名称：-"+query.getProjectName());
             }
+            if(StringUtils.isNotBlank(query.getProjectType())){
+                filterListMap.add("项目名称：-"+query.getProjectType());
+            }
+            if(StringUtils.isNotBlank(query.getCostTime())){
+                String costTimeStr = query.getCostTime();
+                if("all".equalsIgnoreCase(costTimeStr)){
+                    costTimeStr = "全部条件";
+                }else {
+                   int cost = Integer.parseInt(costTimeStr);
+                   switch (cost){
+                       case 7:
+                           costTimeStr = "六个月以上一年以内";
+                           break;
+                       case 8:
+                           costTimeStr = "一年以上";
+                       default:
+                           costTimeStr = cost +"个月";
+                   }
+                }
+                filterListMap.add("整改时长：-"+costTimeStr);
+            }
+            if(StringUtils.isNotBlank(query.getOverTime())){
+                String costTimeStr = query.getOverTime();
+                if("all".equalsIgnoreCase(costTimeStr)){
+                    costTimeStr = "全部条件";
+                }else {
+                    int cost = Integer.parseInt(costTimeStr);
+                    switch (cost){
+
+                        case 7:
+                            costTimeStr = "六个月以上";
+                            break;
+                        default:
+                            costTimeStr = cost +"个月";
+                    }
+                }
+                filterListMap.add("超时情况：-"+costTimeStr);
+            }
             if(StringUtils.isNotBlank(query.getProblemDescription())){
                 filterListMap.add("问题清单：-"+query.getProblemDescription());
             }

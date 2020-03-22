@@ -184,9 +184,29 @@ public class PlanCheckList implements Serializable,Cloneable{
     @TableField(exist = false)
     private String costTime;
     /**
+     * 整改时长
+     */
+    @TableField(exist = false)
+    private String costTimeStart;
+    /**
+     * 整改时长
+     */
+    @TableField(exist = false)
+    private String costTimeEnd;
+    /**
      * 超时情况
      */
     @TableField(exist = false)
     private String overTime;
+    @TableField(exist = false)
+    private String overTimeStart;
+    @TableField(exist = false)
+    private String overTimeEnd;
+
+    @TableField(exist = false)
+    private String auditYearStart;
+
+    @TableField(exist = false)
+    private String auditYearEnd;
 
 }
