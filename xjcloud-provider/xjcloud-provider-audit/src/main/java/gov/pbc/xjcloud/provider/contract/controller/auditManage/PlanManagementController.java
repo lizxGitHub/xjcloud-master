@@ -246,6 +246,7 @@ public class PlanManagementController {
     public R searchPlanList(PlanCheckList query, Page<Map<String, Object>> page) {
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
+            query.setImplementingAgencyId(query.getSelect());
             List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             List<EntryInfo> list = entryService.list();
             Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
@@ -583,6 +584,7 @@ public class PlanManagementController {
      */
     @GetMapping("planList/groupList")
     public R planListGroup(@RequestParam Map<String, Object> params) {
+
         List<Map<String, Object>> mapList = planManagementService.groupCount(params);
         List<EntryInfo> list = entryService.list();
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))

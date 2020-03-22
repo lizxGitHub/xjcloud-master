@@ -176,6 +176,8 @@ public class PlanCheckList implements Serializable,Cloneable{
 
     private String audit_nature_id;
 
+    private String select;
+
     /**
      * 整改时长
      */
