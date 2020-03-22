@@ -192,6 +192,7 @@ public class PlanCheckListController {
                         //项目启动时间
                         plan.setStartTime(new Date());
                         plan.setStatus("1001"); //正在实施
+                        plan.setAuditStatus(String.valueOf(PlanStatusEnum.PLAN_IMP_REJECT.getCode()));
                         planCheckListService.updatePlanById(plan);
 
                         PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(plan.getId());

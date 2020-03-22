@@ -320,7 +320,6 @@ public class TaskController {
 
                     //项目整改结果录入时间
                     plan.setResultEnterTime(new Date());
-                    planCheckListService.updatePlanById(plan);
 
 //                    //实施部门一般员工
 //                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
@@ -342,7 +341,6 @@ public class TaskController {
                     planTimeTemp.setDays(daysPart);
 
                     plan.setStatus("1004"); //设置项目状态为延期整改
-                    planCheckListService.updatePlanById(plan);
                 }
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
@@ -375,7 +373,6 @@ public class TaskController {
                 planTimeTemp.setEndTimeAll(endTimeAll);
                 //项目实施结束
                 plan.setStatus("1002"); //实施结束
-                planCheckListService.updatePlanById(plan);
 
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1006");
@@ -387,19 +384,16 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 plan.setRectifyEvaluation(opinion);
-                planCheckListService.updatePlanById(plan);
                 days = daysOfTwo(planTimeTemp.getStartTimeAll(), planTimeTemp.getEndTimeAll()) - planTimeTemp.getDays();
                 planTimeTemp.setDays(days);
                 //项目实施结束
                 plan.setStatus("1003"); //实施结束
                 //项目归档时间
                 plan.setArchiveTime(new Date());
-                planCheckListService.updatePlanById(plan);
             } else if (PlanStatusEnum.DELAY_APPLY.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //更新延迟时间与说明
                 plan.setDelayDate(delayDate);
                 plan.setDelayRemarks(opinion);
-                planCheckListService.updatePlanById(plan);
                 startTimePartTwo = new Date();
                 planTimeTemp.setStartTimePartTwo(startTimePartTwo);
                 //审计对象员工
@@ -430,7 +424,11 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
             }
 
+            //更新时间
             planTimeTempService.updateById(planTimeTemp);
+            //更新计划
+            plan.setAuditStatus(statusStr);
+            planCheckListService.updatePlanById(plan);
 
             if (StringUtils.isNotBlank((String) params.get("fileUri"))) {
                 PlanFile planFile = new PlanFile();
