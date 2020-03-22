@@ -176,6 +176,7 @@ public class PlanCheckList implements Serializable,Cloneable{
 
     private String audit_nature_id;
 
+    @TableField(exist = false)
     private String select;
 
     /**
