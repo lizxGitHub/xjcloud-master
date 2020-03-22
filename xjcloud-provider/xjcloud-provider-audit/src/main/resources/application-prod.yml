@@ -25,7 +25,7 @@ spring:
         max-wait: -1
   datasource:
     name: xj_cloud
-    url: jdbc:mysql://xjcloud-mysql:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://xjcloud-mysql:8066/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     username: root
     password: password
     type: com.alibaba.druid.pool.DruidDataSource

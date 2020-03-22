@@ -195,6 +195,7 @@ public class EntryController {
             entryService.validate(entryFlow, r);
 
             EntryInfo beforeFlow = entryService.getById(entryFlow.getId());
+            EntryCategory category = categoryService.getById(entryFlow.getId());
             if (null == beforeFlow) {
                 r.setData(false);
                 r.setMsg("该数据已被删除");
@@ -205,8 +206,16 @@ public class EntryController {
                 r.setMsg("该数据已被更改，请刷新重试！");
                 throw new IllegalArgumentException(r.getMsg());
             }
+            if (!"WTCT".equalsIgnoreCase(category.getDefKey())) {
+               entryFlow.setName1("");
+               entryFlow.setName2("");
+               entryFlow.setName3("");
+            }
             UpdateWrapper<EntryInfo> updateWrapper = new UpdateWrapper<>();
             updateWrapper.set("name", entryFlow.getName());
+            updateWrapper.set("name1", entryFlow.getName1());
+            updateWrapper.set("name2", entryFlow.getName2());
+            updateWrapper.set("name3", entryFlow.getName3());
             updateWrapper.set("revision", beforeFlow.getRevision() + 1);
             updateWrapper.set("remarks", entryFlow.getRemarks());
             updateWrapper.set("category_fk", entryFlow.getCategoryFk());

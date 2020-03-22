@@ -51,17 +51,18 @@ public class EntryInfo implements Serializable, Cloneable {
      */
     @Column(name = "name")
     @Length(max = 32, min = 1, message = "词条名称字符长度介于1~32个字符之间")
+    @NotNull
     private String name;
 
-    @Column(name = "name")
+    @Column(name = "name1")
     @Length(max = 32, min = 1, message = "词条名称二级字符长度介于1~32个字符之间")
     private String name1;
 
-    @Column(name = "name")
+    @Column(name = "name2")
     @Length(max = 32, message = "词条名称三级字符长度介于1~32个字符之间")
     private String name2;
 
-    @Column(name = "name")
+    @Column(name = "name3")
     @Length(max = 32, message = "词条名称四级字符长度介于1~32个字符之间")
     private String name3;
     /**
