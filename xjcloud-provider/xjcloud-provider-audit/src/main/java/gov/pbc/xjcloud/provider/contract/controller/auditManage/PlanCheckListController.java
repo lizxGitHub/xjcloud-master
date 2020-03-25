@@ -405,6 +405,7 @@ public class PlanCheckListController {
                 PlanCheckList plan = new PlanCheckList();
                 initPlanProperty(plan,row,colIndex,entryNameValue);
                 plan.setCreatedBy(createdBy);
+                plan.setCreatedTime(new Date());
                 planList.add(plan);
             }
             boolean result = planManagementService.saveBatch(planList, planList.size());
