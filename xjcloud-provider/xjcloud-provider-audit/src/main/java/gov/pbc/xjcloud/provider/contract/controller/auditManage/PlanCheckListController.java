@@ -1,43 +1,65 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
+import gov.pbc.xjcloud.provider.contract.entity.entry.EntryCategory;
+import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryCategoryServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R2;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  *
  */
 @RestController
 @RequestMapping("/audit-api/planCheckList")
+@Slf4j
 public class PlanCheckListController {
 
     @Resource
     private PlanCheckListServiceImpl planCheckListService;
+
+    @Resource
+    private EntryCategoryServiceImpl categoryService;
+
+    @Resource
+    private EntryServiceImpl entryService;
 
     @Resource
     private PlanInfoServiceImpl planInfoService;
@@ -50,6 +72,9 @@ public class PlanCheckListController {
 
     @Autowired
     private PlanManagementServiceImpl planManagementService;
+
+    final String[] planExcelHeader = new String[]
+            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
 
     /**
      * 获取审计计划
@@ -267,4 +292,207 @@ public class PlanCheckListController {
         return r.setData(true);
     }
 
+    /**
+     * @param request
+     * @param response
+     * @return
+     */
+    @GetMapping("template/download")
+    @ApiOperation("计划批量导入模板")
+    public void getWordFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ServletOutputStream out = null;
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet(CommonConstants.PlanSheetName);
+            Map<String, Integer> cateNameMap = categoryService.list().stream().
+                    filter(e -> StringUtils.isNotBlank(e.getName())).collect(Collectors.toMap(e -> e.getName(), x -> x.getId(), (e1, e2) -> e1));
+            Map<Integer, List<EntryInfo>> entryGroup = entryService.list().stream().
+                    filter(e -> StringUtils.isNotBlank(e.getConcatName())).collect(Collectors.groupingBy(e -> e.getCategoryFk()));
+            AtomicInteger rowIndex = new AtomicInteger();
+            AtomicInteger colIndex = new AtomicInteger();
+            XSSFRow row = sheet.createRow(rowIndex.get());
+            DataValidationHelper helper = sheet.getDataValidationHelper();//设置下拉框xlsx格式
+            for (String header:planExcelHeader){
+                XSSFCell cell = row.createCell(colIndex.getAndIncrement());
+                cell.setCellValue(header);
+                cell.setCellStyle(getCellStyle(workbook,true));
+                if(cateNameMap.containsKey(header)){
+                    Integer cateFk = cateNameMap.get(header);
+                    String[] objects = entryGroup.get(cateFk).stream().map(e -> e.getConcatName()).toArray(String[]::new);
+                    creatDropDownList(sheet,helper, objects,rowIndex.get()+1, (1<<16)-1,colIndex.get()-1,colIndex.get()-1);
+                }
+            }
+            response.setContentType("application/binary;charset=ISO8859-1");
+            String fileName = java.net.URLEncoder.encode("计划导入模板", "UTF-8");
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");
+            out = response.getOutputStream();
+            workbook.write(out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        } finally {
+            out.flush();
+            out.close();
+        }
+    }
+
+    public static CellStyle getCellStyle(Workbook workbook, boolean bold){
+        CellStyle cellStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(bold);//加粗
+        font.setFontHeightInPoints((short) 10);
+        font.setColor(IndexedColors.BLACK.getIndex());
+        cellStyle.setFont(font);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        return cellStyle;
+    }
+
+    //创建下拉框
+    public static void creatDropDownList(Sheet sheet, DataValidationHelper helper, String[] list,
+                                          Integer firstRow, Integer lastRow, Integer firstCol, Integer lastCol) {
+        CellRangeAddressList addressList = new CellRangeAddressList(firstRow, lastRow, firstCol, lastCol);
+        //设置下拉框数据
+        DataValidationConstraint constraint = helper.createExplicitListConstraint(list);
+        DataValidation dataValidation = helper.createValidation(constraint, addressList);
+        //处理Excel兼容性问题
+        if (dataValidation instanceof XSSFDataValidation) {
+            dataValidation.setSuppressDropDownArrow(true);
+            dataValidation.setShowErrorBox(true);
+        } else {
+            dataValidation.setSuppressDropDownArrow(false);
+        }
+        sheet.addValidationData(dataValidation);
+    }
+
+    @PostMapping("import")
+    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdBy") Integer createdBy) {
+        Sheet planSheet;
+        if (null == file) {
+            return R.failed("上传文件不能为空");
+        }
+        String fileName = file.getOriginalFilename();
+        try {
+            if (org.apache.commons.lang.StringUtils.isBlank(fileName)) {
+                throw new RuntimeException("导入文档为空!");
+            } else if (fileName.toLowerCase().endsWith("xls")) {
+            } else if (fileName.toLowerCase().endsWith("xlsx")) {
+            } else {
+                throw new RuntimeException("文档格式不正确!");
+            }
+
+            Map<String, String> entryNameValue = entryService.list().stream().filter(e -> StringUtils.isNotBlank(e.getConcatName())).
+                    collect(Collectors.toMap(e -> e.getConcatName(), e -> e.getId(), (e1, e2) -> e1));
+            planSheet = ExcelUtil.getReader(file.getInputStream(), CommonConstants.PlanSheetName).setIgnoreEmptyRow(true).getSheet();
+            checkExcelHeader(planSheet,planExcelHeader);
+            if (planSheet == null) {
+                throw new RuntimeException("请使用模板导入!");
+            }
+            if (planSheet.getLastRowNum() < 1) {
+                throw new RuntimeException("文档中没有工作表!");
+            }
+            int maxRow = planSheet.getLastRowNum();
+            List<PlanCheckList> planList = new ArrayList<>(maxRow - 1);
+            //        final String[] planExcelHeader = new String[]
+//            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
+            for (int startRow = 1; startRow <= maxRow; startRow++) {
+                AtomicInteger colIndex = new AtomicInteger();
+                Row row = planSheet.getRow(startRow);
+                PlanCheckList plan = new PlanCheckList();
+                initPlanProperty(plan,row,colIndex,entryNameValue);
+                plan.setCreatedBy(createdBy);
+                planList.add(plan);
+            }
+            boolean result = planManagementService.saveBatch(planList, planList.size());
+            return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + planList.size() + "条数据" : "导入失败");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new R<Boolean>(ApiErrorCode.FAILED).setMsg("请下载模板导入");
+        }
+    }
+
+    private void initPlanProperty(PlanCheckList plan, Row row, AtomicInteger colIndex, Map<String, String> entryNameValue) {
+        Cell cellprojectName = row.getCell(colIndex.getAndIncrement());
+        Cell cellprojectType = row.getCell(colIndex.getAndIncrement());
+        Cell cellauditNatureId = row.getCell(colIndex.getAndIncrement());
+        Cell cellquestionEntryId = row.getCell(colIndex.getAndIncrement());
+        Cell cellproblemSeverityId = row.getCell(colIndex.getAndIncrement());
+        Cell cellrectifySituationId = row.getCell(colIndex.getAndIncrement());
+        Cell cellproblemCharacterization = row.getCell(colIndex.getAndIncrement());
+        Cell cellproblemDescription = row.getCell(colIndex.getAndIncrement());
+        Cell cellmayAffect = row.getCell(colIndex.getAndIncrement());
+        Cell cellrectificationSuggestions = row.getCell(colIndex.getAndIncrement());
+        Cell cellauditClassificationId = row.getCell(colIndex.getAndIncrement());
+        Cell cellriskAssessmentId = row.getCell(colIndex.getAndIncrement());
+        Cell cellauditBasis = row.getCell(colIndex.getAndIncrement());
+        Cell cellauditingExperience = row.getCell(colIndex.getAndIncrement());
+        //----------
+        cellprojectName.setCellType(CellType.STRING);
+        cellprojectType.setCellType(CellType.STRING);
+        cellauditNatureId.setCellType(CellType.STRING);
+        cellquestionEntryId.setCellType(CellType.STRING);
+        cellproblemSeverityId.setCellType(CellType.STRING);
+        cellrectifySituationId.setCellType(CellType.STRING);
+        cellproblemCharacterization.setCellType(CellType.STRING);
+        cellproblemDescription.setCellType(CellType.STRING);
+        cellmayAffect.setCellType(CellType.STRING);
+        cellrectificationSuggestions.setCellType(CellType.STRING);
+        cellauditClassificationId.setCellType(CellType.STRING);
+        cellriskAssessmentId.setCellType(CellType.STRING);
+        cellauditBasis.setCellType(CellType.STRING);
+        cellauditingExperience.setCellType(CellType.STRING);
+
+        String projectName = cellprojectName.getStringCellValue();//计划名称
+        String projectType = cellprojectType.getStringCellValue();//项目类型
+        String auditNatureId = cellauditNatureId.getStringCellValue();//审计性质
+        String questionEntryId = cellquestionEntryId.getStringCellValue();//问题词条
+        String problemSeverityId = cellproblemSeverityId.getStringCellValue();//问题严重程度
+        String rectifySituationId = cellrectifySituationId.getStringCellValue();//整改情况
+        String problemCharacterization = cellproblemCharacterization.getStringCellValue();//问题定性
+        String problemDescription = cellproblemDescription.getStringCellValue();//问题描述
+        String mayAffect = cellmayAffect.getStringCellValue();//可能影响
+        String rectificationSuggestions = cellrectificationSuggestions.getStringCellValue();//整改建议
+        String auditClassificationId = cellauditClassificationId.getStringCellValue();//审计分类
+        String riskAssessmentId = cellriskAssessmentId.getStringCellValue();//风险评估
+        String auditBasis = cellauditBasis.getStringCellValue();//审计依据
+        String auditingExperience = cellauditingExperience.getStringCellValue();//审计经验
+        plan.setProjectName(projectName);
+        plan.setProjectType(setEntryValue(entryNameValue,projectType));
+        plan.setAuditNatureId(setEntryValue(entryNameValue,auditNatureId));
+        plan.setQuestionEntryId(setEntryValue(entryNameValue,questionEntryId));
+        plan.setProblemSeverityId(setEntryValue(entryNameValue,problemSeverityId));
+        plan.setRectifySituationId(setEntryValue(entryNameValue,rectifySituationId));
+        plan.setProblemCharacterization(setEntryValue(entryNameValue,problemCharacterization));
+        plan.setProblemDescription(problemDescription);
+        plan.setMayAffect(mayAffect);
+        plan.setRectificationSuggestions(rectificationSuggestions);
+        plan.setAuditClassificationId(setEntryValue(entryNameValue,auditClassificationId));
+        plan.setRiskAssessmentId(setEntryValue(entryNameValue,riskAssessmentId));
+        plan.setAuditBasis(auditBasis);
+        plan.setAuditingExperience(auditingExperience);
+        int code = (int) ((Math.random() * 9 + 1) * 1000);
+        plan.setProjectCode("PROJECT-" + code);
+    }
+
+    private String setEntryValue(Map<String, String> entryNameValue, String entryName) {
+        if(entryNameValue.containsKey(entryName)){
+            return entryNameValue.get(entryName);
+        }
+        return "";
+    }
+
+    private void checkExcelHeader(Sheet planSheet, String[] planExcelHeader) {
+        Row row = planSheet.getRow(0);
+        AtomicInteger colIndex =new AtomicInteger();
+        for (String header : planExcelHeader) {
+            String stringCellValue = row.getCell(colIndex.getAndIncrement()).getStringCellValue();
+            if(StringUtils.isBlank(stringCellValue)||!header.equals(stringCellValue)){
+                throw new RuntimeException("模板出错，请使用下载模板上传文件！");
+            }
+        }
+    }
 }

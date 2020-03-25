@@ -71,4 +71,6 @@ public interface CommonConstants {
 	String GETTER="get";
 
 	String SETTER="set";
+
+	String PlanSheetName="计划导入模板";
 }
