@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.joda.time.Instant;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.StringJoiner;
+import java.util.UUID;
 
 @Data
 @Table(name="plan_check_list")
@@ -210,4 +213,10 @@ public class PlanCheckList implements Serializable,Cloneable{
     @TableField(exist = false)
     private String auditYearEnd;
 
+    public String generateProjectCode(){
+        StringJoiner joiner = new StringJoiner("-");
+        joiner.add("PROJECT");
+        joiner.add(Instant.now().toString());
+        return joiner.toString();
+    }
 }

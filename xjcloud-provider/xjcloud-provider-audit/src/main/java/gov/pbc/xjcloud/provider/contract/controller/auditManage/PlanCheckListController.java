@@ -2,6 +2,7 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,7 +13,6 @@ import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
-import gov.pbc.xjcloud.provider.contract.entity.entry.EntryCategory;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
@@ -370,7 +370,7 @@ public class PlanCheckListController {
     }
 
     @PostMapping("import")
-    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdBy") Integer createdBy) {
+    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId) {
         Sheet planSheet;
         if (null == file) {
             return R.failed("上传文件不能为空");
@@ -396,19 +396,39 @@ public class PlanCheckListController {
                 throw new RuntimeException("文档中没有工作表!");
             }
             int maxRow = planSheet.getLastRowNum();
+            AtomicInteger colIndex = null;
+            PlanCheckList plan = null;
+            List<String> prjCode = new ArrayList<>(maxRow);
             List<PlanCheckList> planList = new ArrayList<>(maxRow - 1);
-            //        final String[] planExcelHeader = new String[]
-//            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
             for (int startRow = 1; startRow <= maxRow; startRow++) {
-                AtomicInteger colIndex = new AtomicInteger();
+                colIndex = new AtomicInteger();
                 Row row = planSheet.getRow(startRow);
-                PlanCheckList plan = new PlanCheckList();
+                plan = new PlanCheckList();
                 initPlanProperty(plan,row,colIndex,entryNameValue);
+                plan.setImplementingAgencyId(implementingAgencyId);
                 plan.setCreatedBy(createdBy);
                 plan.setCreatedTime(new Date());
+                plan.setProjectCode(plan.generateProjectCode());
+                prjCode.add(plan.getProjectCode());
                 planList.add(plan);
             }
+            QueryWrapper<PlanCheckList> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("project_code",prjCode);
             boolean result = planManagementService.saveBatch(planList, planList.size());
+            boolean result2 =false;
+            if(result){
+                List<PlanCheckList> queryPlan = planManagementService.list(queryWrapper);
+                List<Integer> collect = queryPlan.stream().map(e -> e.getId()).collect(Collectors.toList());
+                List<PlanInfo> planInfos = new ArrayList<>(null==collect?0:collect.size());
+                collect.stream().forEach(e->{
+                    PlanInfo planInfo = new PlanInfo();
+                    planInfo.setPlanId(e);
+                    planInfo.setUserId(createdBy);
+                    planInfo.setType(0);
+                    planInfos.add(planInfo);
+                });
+                result2 = planInfoService.saveBatch(planInfos);
+            }
             return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + planList.size() + "条数据" : "导入失败");
         } catch (IOException e) {
             e.printStackTrace();
