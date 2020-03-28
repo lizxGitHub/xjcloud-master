@@ -9,10 +9,7 @@ import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +44,7 @@ public class LoginController {
     public R<String> getToken(@RequestParam Map<String, String> params) {
         R<String> r = new R<>();
         try {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             params.entrySet().stream().forEach(e -> {
                 try {
                     if (e.getKey().equals("password")) {
@@ -76,18 +73,18 @@ public class LoginController {
         return r;
     }
 
-    @RequestMapping("user/info")
+    @RequestMapping(value = "user/info",method = RequestMethod.GET)
     public JSONObject getUserInfo(HttpServletRequest request) {
         Map<String, String> headers = Maps.newHashMap();
         String tokenValue = request.getHeader(tokenName);
         headers.put(tokenName, tokenValue);
         String s = null;
         try {
-            s = HttpRequestUtil.sendGet(userUrl, new String(), headers);
+            s = HttpRequestUtil.sendGet(userUrl, "", headers);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        JSONObject jsStr = JSONObject.parseObject(s);
+        JSONObject jsStr = com.alibaba.fastjson.JSON.parseObject(s);
         return jsStr;
     }
 
@@ -113,8 +110,5 @@ public class LoginController {
         return f1.apply(map);
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        System.out.println(URLEncoder.encode("123456", "UTF-8"));
-    }
 
 }

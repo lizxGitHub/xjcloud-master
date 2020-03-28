@@ -236,7 +236,7 @@
 
             </when>
             <when test="query.type=='todo'">
-                and a.`status` !='1003'
+                and  STATUS != '1003' and STATUS != '0'
             </when>
             <when test="query.type=='done'">
                 AND a.`status`='1003' and a.`status`!='0'
