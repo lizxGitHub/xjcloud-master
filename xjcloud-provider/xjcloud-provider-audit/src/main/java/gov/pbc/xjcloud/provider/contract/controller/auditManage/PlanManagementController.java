@@ -111,8 +111,15 @@ public class PlanManagementController {
             page.setCurrent(Long.parseLong(current));
             page.setSize(Long.parseLong(size));
             query.put("type", type);
-            if (StringUtils.isNotBlank(query.get("deptId").toString())) {
-                List deptChild = deptUtil.findChildBank(Integer.parseInt(query.get("deptId").toString()), "支行");
+            String deptIds = query.get("deptId").toString();
+            query.remove("deptId");
+            if (StringUtils.isNotBlank(deptIds)) {
+                String[] deptIdArray = deptIds.split(",");
+                query.put("deptId", deptIdArray);
+                List deptChild = new ArrayList();
+                for (String deptId: deptIdArray) {
+                    deptChild.addAll(deptUtil.findChildBank(Integer.parseInt(deptId), "支行"));
+                }
                 query.put("auditObj", deptChild);
             }
 

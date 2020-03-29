@@ -219,9 +219,9 @@
             and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or
             a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
-        <if test="query.deptId!=null and query.deptId!=''">
-            and a.implementing_agency_id =#{query.deptId}
-        </if>
+<!--        <if test="query.deptId!=null and query.deptId!=''">-->
+<!--            and a.implementing_agency_id =#{query.deptId}-->
+<!--        </if>-->
         <if test="query.normalStatus!=null and query.normalStatus!=''">
             and a.status = #{query.normalStatus}
         </if>
@@ -229,6 +229,12 @@
             and a.audit_object_id in
             <foreach collection="query.auditObj" separator="," open="(" close=")" item="auditObj">
                 #{auditObj.deptId}
+            </foreach>
+        </if>
+        <if test="query.deptId != null and query.deptId!=''">
+            and a.implementing_agency_id in
+            <foreach collection="query.deptId" separator="," open="(" close=")" item="deptId">
+                #{deptId}
             </foreach>
         </if>
         <choose>
