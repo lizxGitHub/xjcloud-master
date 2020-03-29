@@ -55,6 +55,8 @@ public class PlanCheckListVO  {
     @Column(name = "audit_object_id")
     private String auditObjectId ;
 
+    private String auditStatus;
+
     /** 审计对象 */
     @TableField(exist = false)
     private String auditObjectName ;
