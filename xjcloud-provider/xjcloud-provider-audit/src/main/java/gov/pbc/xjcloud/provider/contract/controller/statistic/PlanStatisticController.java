@@ -53,7 +53,6 @@ public class PlanStatisticController {
 
     /**
      * 审计统计图表
-     *
      * @return
      */
     @ApiOperation("审计统计图表")
@@ -180,10 +179,8 @@ public class PlanStatisticController {
         }
         return r;
     }
-
     /**
      * 不同状态审计统计个数
-     *
      * @return
      */
     @ApiOperation("不同状态审计统计个数")
@@ -209,8 +206,8 @@ public class PlanStatisticController {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         Long resultCount = 0L;
         try {
-            if (deptId != 0) {
-                resultList = planManagementService.statisticPlanReportByDeptId(page.getCurrent() - 1, page.getSize(), auditYear, deptId);
+            if (deptId != 0 && deptId != 10100) {
+                resultList =  planManagementService.statisticPlanReportByDeptId(page.getCurrent()-1, page.getSize(), auditYear, deptId);
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
             } else {
                 //获取机构
