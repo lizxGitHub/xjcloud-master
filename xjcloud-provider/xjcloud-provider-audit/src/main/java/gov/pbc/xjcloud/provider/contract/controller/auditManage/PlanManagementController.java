@@ -599,16 +599,20 @@ public class PlanManagementController {
         JSONObject jsonObject = new JSONObject();
         List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId");
         AtomicBoolean isGroupByDept = new AtomicBoolean(false);
+        AtomicBoolean noAll = new AtomicBoolean(false);
+        StringJoiner joiner =new StringJoiner("-");
         deptKey.forEach(e -> {
             if ("all".equals(params.get(e))) {
                 isGroupByDept.set(true);
                 return;
             }
         });
+
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.stream().forEach(e -> {
                 if(null==e.get("name")){
+                    noAll.set(true);
                     e.put("name","未选择");
                     return;
                 }
@@ -627,6 +631,17 @@ public class PlanManagementController {
             });
 
         }
+        List<KeyValue> queryList = initQuery(params,deptKey,entryMap);
+        queryList.forEach(e->{
+            joiner.add(e.getValue().toString());
+        });
+        if(noAll.get()){
+            mapList.stream().limit(1).forEach(e->{
+                e.entrySet().stream().filter(y->y.getKey().equals("name")).forEach(x->{
+                    x.setValue(joiner.toString());
+                });
+            });
+        }
         List<Object> legend = new ArrayList<>();
         List<Map<String, Object>> tableData = new ArrayList<>();
         AtomicInteger total = new AtomicInteger();
@@ -636,6 +651,7 @@ public class PlanManagementController {
             int num =Integer.parseInt(e.get("value").toString());
             total.getAndAdd(num);
         });
+
         mapList.forEach(e -> {
             String name = (String) e.get("name");
             name = name==null?"全部":name;
@@ -681,6 +697,8 @@ public class PlanManagementController {
         JSONObject jsonObject = new JSONObject();
         List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId");
         AtomicBoolean isGroupByDept = new AtomicBoolean(false);
+        AtomicBoolean noAll = new AtomicBoolean(false);
+        StringJoiner joiner = new StringJoiner("-");
         deptKey.forEach(e -> {
             if ("all".equals(params.get(e))) {
                 isGroupByDept.set(true);
@@ -692,6 +710,7 @@ public class PlanManagementController {
             mapList.stream().forEach(e -> {
                 if(null==e.get("name")){
                     e.put("name","未选择");
+                    noAll.set(true);
                     return;
                 }
                 if (isGroupByDept.get()) {
@@ -709,9 +728,12 @@ public class PlanManagementController {
             });
 
         }
+
         List<Map<String, Object>> tableData = new ArrayList<>();
         List<KeyValue> queryList = initQuery(params,deptKey,entryMap);
-
+        queryList.forEach(e->{
+            joiner.add(e.getValue().toString());
+        });
         AtomicInteger total = new AtomicInteger();
         NumberFormat numberFormat = NumberFormat.getPercentInstance();
         numberFormat.setMinimumFractionDigits(2);
@@ -719,6 +741,13 @@ public class PlanManagementController {
             int num =Integer.parseInt(e.get("value").toString());
             total.getAndAdd(num);
         });
+        if(noAll.get()){
+            mapList.stream().limit(1).forEach(e->{
+                e.entrySet().stream().filter(y->y.getKey().equals("name")).forEach(x->{
+                    x.setValue(joiner.toString());
+                });
+            });
+        }
         mapList.forEach(e -> {
             String name = (String) e.get("name");
             name = name==null?"全部":name;
@@ -905,6 +934,9 @@ public class PlanManagementController {
         params.keySet().stream().forEach(e->{
             String key = e;
             Object value = params.get(key);
+            if(StringUtils.isBlank((String)value)){
+                return;
+            }
             KeyValue keyValue =new KeyValue();
             keyValue.setValue(value);
             keyValue.setKey(keyMap.get(key));
