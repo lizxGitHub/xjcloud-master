@@ -16,6 +16,10 @@ public class SpringBootWebMvcConfigurer implements WebMvcConfigurer {
     @Value("${audit.file.uploadFolder}")
     private String uploadFolder;
 
+    /**
+     * 静态文件映射地址
+     * @param registry
+     */
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler(staticAccessPath).addResourceLocations("file:/" + uploadFolder);
     }

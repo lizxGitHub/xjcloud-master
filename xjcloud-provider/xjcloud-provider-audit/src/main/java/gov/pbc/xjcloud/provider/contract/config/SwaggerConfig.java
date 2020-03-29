@@ -23,6 +23,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 //@EnableWebMvc
 //@EnableSwagger2
 //@ComponentScan(basePackages = { "gov.pbc.xjcloud.provider.contract" })
+
+/**
+ * swagger接口文档配置，可直接通过页面访问系统添加的接口
+ */
 public class SwaggerConfig extends WebMvcConfigurationSupport {
 //    @Bean
     public Docket createRestApi() {

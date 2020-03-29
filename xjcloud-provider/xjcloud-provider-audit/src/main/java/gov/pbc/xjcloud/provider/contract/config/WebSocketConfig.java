@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
- * 开启WebSocket支持
+ * 开启WebSocket支持，需要与前端联合使用
  * @author paungmiao@163.com
  */
 @Configuration  

@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.MultipartConfigElement;
 
+/**
+ * 文件上传配置类，
+ * 限制文件上传大小，默认100mb
+ * @author paungmiao@163.com
+ */
 @Configuration
 public class UploadFileConfig {
 

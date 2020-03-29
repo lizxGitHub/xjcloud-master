@@ -61,6 +61,10 @@ public class FeignClientConfig implements RequestInterceptor {
 
     }
 
+    /**
+     * feign远程调用请求头，认证参数配置
+     * @param template
+     */
     @Override
     public void apply(RequestTemplate template) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

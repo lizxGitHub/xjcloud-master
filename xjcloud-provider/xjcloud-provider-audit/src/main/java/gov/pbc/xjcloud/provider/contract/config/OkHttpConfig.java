@@ -16,12 +16,15 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnClass(Feign.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class OkHttpConfig {
-    // 默认老外留给你彩蛋中文乱码，加上它就 OK，实测不加这个也不会乱码
 //    @Bean
 //    public Encoder encoder() {
 //        return new FormEncoder();
 //    }
 
+    /**
+     * feign远程调用请求方式配置，在配置文件feign'client'okHttp开启
+     * @return
+     */
     @Bean
     public okhttp3.OkHttpClient okHttpClient() {
         return new okhttp3.OkHttpClient.Builder()

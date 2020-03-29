@@ -9,6 +9,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+/**
+ * 继承Spring 初始化类
+ * 方便直接获取Bean，不通过IOC方式注入
+ */
 @Component
 @Lazy(false)
 public class SpringContextHolder implements ApplicationContextAware, DisposableBean {
