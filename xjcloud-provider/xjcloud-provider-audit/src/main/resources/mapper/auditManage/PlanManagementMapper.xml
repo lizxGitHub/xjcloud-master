@@ -219,9 +219,12 @@
             and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or
             a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
-<!--        <if test="query.deptId!=null and query.deptId!=''">-->
-<!--            and a.implementing_agency_id =#{query.deptId}-->
-<!--        </if>-->
+        <if test="query.deptId!=null and query.deptId.length>0">
+            and a.implementing_agency_id in
+            <foreach collection="query.deptId" close=")" open="(" item="dept">
+                #{dept}
+            </foreach>
+        </if>
         <if test="query.normalStatus!=null and query.normalStatus!=''">
             and a.status = #{query.normalStatus}
         </if>
@@ -516,7 +519,7 @@
             #{query.costTimeEnd}
         </if>
         <if test="query.costTimeStart!=null and query.costTimeStart!=''">
-            and TIMESTAMPDIFF( DAY, pit.start_time_all, IFNULL( pit.end_time_all, NOW( ) ) )<![CDATA[<=]]>
+            and TIMESTAMPDIFF( DAY, pit.start_time_all, IFNULL( pit.end_time_all, NOW( ) ) )<![CDATA[>]]>
             #{query.costTimeStart}
         </if>
 

@@ -129,6 +129,7 @@ public class TaskController {
             R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
+            // 当前登录用户的流程数据
             Map<Integer, Map<String, String>> collect = resultList.stream().filter(e -> StringUtils.isNotBlank(e.get("bizKey"))).collect(Collectors.toMap(e -> Integer.parseInt(e.get("bizKey")), e -> e,(e1,e2)->e1));
             page = planCheckListService.selectAll(page, query, type, userId, status);
             page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {

@@ -94,52 +94,54 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         }
         if (StringUtils.equals(query.getCostTime(), "all")) { //审计性质
             query.setCostTime("");
-        }else if(StringUtils.isNotBlank(query.getCostTime())){
+        } else if (StringUtils.isNotBlank(query.getCostTime())) {
             dealtCostTimeParams(query);
         }
         if (StringUtils.equals(query.getOverTime(), "all")) { //审计性质
             query.setOverTime("");
-        }else if(StringUtils.isNotBlank(query.getOverTime())){
+        } else if (StringUtils.isNotBlank(query.getOverTime())) {
             calculateOverTime(query);
         }
 
         return planManagementMapper.selectEntryByQuery(query, pageStart, pageNo);
     }
+
     private void calculateOverTime(PlanCheckList query) {
         String overTime = query.getOverTime();
         Integer overTimeCase = Integer.parseInt(overTime);
         Integer overTimeStart = 0;
         Integer overTimeEnd = 0;
-        switch (overTimeCase){
+        switch (overTimeCase) {
             case 7:
-                overTimeStart = (overTimeCase*30);
+                overTimeStart = (overTimeCase * 30);
                 break;
             default:
-                overTimeStart = (overTimeCase*30);
-                overTimeEnd= (overTimeCase*30+30);
+                overTimeStart = (overTimeCase * 30);
+                overTimeEnd = (overTimeCase * 30 + 30);
         }
-        query.setOverTimeStart(overTimeStart==0?"":overTimeStart.toString());
-        query.setOverTimeEnd(overTimeStart==0?"":overTimeEnd.toString());
+        query.setOverTimeStart(overTimeStart == 0 ? "" : overTimeStart.toString());
+        query.setOverTimeEnd(overTimeStart == 0 ? "" : overTimeEnd.toString());
     }
+
     private void dealtCostTimeParams(PlanCheckList query) {
         String costTimeStr = query.getCostTime();
         int caseTime = Integer.parseInt(costTimeStr);
-        Integer overTimeStart=0;
-        Integer overTimeEnd=0;
-        switch (caseTime){
+        Integer overTimeStart = 0;
+        Integer overTimeEnd = 0;
+        switch (caseTime) {
             case 7:
-                 overTimeStart = (caseTime*30);
-                 overTimeEnd = 365;
+                overTimeStart = (caseTime * 30-30);
+                overTimeEnd = 365;
                 break;
             case 8:
-                 overTimeStart = 365;
+                overTimeStart = 365;
                 break;
             default:
-             overTimeStart = (caseTime*30);
-             overTimeEnd= (caseTime*30+30);
+                overTimeStart = (caseTime * 30-30);
+                overTimeEnd = (caseTime * 30 );
         }
-        query.setCostTimeStart(overTimeStart==0?"":overTimeStart.toString());
-        query.setCostTimeEnd(overTimeStart==0?"":overTimeEnd.toString());
+        query.setCostTimeStart(overTimeStart == 0 ? "" : overTimeStart.toString());
+        query.setCostTimeEnd(overTimeStart == 0 ? "" : overTimeEnd.toString());
     }
 
     @Override
@@ -205,26 +207,30 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         planManagementMapper.cancelCheckAttention(userId, checkArr);
         planManagementMapper.addCheckAttention(userId, checkArr);
     }
+
     public void cancelCheckAttention(String userId, String checkStr) {
         String[] checkArr = checkStr.split(",");
         planManagementMapper.cancelCheckAttention(userId, checkArr);
     }
+
     public void saveDeptYearReport(String deptId, String auditYear, String content) {
         List<Map<String, Object>> report = planManagementMapper.selectDeptYearReport(deptId, auditYear);
-        if(null!=report&&report.size()>0){
+        if (null != report && report.size() > 0) {
             planManagementMapper.updateDeptYearReport(deptId, auditYear, content);
-        }else {
+        } else {
             planManagementMapper.addDeptYearReport(deptId, auditYear, content);
         }
     }
+
     public String loadDeptYearReportContent(String deptId, String auditYear) {
         String content = "";
         List<Map<String, Object>> report = planManagementMapper.selectDeptYearReport(deptId, auditYear);
-        if(null!=report&&report.size()>0){
-            return report.get(0).get("content")!=null?report.get(0).get("content").toString():"";
+        if (null != report && report.size() > 0) {
+            return report.get(0).get("content") != null ? report.get(0).get("content").toString() : "";
         }
         return content;
     }
+
     /**
      * 关注列表
      *
@@ -246,28 +252,31 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     public Page<PlanCheckList> getDeadlinePlanPage(Map<String, Object> query, Page<PlanCheckList> page) {
-        return  planManagementMapper.getDeadlinePlanPage(page,query);
+        return planManagementMapper.getDeadlinePlanPage(page, query);
     }
 
     /**
      * 文件记录
+     *
      * @param planFile
      */
     public void addFileLog(PlanFile planFile) {
-        if(StringUtils.isBlank(planFile.getFileUri())){
+        if (StringUtils.isBlank(planFile.getFileUri())) {
             return;
         }
         planManagementMapper.addFileLog(planFile);
     }
-/**
- * 获取文件列表
- */
+
+    /**
+     * 获取文件列表
+     */
     public List<gov.pbc.xjcloud.provider.contract.vo.PlanFileVO> findFilesByBizKey(String bizKey) {
         return planManagementMapper.findFilesByBizKey(bizKey);
     }
 
     /**
      * 提交整改结果
+     *
      * @param params
      */
     public void reportPlanAndTask(Map<String, Object> params) {
@@ -275,14 +284,14 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         originalPlan.setRectifyResult(params.get("rectifyResult").toString());
         originalPlan.setRectifySituationId((String) params.get("rectifySituationId"));
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("rectify_result",params.get("rectifyResult"));
-        updateWrapper.set("rectify_Situation_Id",params.get("rectifySituationId"));
-        updateWrapper.eq("id",params.get("id"));
+        updateWrapper.set("rectify_result", params.get("rectifyResult"));
+        updateWrapper.set("rectify_Situation_Id", params.get("rectifySituationId"));
+        updateWrapper.eq("id", params.get("id"));
 //        updateWrapper.set("audit_status",params.get("status"));
-        planManagementMapper.update(originalPlan,updateWrapper);
+        planManagementMapper.update(originalPlan, updateWrapper);
         //提交文件
 
-        if(null!=params.get("fileUri") && StringUtils.isNotBlank(params.get("fileUri").toString())){
+        if (null != params.get("fileUri") && StringUtils.isNotBlank(params.get("fileUri").toString())) {
             PlanFile planFile = new PlanFile();
             planFile.setId(IdGenUtil.uuid());
 //            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
@@ -302,35 +311,36 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     /**
      * 完善计划
+     *
      * @param params
      */
     public void completePlan(Map<String, Object> params) {
         PlanCheckList originalPlan = planManagementMapper.selectById(params.get("id").toString());
         UpdateWrapper<PlanCheckList> updateWrapper = new UpdateWrapper<>();
-        if(null != params.get("rectifyResult")){
+        if (null != params.get("rectifyResult")) {
             originalPlan.setRectifyResult(params.get("rectifyResult").toString());
-            updateWrapper.set("rectify_result",originalPlan.getRectifyResult());
+            updateWrapper.set("rectify_result", originalPlan.getRectifyResult());
         }
-        if(null != params.get("auditUser")){
+        if (null != params.get("auditUser")) {
             originalPlan.setRectifyResult(params.get("auditUser").toString());
-            updateWrapper.set("auditUser",originalPlan.getRectifyResult());
+            updateWrapper.set("auditUser", originalPlan.getRectifyResult());
         }
-        if(null != params.get("auditUserId")){
+        if (null != params.get("auditUserId")) {
             originalPlan.setAuditUserId(Integer.parseInt(params.get("auditUserId").toString()));
-            updateWrapper.set("audit_user_id",originalPlan.getAuditUserId());
+            updateWrapper.set("audit_user_id", originalPlan.getAuditUserId());
         }
-        if(null != params.get("planTime")){
+        if (null != params.get("planTime")) {
             originalPlan.setPlanTime(params.get("planTime").toString());
-            updateWrapper.set("plan_time",originalPlan.getPlanTime());
+            updateWrapper.set("plan_time", originalPlan.getPlanTime());
         }
-        if(null != params.get("rectifyWay")){
+        if (null != params.get("rectifyWay")) {
             originalPlan.setRectifyWay(params.get("rectifyWay").toString());
-            updateWrapper.set("rectify_way",originalPlan.getRectifyWay());
+            updateWrapper.set("rectify_way", originalPlan.getRectifyWay());
         }
-        updateWrapper.eq("id",originalPlan.getId());
-        planManagementMapper.update(originalPlan,updateWrapper);
+        updateWrapper.eq("id", originalPlan.getId());
+        planManagementMapper.update(originalPlan, updateWrapper);
         //提交文件
-        if(null!=params.get("fileUri")){
+        if (null != params.get("fileUri")) {
             PlanFile planFile = new PlanFile();
             planFile.setId(IdGenUtil.uuid());
 //            planFile.setTaskId(Integer.parseInt(params.get("taskId").toString()));
@@ -351,68 +361,71 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
 
     /**
      * 分组统计
+     *
      * @param params
      */
-    public List<Map<String,Object>> groupCount(Map<String, Object> params) {
+    public List<Map<String, Object>> groupCount(Map<String, Object> params) {
         //超时统计
-        if(null!=params.get("overTime")&&params.get("overTime").toString().equals("all")){
+        if (null != params.get("overTime") && params.get("overTime").toString().equals("all")) {
             List<Map<String, Object>> list = this.planManagementMapper.listAllWithDays(params);
-            List<Map<String,Object>> result = calculateOverTime(list);
+            List<Map<String, Object>> result = calculateOverTime(list);
             return result;
-        }else if(null!=params.get("overTime")&&!(params.get("overTime")).equals("all")&&StringUtils.isNotBlank((String)params.get("overTime")))
+        } else if (null != params.get("overTime") && !(params.get("overTime")).equals("all") && StringUtils.isNotBlank((String) params.get("overTime")))
             dealtOverTimeParams(params);
-        else if(null!=params.get("costTime")&&params.get("costTime").toString().equals("all")){
+        else if (null != params.get("costTime") && params.get("costTime").toString().equals("all")) {
             List<Map<String, Object>> list = this.planManagementMapper.listAllWithDays(params);
-            List<Map<String,Object>> result = calculateCostTime(list);
+            List<Map<String, Object>> result = calculateCostTime(list);
             return result;
-        }else if(null!=params.get("costTime")&&!(params.get("costTime")).equals("all")&&StringUtils.isNotBlank((String)params.get("costTime"))){
+        } else if (null != params.get("costTime") && !(params.get("costTime")).equals("all") && StringUtils.isNotBlank((String) params.get("costTime"))) {
             dealtCostTimeParams(params);
         }
         return planManagementMapper.groupCount(params);
     }
 
     private void dealtOverTimeParams(Map<String, Object> params) {
-        String overTimeStr =(String) params.get("overTime");
+        String overTimeStr = (String) params.get("overTime");
         int caseTime = Integer.parseInt(overTimeStr);
-        for (AtomicInteger month=new AtomicInteger(1);month.get()<=7;month.addAndGet(1)){
-            if(month.get()==7){//超过6个月，第七个月开始计算
-                int overTimeStart = (month.get()*30);
-                params.put("overTimeStart",overTimeStart);
+        switch (caseTime) {
+            case 7: {//超过6个月，第七个月开始计算
+                int overTimeStart = (caseTime * 30);
+                params.put("overTimeStart", overTimeStart);
                 break;
             }
-            int overTimeStart = (month.get()*30);
-            int overTimeEnd= (month.get()*30+30);
-            params.put("overTimeStart",overTimeStart);
-            params.put("overTimeEnd",overTimeEnd);
+            default:
+                int overTimeStart = (caseTime * 30);
+                int overTimeEnd = (caseTime * 30 + 30);
+                params.put("overTimeStart", overTimeStart);
+                params.put("overTimeEnd", overTimeEnd);
         }
     }
 
     private void dealtCostTimeParams(Map<String, Object> params) {
-        String costTimeStr =(String) params.get("costTime");
+        String costTimeStr = (String) params.get("costTime");
         int caseTime = Integer.parseInt(costTimeStr);
-        for (AtomicInteger month=new AtomicInteger(1);month.get()<=8;month.addAndGet(1)){
-            if(month.get()==7){//半年到一年
-                int overTimeStart = (month.get()*30);
+        switch (caseTime) {
+            case 7: {//半年到一年
+                int overTimeStart = (caseTime * 30-30);
                 int overTimeEnd = 365;
-                params.put("costTimeStart",overTimeStart);
-                params.put("costTimeEnd",overTimeEnd);
+                params.put("costTimeStart", overTimeStart);
+                params.put("costTimeEnd", overTimeEnd);
                 break;
             }
-            if(month.get()==8){//一年以上
+            case 8: {//一年以上
                 int overTimeStart = 365;
-                params.put("overTimeStart",overTimeStart);
+                params.put("overTimeStart", overTimeStart);
                 break;
             }
-            int overTimeStart = (month.get()*30);
-            int overTimeEnd= (month.get()*30+30);
-            params.put("overTimeStart",overTimeStart);
-            params.put("overTimeEnd",overTimeEnd);
+            default:
+                int overTimeStart = (caseTime * 30-30);
+                int overTimeEnd = (caseTime * 30 );
+                params.put("overTimeStart", overTimeStart);
+                params.put("overTimeEnd", overTimeEnd);
         }
     }
 
     private List<Map<String, Object>> calculateCostTime(List<Map<String, Object>> list) {
-        List<Map<String, Object>> result=new ArrayList<>(list.size()/2);
-        for (AtomicInteger month = new AtomicInteger(1); month.get()<=8; month.addAndGet(1)) {
+        List<Map<String, Object>> result = new ArrayList<>(list.size() / 2);
+        for (AtomicInteger month = new AtomicInteger(1); month.get() <= 8; month.addAndGet(1)) {
             long count = list.stream().filter(e -> {
                 Date startTimeAll = (Date) e.get("startTimeAll");
                 Date endTimeAll = (Date) e.get("endTimeAll");
@@ -447,30 +460,30 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     private List<Map<String, Object>> calculateOverTime(List<Map<String, Object>> list) {
-        List<Map<String,Object>> result =new ArrayList<>();
-        for (AtomicInteger month=new AtomicInteger(1);month.get()<=7;month.addAndGet(1)){
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (AtomicInteger month = new AtomicInteger(1); month.get() <= 7; month.addAndGet(1)) {
             long count = list.stream().filter(e -> {
                 Long planTime = Long.parseLong(e.get("planTime").toString());
                 Date startTimeAll = (Date) e.get("startTimeAll");
-                Date endTimeAll =(Date) e.get("endTimeAll");
-                if(null == endTimeAll){
-                    endTimeAll=new Date();
+                Date endTimeAll = (Date) e.get("endTimeAll");
+                if (null == endTimeAll) {
+                    endTimeAll = new Date();
                 }
-                long costTime =diffDays(startTimeAll,endTimeAll);
-                long delayDate =  Long.parseLong(e.get("delayDate").toString());
-                if(month.get()==7){
-                    return (costTime-planTime+delayDate)>=(month.get()*30);
+                long costTime = diffDays(startTimeAll, endTimeAll);
+                long delayDate = Long.parseLong(e.get("delayDate").toString());
+                if (month.get() == 7) {
+                    return (costTime - planTime + delayDate) >= (month.get() * 30);
                 }
-                boolean lg= (costTime-planTime+delayDate)>=(month.get()*30);
-                boolean gt= (costTime-planTime+delayDate)<(month.get()*30+30);
-                return lg&gt;
+                boolean lg = (costTime - planTime + delayDate) >= (month.get() * 30);
+                boolean gt = (costTime - planTime + delayDate) < (month.get() * 30 + 30);
+                return lg & gt;
             }).count();
             Map<String, Object> value = new HashMap<>();
-            value.put("value",count);
-            if(month.get()==7){
-                value.put("name",String.format("超时%d个月以上",month.get()-1));
-            }else {
-                value.put("name",String.format("超时%d个月",month.get()));
+            value.put("value", count);
+            if (month.get() == 7) {
+                value.put("name", String.format("超时%d个月以上", month.get() - 1));
+            } else {
+                value.put("name", String.format("超时%d个月", month.get()));
             }
             result.add(value);
         }
@@ -478,23 +491,24 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     private long diffDays(Date startTimeAll, Date endTimeAll) {
-        long start= (startTimeAll).getTime();
+        long start = (startTimeAll).getTime();
         long end = (endTimeAll).getTime();
-        return (end-start)/(24*60*60*1000);
+        return (end - start) / (24 * 60 * 60 * 1000);
     }
 
 
     /**
      * Date转换为LocalDateTime
+     *
      * @param date
      */
-    public LocalDateTime date2LocalDateTime(Date date){
+    public LocalDateTime date2LocalDateTime(Date date) {
         Instant instant = date.toInstant();//An instantaneous point on the time-line.(时间线上的一个瞬时点。)
         ZoneId zoneId = ZoneId.systemDefault();//A time-zone ID, such as {@code Europe/Paris}.(时区)
         LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
 
         System.out.println(localDateTime.toString());//2018-03-27T14:07:32.668
-        System.out.println(localDateTime.toLocalDate() + " " +localDateTime.toLocalTime());//2018-03-27 14:48:57.453
+        System.out.println(localDateTime.toLocalDate() + " " + localDateTime.toLocalTime());//2018-03-27 14:48:57.453
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");//This class is immutable and thread-safe.@since 1.8
         System.out.println(dateTimeFormatter.format(localDateTime));//2018-03-27 14:52:57
