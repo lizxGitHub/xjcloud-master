@@ -179,6 +179,25 @@ public class PlanStatisticController {
         }
         return r;
     }
+
+    /**
+     * 基本情况
+     * @return
+     */
+    @ApiOperation("基本情况")
+    @RequestMapping("/questionStatisticBasic")
+    public R questionStatisticBasic() {
+        R<JSONObject> r = new R<>();
+        try {
+            JSONObject data = new JSONObject();
+            List<Map<String, Object>> list = planManagementService.groupCountEntry();
+            data.put("statisticData", list);
+            r.setData(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
     /**
      * 不同状态审计统计个数
      * @return

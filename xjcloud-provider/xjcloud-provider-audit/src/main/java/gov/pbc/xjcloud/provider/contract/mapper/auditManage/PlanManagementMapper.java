@@ -104,6 +104,21 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "</script>"})
     List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupName")String groupName, @Param("groupField")String groupField);
 
+    @Select({"<script>",
+            "SELECT * from (\n" +
+                    "SELECT tb1.deptId, COUNT(tb1.`code`) proNum, SUM(tb1.error) errorNum from \n" +
+                    "(\n" +
+                    "SELECT a.implementing_agency_id deptId, a.project_code code,\n" +
+                    "CASE WHEN a.`status` in (1001,1002,1003) THEN 1 ELSE 0 END as error\n" +
+                    "from \n" +
+                    "plan_check_list a \n" +
+                    "where a.del_flag = 0\n" +
+                    ") tb1 GROUP BY tb1.`code`\n" +
+                    ") tb2\n" +
+                    "ORDER BY tb2.errorNum desc",
+            "</script>"})
+    List<Map<String, Object>> groupCountEntry();
+
 
     List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId, @Param("auditYear")String auditYear);
 
