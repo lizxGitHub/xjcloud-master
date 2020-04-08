@@ -244,8 +244,12 @@
             `rectify_situation_id`,
             `problem_characterization`,
             `problem_description`,
+            <if test="planCheckList.mayAffect != null and planCheckList.mayAffect !=''">
             `may_affect`,
+            </if>
+            <if test="planCheckList.rectificationSuggestions != null and planCheckList.rectificationSuggestions !=''">
             `rectification_suggestions`,
+            </if>
             <if test="planCheckList.auditBasis != null and planCheckList.auditBasis !=''">
                 `audit_basis`,
             </if>
