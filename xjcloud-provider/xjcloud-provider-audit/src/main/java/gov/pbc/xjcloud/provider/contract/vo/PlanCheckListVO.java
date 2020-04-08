@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -169,5 +170,42 @@ public class PlanCheckListVO  {
     private String implementingAgencyName;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date startTime;
+
+    public void setConcatQuestionEntry() {
+        String name =this.questionEntryId1;
+        if(StringUtils.isNotBlank(this.questionEntryId2)){
+            name+='-'+this.questionEntryId2;
+        }
+        if(StringUtils.isNotBlank(this.questionEntryId3)){
+            name+='-'+this.questionEntryId3;
+        }
+        if(StringUtils.isNotBlank(this.questionEntryId4)){
+            name+='-'+this.questionEntryId4;
+        }
+        this.questionEntryId = name;
+    }
+
+    @TableField(exist = false)
+    private String questionEntryId1 ;
+    @TableField(exist = false)
+    private String questionEntryId2 ;
+    @TableField(exist = false)
+    private String questionEntryId3 ;
+    @TableField(exist = false)
+    private String questionEntryId4 ;
+
+    private String agencyLevel;
+
+    private String enterTime;
+
+    private String orgType;
+
+    private String managerDutyType;
+
+    private String riskType;
+
+    private String functionType;
+
+    private String auditSuggestions;
 
 }

@@ -14,6 +14,7 @@ import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
+import gov.pbc.xjcloud.provider.contract.enumutils.ExportPlanHeaderEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
@@ -22,9 +23,11 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServic
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryCategoryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R2;
+import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +43,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -73,8 +79,8 @@ public class PlanCheckListController {
     @Autowired
     private PlanManagementServiceImpl planManagementService;
 
-    final String[] planExcelHeader = new String[]
-            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
+//    final String[] planExcelHeader = new String[]
+//            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
 
     /**
      * 获取审计计划
@@ -119,7 +125,7 @@ public class PlanCheckListController {
                 String year = String.valueOf(date.get(Calendar.YEAR));
                 planCheckList.setAuditYear(year);
             }
-            String fileUri= planCheckList.getFileUri();
+            String fileUri = planCheckList.getFileUri();
 //            planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
             if (planCheckList.getId() == 0) {
                 planCheckList.setDelFlag(DelConstants.EXITED);
@@ -138,7 +144,7 @@ public class PlanCheckListController {
             } else {
                 planCheckListService.updatePlanById(planCheckList);
             }
-            if(StringUtils.isNotBlank(fileUri)){
+            if (StringUtils.isNotBlank(fileUri)) {
                 PlanFile planFile = new PlanFile();
                 planFile.setId(IdGenUtil.uuid());
                 planFile.setTaskId(0);
@@ -158,6 +164,7 @@ public class PlanCheckListController {
 
     /**
      * 更改状态
+     *
      * @param ids
      * @return
      */
@@ -174,7 +181,7 @@ public class PlanCheckListController {
             String[] idArray = ids.split(",");
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
-                if(StringUtils.isNotBlank(fileUri)){
+                if (StringUtils.isNotBlank(fileUri)) {
                     PlanFile planFile = new PlanFile();
                     planFile.setId(IdGenUtil.uuid());
                     planFile.setTaskId(0);
@@ -281,8 +288,8 @@ public class PlanCheckListController {
                     String vars = varsJSONObject.toJSONString();
                     //启动流程
                     R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
-                    if(!auditApply.getData()){
-                        return r.setMsg("流程启动失败:"+auditApply.getMsg());
+                    if (!auditApply.getData()) {
+                        return r.setMsg("流程启动失败:" + auditApply.getMsg());
                     }
                 }
             }
@@ -312,14 +319,14 @@ public class PlanCheckListController {
             AtomicInteger colIndex = new AtomicInteger();
             XSSFRow row = sheet.createRow(rowIndex.get());
             DataValidationHelper helper = sheet.getDataValidationHelper();//设置下拉框xlsx格式
-            for (String header:planExcelHeader){
+            for (ExportPlanHeaderEnum header : ExportPlanHeaderEnum.values()) {
                 XSSFCell cell = row.createCell(colIndex.getAndIncrement());
-                cell.setCellValue(header);
-                cell.setCellStyle(getCellStyle(workbook,true));
-                if(cateNameMap.containsKey(header)){
-                    Integer cateFk = cateNameMap.get(header);
+                cell.setCellValue(header.getName());
+                cell.setCellStyle(getCellStyle(workbook, true));
+                if (cateNameMap.containsKey(header.getName())) {
+                    Integer cateFk = cateNameMap.get(header.getName());
                     String[] objects = entryGroup.get(cateFk).stream().map(e -> e.getConcatName()).toArray(String[]::new);
-                    creatDropDownList(sheet,helper, objects,rowIndex.get()+1, (1<<16)-1,colIndex.get()-1,colIndex.get()-1);
+                    creatDropDownList(sheet, helper, objects, rowIndex.get() + 1, (1 << 16) - 1, colIndex.get() - 1, colIndex.get() - 1);
                 }
             }
             response.setContentType("application/binary;charset=ISO8859-1");
@@ -337,7 +344,7 @@ public class PlanCheckListController {
         }
     }
 
-    public static CellStyle getCellStyle(Workbook workbook, boolean bold){
+    public static CellStyle getCellStyle(Workbook workbook, boolean bold) {
         CellStyle cellStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
         font.setBold(bold);//加粗
@@ -354,7 +361,7 @@ public class PlanCheckListController {
 
     //创建下拉框
     public static void creatDropDownList(Sheet sheet, DataValidationHelper helper, String[] list,
-                                          Integer firstRow, Integer lastRow, Integer firstCol, Integer lastCol) {
+                                         Integer firstRow, Integer lastRow, Integer firstCol, Integer lastCol) {
         CellRangeAddressList addressList = new CellRangeAddressList(firstRow, lastRow, firstCol, lastCol);
         //设置下拉框数据
         DataValidationConstraint constraint = helper.createExplicitListConstraint(list);
@@ -369,12 +376,23 @@ public class PlanCheckListController {
         sheet.addValidationData(dataValidation);
     }
 
+    @Autowired
+    private DeptUtil deptUtil;
+
+    private ConcurrentHashMap<String, Integer> deptNameValue = new ConcurrentHashMap<>();
+
     @PostMapping("import")
-    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId) {
+    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file,  @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId) {
         Sheet planSheet;
         if (null == file) {
             return R.failed("上传文件不能为空");
         }
+        boolean result = false;
+        List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(implementingAgencyId),"支行");
+        Map<String, Integer> tempMap = deptList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
+        deptNameValue.clear();
+        deptNameValue.putAll(tempMap);
+        List<PlanCheckList> planList = null;
         String fileName = file.getOriginalFilename();
         try {
             if (org.apache.commons.lang.StringUtils.isBlank(fileName)) {
@@ -388,7 +406,7 @@ public class PlanCheckListController {
             Map<String, String> entryNameValue = entryService.list().stream().filter(e -> StringUtils.isNotBlank(e.getConcatName())).
                     collect(Collectors.toMap(e -> e.getConcatName(), e -> e.getId(), (e1, e2) -> e1));
             planSheet = ExcelUtil.getReader(file.getInputStream(), CommonConstants.PlanSheetName).setIgnoreEmptyRow(true).getSheet();
-            checkExcelHeader(planSheet,planExcelHeader);
+            checkExcelHeader(planSheet);
             if (planSheet == null) {
                 throw new RuntimeException("请使用模板导入!");
             }
@@ -399,12 +417,19 @@ public class PlanCheckListController {
             AtomicInteger colIndex = null;
             PlanCheckList plan = null;
             List<String> prjCode = new ArrayList<>(maxRow);
-            List<PlanCheckList> planList = new ArrayList<>(maxRow - 1);
+            planList = new ArrayList<>(maxRow - 1);
             for (int startRow = 1; startRow <= maxRow; startRow++) {
                 colIndex = new AtomicInteger();
                 Row row = planSheet.getRow(startRow);
                 plan = new PlanCheckList();
-                initPlanProperty(plan,row,colIndex,entryNameValue);
+                initPlanProperty(plan, row, colIndex, entryNameValue);
+                String auditObjectId = plan.getAuditObjectId();
+                if(deptNameValue.containsKey(auditObjectId)){
+                    plan.setAuditObjectId(deptNameValue.get(auditObjectId).toString());
+                }
+                plan.setConcatQuestionEntry();
+                int code = (int) ((Math.random() * 9 + 1) * 1000);
+                plan.setProjectCode("PROJECT-" + code);
                 plan.setImplementingAgencyId(implementingAgencyId);
                 plan.setCreatedBy(createdBy);
                 plan.setCreatedTime(new Date());
@@ -413,105 +438,141 @@ public class PlanCheckListController {
                 planList.add(plan);
             }
             QueryWrapper<PlanCheckList> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("project_code",prjCode);
-            boolean result = planManagementService.saveBatch(planList, planList.size());
-            boolean result2 =false;
-            if(result){
+            queryWrapper.in("project_code", prjCode);
+            result = planManagementService.saveBatch(planList, planList.size());
+            if (result) {
                 List<PlanCheckList> queryPlan = planManagementService.list(queryWrapper);
                 List<Integer> collect = queryPlan.stream().map(e -> e.getId()).collect(Collectors.toList());
-                List<PlanInfo> planInfos = new ArrayList<>(null==collect?0:collect.size());
-                collect.stream().forEach(e->{
+                List<PlanInfo> planInfos = new ArrayList<>(null == collect ? 0 : collect.size());
+                collect.stream().forEach(e -> {
                     PlanInfo planInfo = new PlanInfo();
                     planInfo.setPlanId(e);
                     planInfo.setUserId(createdBy);
                     planInfo.setType(0);
                     planInfos.add(planInfo);
                 });
-                result2 = planInfoService.saveBatch(planInfos);
+                planInfoService.saveBatch(planInfos);
             }
-            return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + planList.size() + "条数据" : "导入失败");
         } catch (IOException e) {
             e.printStackTrace();
             return new R<Boolean>(ApiErrorCode.FAILED).setMsg("请下载模板导入");
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+        return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + planList.size() + "条数据" : "导入失败");
     }
 
-    private void initPlanProperty(PlanCheckList plan, Row row, AtomicInteger colIndex, Map<String, String> entryNameValue) {
-        Cell cellprojectName = row.getCell(colIndex.getAndIncrement());
-        Cell cellprojectType = row.getCell(colIndex.getAndIncrement());
-        Cell cellauditNatureId = row.getCell(colIndex.getAndIncrement());
-        Cell cellquestionEntryId = row.getCell(colIndex.getAndIncrement());
-        Cell cellproblemSeverityId = row.getCell(colIndex.getAndIncrement());
-        Cell cellrectifySituationId = row.getCell(colIndex.getAndIncrement());
-        Cell cellproblemCharacterization = row.getCell(colIndex.getAndIncrement());
-        Cell cellproblemDescription = row.getCell(colIndex.getAndIncrement());
-        Cell cellmayAffect = row.getCell(colIndex.getAndIncrement());
-        Cell cellrectificationSuggestions = row.getCell(colIndex.getAndIncrement());
-        Cell cellauditClassificationId = row.getCell(colIndex.getAndIncrement());
-        Cell cellriskAssessmentId = row.getCell(colIndex.getAndIncrement());
-        Cell cellauditBasis = row.getCell(colIndex.getAndIncrement());
-        Cell cellauditingExperience = row.getCell(colIndex.getAndIncrement());
-        //----------
-        cellprojectName.setCellType(CellType.STRING);
-        cellprojectType.setCellType(CellType.STRING);
-        cellauditNatureId.setCellType(CellType.STRING);
-        cellquestionEntryId.setCellType(CellType.STRING);
-        cellproblemSeverityId.setCellType(CellType.STRING);
-        cellrectifySituationId.setCellType(CellType.STRING);
-        cellproblemCharacterization.setCellType(CellType.STRING);
-        cellproblemDescription.setCellType(CellType.STRING);
-        cellmayAffect.setCellType(CellType.STRING);
-        cellrectificationSuggestions.setCellType(CellType.STRING);
-        cellauditClassificationId.setCellType(CellType.STRING);
-        cellriskAssessmentId.setCellType(CellType.STRING);
-        cellauditBasis.setCellType(CellType.STRING);
-        cellauditingExperience.setCellType(CellType.STRING);
+    private void initPlanProperty(PlanCheckList plan, Row row, AtomicInteger colIndex, Map<String, String> entryNameValue) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ExportPlanHeaderEnum[] headerEnums = ExportPlanHeaderEnum.values();
+        for (int i = 0; i < headerEnums.length; i++) {
+            ExportPlanHeaderEnum header = headerEnums[i];
+            String column = header.getColumn();
+            String settterMethod = generateSetterMethod(column);
+            Method method = plan.getClass().getMethod(settterMethod, String.class);
+            method.setAccessible(true);
+            Cell cell = row.getCell(colIndex.getAndIncrement());
+            cell.setCellType(CellType.STRING);
+            String value = cell.getStringCellValue();
+            if(entryNameValue.containsKey(value)){
+                value = entryNameValue.get(value);
+            }
+            method.invoke(plan, new Object[]{value});
 
-        String projectName = cellprojectName.getStringCellValue();//计划名称
-        String projectType = cellprojectType.getStringCellValue();//项目类型
-        String auditNatureId = cellauditNatureId.getStringCellValue();//审计性质
-        String questionEntryId = cellquestionEntryId.getStringCellValue();//问题词条
-        String problemSeverityId = cellproblemSeverityId.getStringCellValue();//问题严重程度
-        String rectifySituationId = cellrectifySituationId.getStringCellValue();//整改情况
-        String problemCharacterization = cellproblemCharacterization.getStringCellValue();//问题定性
-        String problemDescription = cellproblemDescription.getStringCellValue();//问题描述
-        String mayAffect = cellmayAffect.getStringCellValue();//可能影响
-        String rectificationSuggestions = cellrectificationSuggestions.getStringCellValue();//整改建议
-        String auditClassificationId = cellauditClassificationId.getStringCellValue();//审计分类
-        String riskAssessmentId = cellriskAssessmentId.getStringCellValue();//风险评估
-        String auditBasis = cellauditBasis.getStringCellValue();//审计依据
-        String auditingExperience = cellauditingExperience.getStringCellValue();//审计经验
-        plan.setProjectName(projectName);
-        plan.setProjectType(setEntryValue(entryNameValue,projectType));
-        plan.setAuditNatureId(setEntryValue(entryNameValue,auditNatureId));
-        plan.setQuestionEntryId(setEntryValue(entryNameValue,questionEntryId));
-        plan.setProblemSeverityId(setEntryValue(entryNameValue,problemSeverityId));
-        plan.setRectifySituationId(setEntryValue(entryNameValue,rectifySituationId));
-        plan.setProblemCharacterization(setEntryValue(entryNameValue,problemCharacterization));
-        plan.setProblemDescription(problemDescription);
-        plan.setMayAffect(mayAffect);
-        plan.setRectificationSuggestions(rectificationSuggestions);
-        plan.setAuditClassificationId(setEntryValue(entryNameValue,auditClassificationId));
-        plan.setRiskAssessmentId(setEntryValue(entryNameValue,riskAssessmentId));
-        plan.setAuditBasis(auditBasis);
-        plan.setAuditingExperience(auditingExperience);
-        int code = (int) ((Math.random() * 9 + 1) * 1000);
-        plan.setProjectCode("PROJECT-" + code);
+        }
+//        Cell cellprojectName = row.getCell(colIndex.getAndIncrement());
+//        Cell cellprojectType = row.getCell(colIndex.getAndIncrement());
+//        Cell cellauditNatureId = row.getCell(colIndex.getAndIncrement());
+//        Cell cellquestionEntryId = row.getCell(colIndex.getAndIncrement());
+//        Cell cellproblemSeverityId = row.getCell(colIndex.getAndIncrement());
+//        Cell cellrectifySituationId = row.getCell(colIndex.getAndIncrement());
+//        Cell cellproblemCharacterization = row.getCell(colIndex.getAndIncrement());
+//        Cell cellproblemDescription = row.getCell(colIndex.getAndIncrement());
+//        Cell cellmayAffect = row.getCell(colIndex.getAndIncrement());
+//        Cell cellrectificationSuggestions = row.getCell(colIndex.getAndIncrement());
+//        Cell cellauditClassificationId = row.getCell(colIndex.getAndIncrement());
+//        Cell cellriskAssessmentId = row.getCell(colIndex.getAndIncrement());
+//        Cell cellauditBasis = row.getCell(colIndex.getAndIncrement());
+//        Cell cellauditingExperience = row.getCell(colIndex.getAndIncrement());
+//        //----------
+//        cellprojectName.setCellType(CellType.STRING);
+//        cellprojectType.setCellType(CellType.STRING);
+//        cellauditNatureId.setCellType(CellType.STRING);
+//        cellquestionEntryId.setCellType(CellType.STRING);
+//        cellproblemSeverityId.setCellType(CellType.STRING);
+//        cellrectifySituationId.setCellType(CellType.STRING);
+//        cellproblemCharacterization.setCellType(CellType.STRING);
+//        cellproblemDescription.setCellType(CellType.STRING);
+//        cellmayAffect.setCellType(CellType.STRING);
+//        cellrectificationSuggestions.setCellType(CellType.STRING);
+//        cellauditClassificationId.setCellType(CellType.STRING);
+//        cellriskAssessmentId.setCellType(CellType.STRING);
+//        cellauditBasis.setCellType(CellType.STRING);
+//        cellauditingExperience.setCellType(CellType.STRING);
+//
+//        String projectName = cellprojectName.getStringCellValue();//计划名称
+//        String projectType = cellprojectType.getStringCellValue();//项目类型
+//        String auditNatureId = cellauditNatureId.getStringCellValue();//审计性质
+//        String questionEntryId = cellquestionEntryId.getStringCellValue();//问题词条
+//        String problemSeverityId = cellproblemSeverityId.getStringCellValue();//问题严重程度
+//        String rectifySituationId = cellrectifySituationId.getStringCellValue();//整改情况
+//        String problemCharacterization = cellproblemCharacterization.getStringCellValue();//问题定性
+//        String problemDescription = cellproblemDescription.getStringCellValue();//问题描述
+//        String mayAffect = cellmayAffect.getStringCellValue();//可能影响
+//        String rectificationSuggestions = cellrectificationSuggestions.getStringCellValue();//整改建议
+//        String auditClassificationId = cellauditClassificationId.getStringCellValue();//审计分类
+//        String riskAssessmentId = cellriskAssessmentId.getStringCellValue();//风险评估
+//        String auditBasis = cellauditBasis.getStringCellValue();//审计依据
+//        String auditingExperience = cellauditingExperience.getStringCellValue();//审计经验
+//        plan.setProjectName(projectName);
+//        plan.setProjectType(setEntryValue(entryNameValue, projectType));
+//        plan.setAuditNatureId(setEntryValue(entryNameValue, auditNatureId));
+//        plan.setQuestionEntryId(setEntryValue(entryNameValue, questionEntryId));
+//        plan.setProblemSeverityId(setEntryValue(entryNameValue, problemSeverityId));
+//        plan.setRectifySituationId(setEntryValue(entryNameValue, rectifySituationId));
+//        plan.setProblemCharacterization(setEntryValue(entryNameValue, problemCharacterization));
+//        plan.setProblemDescription(problemDescription);
+//        plan.setMayAffect(mayAffect);
+//        plan.setRectificationSuggestions(rectificationSuggestions);
+//        plan.setAuditClassificationId(setEntryValue(entryNameValue, auditClassificationId));
+//        plan.setRiskAssessmentId(setEntryValue(entryNameValue, riskAssessmentId));
+//        plan.setAuditBasis(auditBasis);
+//        plan.setAuditingExperience(auditingExperience);
+    }
+
+    /**
+     * column 转setter方法名称
+     *
+     * @param column
+     * @return
+     */
+    private String generateSetterMethod(String column) {
+        String[] splits = column.split("_");
+        StringBuffer settterName = new StringBuffer("set");
+        for (String split : splits) {
+            String firstChar = split.substring(0, 1);
+            String otherChar = split.substring(1);
+            settterName.append(firstChar.toUpperCase() + otherChar);
+        }
+        return settterName.toString();
     }
 
     private String setEntryValue(Map<String, String> entryNameValue, String entryName) {
-        if(entryNameValue.containsKey(entryName)){
+        if (entryNameValue.containsKey(entryName)) {
             return entryNameValue.get(entryName);
         }
         return "";
     }
 
-    private void checkExcelHeader(Sheet planSheet, String[] planExcelHeader) {
+    private void checkExcelHeader(Sheet planSheet) {
         Row row = planSheet.getRow(0);
-        AtomicInteger colIndex =new AtomicInteger();
-        for (String header : planExcelHeader) {
+        AtomicInteger colIndex = new AtomicInteger();
+        for (ExportPlanHeaderEnum header : ExportPlanHeaderEnum.values()) {
             String stringCellValue = row.getCell(colIndex.getAndIncrement()).getStringCellValue();
-            if(StringUtils.isBlank(stringCellValue)||!header.equals(stringCellValue)){
+            if (StringUtils.isBlank(stringCellValue) || !header.getName().equals(stringCellValue)) {
                 throw new RuntimeException("模板出错，请使用下载模板上传文件！");
             }
         }

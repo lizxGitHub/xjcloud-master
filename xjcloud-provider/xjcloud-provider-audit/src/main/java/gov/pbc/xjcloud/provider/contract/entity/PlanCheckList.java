@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -68,6 +69,14 @@ public class PlanCheckList implements Serializable,Cloneable{
     /** 问题词条 */
     @Column(name = "question_entry_id")
     private String questionEntryId ;
+    @TableField(exist = false)
+    private String questionEntryId1 ;
+    @TableField(exist = false)
+    private String questionEntryId2 ;
+    @TableField(exist = false)
+    private String questionEntryId3 ;
+    @TableField(exist = false)
+    private String questionEntryId4 ;
     /** 问题严重程度 */
     @Column(name = "problem_severity_id")
     private String problemSeverityId ;
@@ -219,4 +228,32 @@ public class PlanCheckList implements Serializable,Cloneable{
         joiner.add(Instant.now().toString());
         return joiner.toString();
     }
+
+    public void setConcatQuestionEntry() {
+        String name =this.questionEntryId1;
+        if(StringUtils.isNotBlank(this.questionEntryId2)){
+            name+='-'+this.questionEntryId2;
+        }
+        if(StringUtils.isNotBlank(this.questionEntryId3)){
+            name+='-'+this.questionEntryId3;
+        }
+        if(StringUtils.isNotBlank(this.questionEntryId4)){
+            name+='-'+this.questionEntryId4;
+        }
+        this.questionEntryId = name;
+    }
+
+    private String agencyLevel;
+
+    private String enterTime;
+
+    private String orgType;
+
+    private String managerDutyType;
+
+    private String riskType;
+
+    private String functionType;
+
+    private String auditSuggestions;
 }
