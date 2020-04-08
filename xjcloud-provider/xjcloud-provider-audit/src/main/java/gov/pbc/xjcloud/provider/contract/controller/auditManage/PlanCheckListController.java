@@ -432,6 +432,7 @@ public class PlanCheckListController {
                 plan.setProjectCode("PROJECT-" + code);
                 plan.setImplementingAgencyId(implementingAgencyId);
                 plan.setCreatedBy(createdBy);
+                plan.setStatus("0");
                 plan.setCreatedTime(new Date());
                 plan.setProjectCode(plan.generateProjectCode());
                 prjCode.add(plan.getProjectCode());
