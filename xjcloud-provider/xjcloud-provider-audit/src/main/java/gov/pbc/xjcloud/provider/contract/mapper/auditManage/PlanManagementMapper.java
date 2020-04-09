@@ -206,5 +206,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
     List<Map<String,Object>> listAllWithDays(@Param("params") Map<String, Object> params);
 
-    List<Map<String, Object>> selectEntryByKeyAndLevel(@Param("defKey") String defKey, @Param("level") String level, @Param("name") String name);
+
+    List<Map<String, Object>> selectEntryByKeyAndLevel(Map<String, String> params);
 }

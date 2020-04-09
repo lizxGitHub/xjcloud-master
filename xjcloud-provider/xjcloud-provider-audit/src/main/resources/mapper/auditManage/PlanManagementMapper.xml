@@ -245,7 +245,7 @@
 
             </when>
             <when test="query.type=='todo'">
-                and  STATUS != '1003' and STATUS != '0'
+                and STATUS != '1003' and STATUS != '0'
             </when>
             <when test="query.type=='done'">
                 AND a.`status`='1003' and a.`status`!='0'
@@ -550,7 +550,7 @@
             and (pcl.rectify_situation_id = '${query.rectifySituationId}')
         </if>
     </select>
-    <select id="selectEntryByKeyAndLevel" resultType="java.util.Map">
+    <select id="selectEntryByKeyAndLevel" resultType="java.util.Map" parameterType="map">
         select
         id,
         <if test="level==1">
@@ -565,17 +565,20 @@
         <if test="level==4">
             name3
         </if>
-         as  "name"
+        as "name"
         from entry_info
         where category_fk in (select id from entry_category where def_key=#{defKey})
-        <if test="level==2  and name!=null and name!=''">
-           and name =#{name}
+        <if test=" name!=null and name!=''">
+            and name =#{name}
         </if>
-        <if test="level==3 and name!=null and name!=''">
-            and name1 =#{name}
+        <if test="name1!=null and name1!=''">
+            and name1 =#{name1}
         </if>
-        <if test="level==4 and name!=null and name!=''">
-            and name2 =#{name}
+        <if test="name2!=null and name2!=''">
+            and name2 =#{name2}
+        </if>
+        <if test="name3!=null and name3!=''">
+            and name3 =#{name3}
         </if>
     </select>
 

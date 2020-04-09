@@ -317,11 +317,9 @@ public class PlanManagementController {
     }
 
     @GetMapping("/selectEntryByLevel")
-    public R selectEntryByLevel(@RequestParam(name = "defKey") String defKey,
-                                @RequestParam(name = "level") String level,
-                                @RequestParam(name = "name") String name) {
+    public R selectEntryByLevel(@RequestParam Map<String,String> params) {
 
-        List<Map<String, Object>> maps = planManagementService.selectEntryByKeyAndLevel(defKey, level,name);
+        List<Map<String, Object>> maps = planManagementService.selectEntryByKeyAndLevel(params);
         return R.ok(maps);
     }
 
