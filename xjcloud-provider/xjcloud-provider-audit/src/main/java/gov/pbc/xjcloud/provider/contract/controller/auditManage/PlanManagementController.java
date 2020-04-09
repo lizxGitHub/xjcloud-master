@@ -117,7 +117,7 @@ public class PlanManagementController {
                 String[] deptIdArray = deptIds.split(",");
                 query.put("deptId", deptIdArray);
                 List deptChild = new ArrayList();
-                for (String deptId: deptIdArray) {
+                for (String deptId : deptIdArray) {
                     deptChild.addAll(deptUtil.findChildBank(Integer.parseInt(deptId), "支行"));
                 }
                 query.put("auditObj", deptChild);
@@ -186,6 +186,7 @@ public class PlanManagementController {
         }
         return R.ok(Boolean.TRUE);
     }
+
     @ApiOperation("保存报告")
     @PutMapping(value = {"deptYearReport/save"})
     public R<Boolean> deptYearReportSave(String deptId, String auditYear, String content) {
@@ -196,6 +197,7 @@ public class PlanManagementController {
         }
         return R.ok(Boolean.TRUE);
     }
+
     @ApiOperation("获取报告")
     @PutMapping(value = {"deptYearReport/load"})
     public R<String> deptYearReportLoad(String deptId, String auditYear) {
@@ -207,6 +209,7 @@ public class PlanManagementController {
         }
         return R.ok(content);
     }
+
     /**
      * 获取审计计划
      *
@@ -313,6 +316,16 @@ public class PlanManagementController {
         return R.ok(maps);
     }
 
+    @GetMapping("/selectEntryByLevel")
+    public R selectEntryByLevel(@RequestParam(name = "defKey") String defKey,
+                                @RequestParam(name = "level") String level,
+                                @RequestParam(name = "name") String name) {
+
+        List<Map<String, Object>> maps = planManagementService.selectEntryByKeyAndLevel(defKey, level,name);
+        return R.ok(maps);
+    }
+
+
     /**
      * @return
      */
@@ -413,6 +426,7 @@ public class PlanManagementController {
         }
         return r.setData(b);
     }
+
     /**
      * 用户行为：删除问题
      *
@@ -427,10 +441,11 @@ public class PlanManagementController {
         if (StringUtils.isBlank(ids)) {
             throw new NullArgumentException("请求参数不存在");
         } else {
-            b = planManagementService.removeByIds(Arrays.asList(StringUtils.split(ids,",")));
+            b = planManagementService.removeByIds(Arrays.asList(StringUtils.split(ids, ",")));
         }
         return r.setData(b);
     }
+
     /**
      * 根据id获取问题信息
      *
@@ -487,7 +502,7 @@ public class PlanManagementController {
                 if (type.equals(String.class)) {
                     Object invoke = field.get(planCheckListDTO);
                     if (null != entryMap.get(invoke) && !field.getName().toUpperCase().equals("rectifySituationId".toUpperCase())) {
-                        methodSetter.invoke(planCheckListDTO,new Object[]{ entryMap.get(invoke).getConcatName()});
+                        methodSetter.invoke(planCheckListDTO, new Object[]{entryMap.get(invoke).getConcatName()});
                     }
                 }
             }
@@ -504,10 +519,10 @@ public class PlanManagementController {
                     JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
                     planCheckListDTO.setAuditObjectName(adeptData.get("name").toString());
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(StringUtils.isNotBlank(planCheckListDTO.getRectifySituationId())){
+            if (StringUtils.isNotBlank(planCheckListDTO.getRectifySituationId())) {
                 planCheckListDTO.setRectifySituationName(entryMap.get(planCheckListDTO.getRectifySituationId()).getConcatName());
             }
             r.setData(planCheckListDTO);
@@ -600,7 +615,7 @@ public class PlanManagementController {
         List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId");
         AtomicBoolean isGroupByDept = new AtomicBoolean(false);
         AtomicBoolean noAll = new AtomicBoolean(false);
-        StringJoiner joiner =new StringJoiner("-");
+        StringJoiner joiner = new StringJoiner("-");
         deptKey.forEach(e -> {
             if ("all".equals(params.get(e))) {
                 isGroupByDept.set(true);
@@ -611,9 +626,9 @@ public class PlanManagementController {
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.stream().forEach(e -> {
-                if(null==e.get("name")){
+                if (null == e.get("name")) {
                     noAll.set(true);
-                    e.put("name","未选择");
+                    e.put("name", "未选择");
                     return;
                 }
                 if (isGroupByDept.get()) {
@@ -621,23 +636,23 @@ public class PlanManagementController {
                     JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
                     if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
                         JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
-                        e.put("name",deptData.get("name"));
+                        e.put("name", deptData.get("name"));
                     }
                 } else {
                     if (entryMap.containsKey(e.get("name"))) {
-                        e.put("name",entryMap.get(e.get("name")).getConcatName());
+                        e.put("name", entryMap.get(e.get("name")).getConcatName());
                     }
                 }
             });
 
         }
-        List<KeyValue> queryList = initQuery(params,deptKey,entryMap);
-        queryList.forEach(e->{
+        List<KeyValue> queryList = initQuery(params, deptKey, entryMap);
+        queryList.forEach(e -> {
             joiner.add(e.getValue().toString());
         });
-        if(noAll.get()){
-            mapList.stream().limit(1).forEach(e->{
-                e.entrySet().stream().filter(y->y.getKey().equals("name")).forEach(x->{
+        if (noAll.get()) {
+            mapList.stream().limit(1).forEach(e -> {
+                e.entrySet().stream().filter(y -> y.getKey().equals("name")).forEach(x -> {
                     x.setValue(joiner.toString());
                 });
             });
@@ -648,20 +663,20 @@ public class PlanManagementController {
         NumberFormat numberFormat = NumberFormat.getPercentInstance();
         numberFormat.setMinimumFractionDigits(2);
         mapList.forEach(e -> {
-            int num =Integer.parseInt(e.get("value").toString());
+            int num = Integer.parseInt(e.get("value").toString());
             total.getAndAdd(num);
         });
 
         mapList.forEach(e -> {
             String name = (String) e.get("name");
-            name = name==null?"全部":name;
-            e.put("name",name);
-            legend.add(name==null?"全部":name);
+            name = name == null ? "全部" : name;
+            e.put("name", name);
+            legend.add(name == null ? "全部" : name);
             int num = Integer.parseInt(e.get("value").toString());
             Map<String, Object> row = new HashMap<>();
-            e.entrySet().stream().forEach(es ->row.put(es.getKey(), es.getValue()));
+            e.entrySet().stream().forEach(es -> row.put(es.getKey(), es.getValue()));
             String percent = "0%";
-            if(total.get()!=0){
+            if (total.get() != 0) {
                 percent = numberFormat.format(((double) num) / ((double) total.get()));
             }
             row.put("percent", percent);
@@ -675,9 +690,9 @@ public class PlanManagementController {
     }
 
     private boolean filterOverTime(Map<String, Object> e, Map<String, Object> params) {
-        boolean result=true;
-        String overTime =(String) params.get("overTime");
-        if(null!=overTime&&!"all".equals(overTime)){
+        boolean result = true;
+        String overTime = (String) params.get("overTime");
+        if (null != overTime && !"all".equals(overTime)) {
 
         }
         return true;
@@ -685,11 +700,12 @@ public class PlanManagementController {
 
     /**
      * 导出统计表
+     *
      * @param params
      * @param response
      */
     @GetMapping("export/groupcount")
-    public void export(@RequestParam Map<String, Object> params, HttpServletResponse response){
+    public void export(@RequestParam Map<String, Object> params, HttpServletResponse response) {
         List<Map<String, Object>> mapList = planManagementService.groupCount(params);
         List<EntryInfo> list = entryService.list();
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
@@ -708,8 +724,8 @@ public class PlanManagementController {
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.stream().forEach(e -> {
-                if(null==e.get("name")){
-                    e.put("name","未选择");
+                if (null == e.get("name")) {
+                    e.put("name", "未选择");
                     noAll.set(true);
                     return;
                 }
@@ -718,11 +734,11 @@ public class PlanManagementController {
                     JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
                     if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
                         JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
-                        e.put("name",deptData.get("name"));
+                        e.put("name", deptData.get("name"));
                     }
                 } else {
                     if (entryMap.containsKey(e.get("name"))) {
-                        e.put("name",entryMap.get(e.get("name")).getConcatName());
+                        e.put("name", entryMap.get(e.get("name")).getConcatName());
                     }
                 }
             });
@@ -730,33 +746,33 @@ public class PlanManagementController {
         }
 
         List<Map<String, Object>> tableData = new ArrayList<>();
-        List<KeyValue> queryList = initQuery(params,deptKey,entryMap);
-        queryList.forEach(e->{
+        List<KeyValue> queryList = initQuery(params, deptKey, entryMap);
+        queryList.forEach(e -> {
             joiner.add(e.getValue().toString());
         });
         AtomicInteger total = new AtomicInteger();
         NumberFormat numberFormat = NumberFormat.getPercentInstance();
         numberFormat.setMinimumFractionDigits(2);
         mapList.forEach(e -> {
-            int num =Integer.parseInt(e.get("value").toString());
+            int num = Integer.parseInt(e.get("value").toString());
             total.getAndAdd(num);
         });
-        if(noAll.get()){
-            mapList.stream().limit(1).forEach(e->{
-                e.entrySet().stream().filter(y->y.getKey().equals("name")).forEach(x->{
+        if (noAll.get()) {
+            mapList.stream().limit(1).forEach(e -> {
+                e.entrySet().stream().filter(y -> y.getKey().equals("name")).forEach(x -> {
                     x.setValue(joiner.toString());
                 });
             });
         }
         mapList.forEach(e -> {
             String name = (String) e.get("name");
-            name = name==null?"全部":name;
-            e.put("name",name);
+            name = name == null ? "全部" : name;
+            e.put("name", name);
             int num = Integer.parseInt(e.get("value").toString());
             Map<String, Object> row = new HashMap<>();
-            e.entrySet().stream().forEach(es ->row.put(es.getKey(), es.getValue()));
+            e.entrySet().stream().forEach(es -> row.put(es.getKey(), es.getValue()));
             String percent = "0%";
-            if(total.get()!=0){
+            if (total.get() != 0) {
                 percent = numberFormat.format(((double) num) / ((double) total.get()));
             }
             row.put("percent", percent);
@@ -764,7 +780,7 @@ public class PlanManagementController {
         });
         jsonObject.put("tableData", tableData);
 
-        exportFile(response,queryList,tableData);
+        exportFile(response, queryList, tableData);
 
     }
 
@@ -774,16 +790,16 @@ public class PlanManagementController {
         SXSSFSheet sheet = sxssfWorkbook.getSheetAt(0);
         //添加结果数据
         AtomicInteger lastRowNumber = new AtomicInteger(0);
-        createQueryHeader(lastRowNumber,sxssfWorkbook,sheet,queryList);
-        createTableData(lastRowNumber,sxssfWorkbook,sheet,tableData);
-        OutputStream out =null;
+        createQueryHeader(lastRowNumber, sxssfWorkbook, sheet, queryList);
+        createTableData(lastRowNumber, sxssfWorkbook, sheet, tableData);
+        OutputStream out = null;
         try {
             response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode("统计查询列表.xlsx", "UTF-8"));
             out = response.getOutputStream();
             sxssfWorkbook.write(out);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 out.flush();
                 out.close();
@@ -798,14 +814,14 @@ public class PlanManagementController {
         SXSSFRow dataTipRow = sheet.createRow(lastRowNum.getAndIncrement());
         SXSSFCell dataHeadCell = dataTipRow.createCell(0);
         dataHeadCell.setCellValue("查询结果");
-        dataHeadCell.setCellStyle(getCellStyle(sxssfWorkbook,true));
+        dataHeadCell.setCellStyle(getCellStyle(sxssfWorkbook, true));
         SXSSFRow dataHeader = sheet.createRow(lastRowNum.getAndIncrement());
         String[] strings = new String[]
-                {"序号","类型","个数","占比"};
-        initHeader(strings,dataHeader,getCellStyle(sxssfWorkbook,true));
-        CellStyle normalStyle = getCellStyle(sxssfWorkbook,false);
-        int index =1;
-        while (dataIt.hasNext()){
+                {"序号", "类型", "个数", "占比"};
+        initHeader(strings, dataHeader, getCellStyle(sxssfWorkbook, true));
+        CellStyle normalStyle = getCellStyle(sxssfWorkbook, false);
+        int index = 1;
+        while (dataIt.hasNext()) {
             Map<String, Object> data = dataIt.next();
             SXSSFRow row = sheet.createRow(lastRowNum.getAndIncrement());
             SXSSFCell var0 = row.createCell(0);
@@ -814,17 +830,17 @@ public class PlanManagementController {
             SXSSFCell var3 = row.createCell(3);
             var0.setCellValue(index++);
             var1.setCellValue((String) data.get("name"));
-            var2.setCellValue((long)data.get("value"));
+            var2.setCellValue((long) data.get("value"));
             var3.setCellValue((String) data.get("percent"));
-            var0.setCellStyle(getCellStyle(sxssfWorkbook,false));
-            var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
-            var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
-            var3.setCellStyle(getCellStyle(sxssfWorkbook,false));
+            var0.setCellStyle(getCellStyle(sxssfWorkbook, false));
+            var1.setCellStyle(getCellStyle(sxssfWorkbook, false));
+            var2.setCellStyle(getCellStyle(sxssfWorkbook, false));
+            var3.setCellStyle(getCellStyle(sxssfWorkbook, false));
         }
     }
 
-    private void initHeader(String[] tip, SXSSFRow dataHeader,CellStyle cellStyle) {
-        for(int i = 0 ; i<tip.length;i++){
+    private void initHeader(String[] tip, SXSSFRow dataHeader, CellStyle cellStyle) {
+        for (int i = 0; i < tip.length; i++) {
             SXSSFCell cell = dataHeader.createCell(i);
             cell.setCellStyle(cellStyle);
             cell.setCellValue(tip[i]);
@@ -832,21 +848,21 @@ public class PlanManagementController {
     }
 
     private int createQueryHeader(AtomicInteger rowNum, SXSSFWorkbook sxssfWorkbook, SXSSFSheet sheet, List<KeyValue> queryList) {
-        if(null!=queryList&&!queryList.isEmpty()){
-            Row row=sheet.createRow(rowNum.getAndIncrement());
+        if (null != queryList && !queryList.isEmpty()) {
+            Row row = sheet.createRow(rowNum.getAndIncrement());
             Cell cell = row.createCell(0);
             cell.setCellValue("查询条件");
-            cell.setCellStyle(getCellStyle(sxssfWorkbook,true));
-            for (KeyValue e:queryList){
+            cell.setCellStyle(getCellStyle(sxssfWorkbook, true));
+            for (KeyValue e : queryList) {
                 int curCellIndex = 0;
-                Row queryRow=sheet.createRow(rowNum.getAndIncrement());
+                Row queryRow = sheet.createRow(rowNum.getAndIncrement());
                 Cell var1 = queryRow.createCell(curCellIndex++);
-                var1.setCellValue(e.getKey()+":");
-                var1.setCellStyle(getCellStyle(sxssfWorkbook,false));
+                var1.setCellValue(e.getKey() + ":");
+                var1.setCellStyle(getCellStyle(sxssfWorkbook, false));
                 Cell var2 = queryRow.createCell(curCellIndex++);
-                var2.setCellStyle(getCellStyle(sxssfWorkbook,false));
-                String value =e.getValue().toString();
-                var2.setCellValue("all".equalsIgnoreCase(value)?"全部条件":value);
+                var2.setCellStyle(getCellStyle(sxssfWorkbook, false));
+                String value = e.getValue().toString();
+                var2.setCellValue("all".equalsIgnoreCase(value) ? "全部条件" : value);
             }
         }
 
@@ -854,40 +870,39 @@ public class PlanManagementController {
     }
 
     /**
-     *
      * @param key
      * @param value
      * @return
      */
     private String changeKeyValue(String key, String value) {
-        if("all".equals(value)){
+        if ("all".equals(value)) {
             return value;
         }
-        if("overTime".equals(key)){
-            switch (value){
+        if ("overTime".equals(key)) {
+            switch (value) {
                 case "7":
-                    value="6个月以上";
+                    value = "6个月以上";
                     break;
                 default:
-                    value+="个月";
+                    value += "个月";
             }
         }
-        if("costTime".equals(key)){
-            switch (value){
+        if ("costTime".equals(key)) {
+            switch (value) {
                 case "7":
-                    value="6个月以上一年以内";
+                    value = "6个月以上一年以内";
                     break;
                 case "8":
-                    value="超过一年";
+                    value = "超过一年";
                     break;
                 default:
-                    value+="个月";
+                    value += "个月";
             }
         }
         return value;
     }
 
-    private CellStyle getCellStyle(Workbook workbook,boolean bold){
+    private CellStyle getCellStyle(Workbook workbook, boolean bold) {
         CellStyle cellStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
         font.setBold(bold);//加粗
@@ -928,34 +943,34 @@ public class PlanManagementController {
         params.remove("groupBy");
         params.remove("overTimeStart");
         params.remove("overTimeEnd");
-        List<KeyValue> result=new ArrayList<>();
-        Map<String,String> keyMap = JSONUtil.toBean(JSONUtil.toJsonStr(new PlanConstants()),Map.class);
-        List<String> yearGroup = Arrays.asList("overTime","costTime");
-        params.keySet().stream().forEach(e->{
+        List<KeyValue> result = new ArrayList<>();
+        Map<String, String> keyMap = JSONUtil.toBean(JSONUtil.toJsonStr(new PlanConstants()), Map.class);
+        List<String> yearGroup = Arrays.asList("overTime", "costTime");
+        params.keySet().stream().forEach(e -> {
             String key = e;
             Object value = params.get(key);
-            if(StringUtils.isBlank((String)value)){
+            if (StringUtils.isBlank((String) value)) {
                 return;
             }
-            KeyValue keyValue =new KeyValue();
+            KeyValue keyValue = new KeyValue();
             keyValue.setValue(value);
             keyValue.setKey(keyMap.get(key));
-            if(null==keyMap.get(key)){
+            if (null == keyMap.get(key)) {
                 return;
             }
             result.add(keyValue);
-            if(deptKey.contains(key)){
+            if (deptKey.contains(key)) {
                 gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt((String) value));
                 JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
                 if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
                     JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
                     keyValue.setValue(deptData.get("name"));
                 }
-            }else {
-                if(entryMap.containsKey(value)){
+            } else {
+                if (entryMap.containsKey(value)) {
                     keyValue.setValue(entryMap.get(value).getConcatName());
-                }else if(yearGroup.contains(key)){
-                    value=changeKeyValue(key,value.toString());
+                } else if (yearGroup.contains(key)) {
+                    value = changeKeyValue(key, value.toString());
                     keyValue.setValue(value);
                 }
             }

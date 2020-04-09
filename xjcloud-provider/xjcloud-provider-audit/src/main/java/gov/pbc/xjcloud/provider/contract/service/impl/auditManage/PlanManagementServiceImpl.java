@@ -519,4 +519,15 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         System.out.println(dateTimeFormatter.format(localDateTime));//2018-03-27 14:52:57
         return localDateTime;
     }
+
+    /**
+     * 查询词条 by级别和类型
+     * @param defKey
+     * @param level
+     * @param name
+     * @return
+     */
+    public List<Map<String, Object>> selectEntryByKeyAndLevel(String defKey, String level, String name) {
+        return planManagementMapper.selectEntryByKeyAndLevel(defKey,level,name);
+    }
 }

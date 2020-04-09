@@ -1,6 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.mapper.auditManage;
 
-import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
@@ -206,4 +205,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
     List<Map<String, Object>> groupCount(@Param("params") Map<String, Object> params);
 
     List<Map<String,Object>> listAllWithDays(@Param("params") Map<String, Object> params);
+
+    List<Map<String, Object>> selectEntryByKeyAndLevel(@Param("defKey") String defKey, @Param("level") String level, @Param("name") String name);
 }
