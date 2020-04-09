@@ -569,13 +569,13 @@
         from entry_info
         where category_fk in (select id from entry_category where def_key=#{defKey})
         <if test="level==2  and name!=null and name!=''">
-           and name1 =#{name}
+           and name =#{name}
         </if>
         <if test="level==3 and name!=null and name!=''">
-            and name2 =#{name}
+            and name1 =#{name}
         </if>
         <if test="level==4 and name!=null and name!=''">
-            and name3 =#{name}
+            and name2 =#{name}
         </if>
     </select>
 
