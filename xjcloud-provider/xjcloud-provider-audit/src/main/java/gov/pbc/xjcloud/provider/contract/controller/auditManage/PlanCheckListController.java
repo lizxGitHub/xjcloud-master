@@ -429,7 +429,6 @@ public class PlanCheckListController {
                 }
                 plan.setConcatQuestionEntry();
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
-                plan.setProjectCode("PROJECT-" + code);
                 plan.setImplementingAgencyId(implementingAgencyId);
                 plan.setCreatedBy(createdBy);
                 plan.setStatus("0");
@@ -450,6 +449,7 @@ public class PlanCheckListController {
                     planInfo.setPlanId(e);
                     planInfo.setUserId(createdBy);
                     planInfo.setType(0);
+                    planInfo.setStatusUser("1001");
                     planInfos.add(planInfo);
                 });
                 planInfoService.saveBatch(planInfos);
