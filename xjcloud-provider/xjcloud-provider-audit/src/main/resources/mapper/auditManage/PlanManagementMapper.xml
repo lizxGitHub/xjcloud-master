@@ -553,6 +553,10 @@
     <select id="selectEntryByKeyAndLevel" resultType="java.util.Map" parameterType="map">
         select
         id,
+        ifnull(t.name,'') name
+         from ( select
+        id
+        ,
         <if test="level==1">
             name
         </if>
@@ -568,7 +572,7 @@
         as "name"
         from entry_info
         where category_fk in (select id from entry_category where def_key=#{defKey})
-        <if test=" name!=null and name!=''">
+        <if test=" name!=null and name!='' ">
             and name =#{name}
         </if>
         <if test="name1!=null and name1!=''">
@@ -579,7 +583,7 @@
         </if>
         <if test="name3!=null and name3!=''">
             and name3 =#{name3}
-        </if>
+        </if>) t group by name
     </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList"

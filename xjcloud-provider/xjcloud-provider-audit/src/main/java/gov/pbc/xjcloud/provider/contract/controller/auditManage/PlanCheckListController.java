@@ -325,7 +325,12 @@ public class PlanCheckListController {
                 cell.setCellStyle(getCellStyle(workbook, true));
                 if (cateNameMap.containsKey(header.getName())) {
                     Integer cateFk = cateNameMap.get(header.getName());
-                    String[] objects = entryGroup.get(cateFk).stream().map(e -> e.getConcatName()).toArray(String[]::new);
+                    List<EntryInfo> entryInfos = entryGroup.get(cateFk);
+                    String[] objects = null;
+                    if(null==entryInfos){
+                        continue;
+                    }
+                    objects=entryInfos.stream().filter(Objects::nonNull).map(e -> e.getConcatName()).toArray(String[]::new);
                     creatDropDownList(sheet, helper, objects, rowIndex.get() + 1, (1 << 16) - 1, colIndex.get() - 1, colIndex.get() - 1);
                 }
             }
@@ -337,6 +342,7 @@ public class PlanCheckListController {
             out.flush();
             out.close();
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         } finally {
             out.flush();

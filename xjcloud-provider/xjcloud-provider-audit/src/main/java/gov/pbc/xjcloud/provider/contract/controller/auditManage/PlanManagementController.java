@@ -520,8 +520,10 @@ public class PlanManagementController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (StringUtils.isNotBlank(planCheckListDTO.getRectifySituationId())) {
-                planCheckListDTO.setRectifySituationName(entryMap.get(planCheckListDTO.getRectifySituationId()).getConcatName());
+            String rectifySituationId = planCheckListDTO.getRectifySituationId();
+            if (StringUtils.isNotBlank(rectifySituationId)) {
+                EntryInfo info = entryMap.get(rectifySituationId);
+                planCheckListDTO.setRectifySituationName(null!=info?info.getConcatName():"");
             }
             r.setData(planCheckListDTO);
         } catch (Exception e) {
