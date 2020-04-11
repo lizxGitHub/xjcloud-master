@@ -19,7 +19,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class PlanCheckListVO  {
 
-
+    /**
+     * 问题类型
+     */
+    private String questionType;
     /** 创建人 */
     @Column(name = "created_by")
     private int createdBy ;

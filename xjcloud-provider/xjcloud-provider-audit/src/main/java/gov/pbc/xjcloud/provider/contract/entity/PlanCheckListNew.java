@@ -195,5 +195,9 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     private String functionType;
 
     private String auditSuggestions;
+    /**
+     * 问题类型
+     */
+    private String questionType;
 
 }

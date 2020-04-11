@@ -202,6 +202,10 @@ public class PlanCheckList implements Serializable,Cloneable{
     @TableField(exist = false)
     private String costTimeStart;
     /**
+     * 问题类型
+     */
+    private String questionType;
+    /**
      * 整改时长
      */
     @TableField(exist = false)

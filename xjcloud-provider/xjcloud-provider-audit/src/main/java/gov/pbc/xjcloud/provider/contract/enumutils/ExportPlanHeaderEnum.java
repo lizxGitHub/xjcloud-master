@@ -17,7 +17,7 @@ public enum ExportPlanHeaderEnum {
     var6("组织形式", "org_type", false),
     var7("项目名称", "project_name", true),
     var8("问题定性", "problem_characterization", true),
-    var9("问题类型", "audit_classification_id", true),
+    var9("问题类型", "question_type", true),
     var10("问题描述", "problem_description", false),
     var11("问题词条一级", "question_entry_id1", true),
     var12("问题词条二级", "question_entry_id2", false),
