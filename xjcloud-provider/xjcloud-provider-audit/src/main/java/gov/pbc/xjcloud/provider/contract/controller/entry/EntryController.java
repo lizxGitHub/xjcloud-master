@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.contract.AppException;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.OptConstants;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryCategory;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -42,6 +44,8 @@ import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -292,6 +296,7 @@ public class EntryController {
     @PostMapping("import")
     public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdUser") String createdUser) {
         Sheet modelSheet;
+        String message;
         if (null == file) {
             return R.failed("上传文件不能为空");
         }
@@ -319,12 +324,20 @@ public class EntryController {
             List<EntryInfo> entryFlows = new ArrayList<>(maxRow - 1);
             for (int startRow = 2; startRow <= maxRow; startRow++) {
                 Row row = modelSheet.getRow(startRow);
-                String category = row.getCell(0).getStringCellValue();
-                String name = row.getCell(1).getStringCellValue();
-                if (StringUtils.isBlank(category) || StringUtils.isBlank(name)) {
+                Cell cell = row.getCell(0);
+                if(cell==null){
                     continue;
                 }
+                String category = cell.getStringCellValue();
+                Cell cell1 = row.getCell(1);
+                String name = cell1.getStringCellValue();
                 if (!entryMap.containsKey(category)) {
+                    continue;
+                }
+                if (null==cell1) {
+                    continue;
+                }
+                if (StringUtils.isBlank(category) || StringUtils.isBlank(name)) {
                     continue;
                 }
                 Cell remarksCell = row.getCell(5);
@@ -337,16 +350,18 @@ public class EntryController {
                 entryFlow.setCreatedBy(createdUser);
                 entryFlow.setCategoryFk(entryMap.get(category).getId());
                 entryFlow.setName(name);
-                if (entryMap.get(category).getLevel() == 4) {
-                    String name1 = new String();
-                    String name2 = new String();
-                    String name3 = new String();
-                    Cell nameCell1 = row.getCell(2);
-                    Cell nameCell2 = row.getCell(3);
-                    Cell nameCell3 = row.getCell(4);
-                    entryFlow.setName1(null==nameCell1?name1:nameCell1.getStringCellValue());
-                    entryFlow.setName2(null==nameCell2?name2:nameCell2.getStringCellValue());
-                    entryFlow.setName3(null==nameCell3?name3:nameCell3.getStringCellValue());
+                Integer level = entryMap.get(category).getLevel();
+                String setNameLevelPri = "setName";
+                while (level>1){
+                    String setNameLevel = setNameLevelPri+(level-1);
+                    Cell nameCellLevel = row.getCell(level);
+                    if(nameCellLevel==null){
+                        throw new AppException("第"+(startRow+1)+"行词条类型缺少"+(level)+"级词条");
+                    }
+                    String value = nameCellLevel.getStringCellValue();
+                    Method method = entryFlow.getClass().getMethod(setNameLevel, String.class);
+                    method.invoke(entryFlow,value);
+                    --level;
                 }
                 //乐观锁
                 entryFlow.setRevision(1);
@@ -359,10 +374,20 @@ public class EntryController {
             }
             boolean result = entryService.saveBatch(entryFlows, entryFlows.size());
             return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + entryFlows.size() + "条数据" : "导入失败");
-        } catch (IOException e) {
+        } catch (IOException | NoSuchMethodException e) {
             e.printStackTrace();
             return new R<Boolean>(ApiErrorCode.FAILED).setMsg("请下载模板导入");
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            message=e.getMessage();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            message=e.getMessage();
+        } catch (AppException e) {
+            e.printStackTrace();
+            message=e.getMessage();
         }
+        return R.failed(message);
     }
 
     @GetMapping("download/entry")

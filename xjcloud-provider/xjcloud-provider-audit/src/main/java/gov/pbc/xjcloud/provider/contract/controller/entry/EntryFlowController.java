@@ -378,7 +378,7 @@ public class EntryFlowController {
      */
     @GetMapping("template/download")
     public void getWordFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String fileNameString = "词条导入模板.xlsx"; //声明要下载的文件名
+        String fileNameString = "词条导入模板-bak.xlsx"; //声明要下载的文件名
         ServletOutputStream out = null;
         try {
             InputStream fis = FileUtil.getResourcesFileInputStream("template/" + fileNameString);
