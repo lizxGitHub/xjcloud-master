@@ -242,7 +242,7 @@
         </if>
         <choose>
             <when test="query.type=='all'">
-
+                and STATUS != '0'
             </when>
             <when test="query.type=='todo'">
                 and STATUS != '1003' and STATUS != '0'
@@ -259,7 +259,7 @@
     </select>
     <select id="countPlan" resultType="java.util.Map">
         select
-        count(1) planSum,
+        IFNULL(sum(case when status!= '0' then 1 else 0 end),0) planSum,
         IFNULL(sum(case when status='1003' then 1 else 0 end),0) finishCount,
         IFNULL(sum(case when STATUS != '1003' and STATUS != '0' then 1 else 0 end),0) nofinishCount,
         IFNULL(sum(case when status='1004' then 1 else 0 end),0) timeoutCount

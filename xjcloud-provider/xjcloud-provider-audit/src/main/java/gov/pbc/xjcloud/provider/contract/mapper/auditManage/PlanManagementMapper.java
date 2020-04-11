@@ -114,7 +114,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "where a.del_flag = 0\n" +
                     ") tb1 GROUP BY tb1.`code`\n" +
                     ") tb2\n" +
-                    "ORDER BY tb2.errorNum desc",
+                    "ORDER BY tb2.errorNum desc LIMIT 5",
             "</script>"})
     List<Map<String, Object>> groupCountEntry();
 
