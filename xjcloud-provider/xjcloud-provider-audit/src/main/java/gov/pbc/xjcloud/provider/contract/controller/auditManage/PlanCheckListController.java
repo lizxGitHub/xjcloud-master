@@ -354,7 +354,7 @@ public class PlanCheckListController {
             XSSFSheet sheet = workbook.createSheet(CommonConstants.PlanSheetName);
             Map<String, Integer> cateNameMap = categoryService.list().stream().
                     filter(e -> StringUtils.isNotBlank(e.getName())).collect(Collectors.toMap(e -> e.getName(), x -> x.getId(), (e1, e2) -> e1));
-            Map<Integer, List<EntryInfo>> entryGroup = entryService.list().stream().
+            Map<Integer, List<EntryInfo>> entryGroup = entryService.listAll().stream().
                     filter(e -> StringUtils.isNotBlank(e.getConcatName())).collect(Collectors.groupingBy(e -> e.getCategoryFk()));
             AtomicInteger rowIndex = new AtomicInteger();
             AtomicInteger colIndex = new AtomicInteger();
@@ -450,7 +450,7 @@ public class PlanCheckListController {
                 throw new RuntimeException("文档格式不正确!");
             }
 
-            Map<String, String> entryNameValue = entryService.list().stream().filter(e -> StringUtils.isNotBlank(e.getConcatName())).
+            Map<String, String> entryNameValue = entryService.listAll().stream().filter(e -> StringUtils.isNotBlank(e.getConcatName())).
                     collect(Collectors.toMap(e -> e.getConcatName(), e -> e.getId(), (e1, e2) -> e1));
             planSheet = ExcelUtil.getReader(file.getInputStream(), CommonConstants.PlanSheetName).setIgnoreEmptyRow(true).getSheet();
             checkExcelHeader(planSheet);

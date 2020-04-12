@@ -379,9 +379,6 @@
         <if test="params.implementingAgencyId!=null and params.implementingAgencyId=='all'">
             ,a.implementing_agency_id `name`
         </if>
-        <if test="params.questionEntryId!=null and params.questionEntryId=='all'">
-            ,a.question_entry_id `name`
-        </if>
         <if test="params.projectType!=null and params.projectType=='all'">
             ,a.project_type `name`
         </if>
@@ -417,6 +414,9 @@
         </if>
         <if test="params.problemDescription!=null and params.problemDescription!='' and params.problemDescription!='all'">
             and a.problem_description like concat('%',#{params.problemDescription},'%')
+        </if>
+        <if test="params.questionEntryId!=null and params.questionEntryId!=''">
+            and a.question_entry_id like concat('%',#{params.questionEntryId},'%')
         </if>
         <if test="params.costTimeEnd!=null and params.costTimeEnd!=''">
             and TIMESTAMPDIFF( DAY, b.start_time_all, IFNULL( b.end_time_all, NOW( ) ) )<![CDATA[<=]]>
@@ -456,7 +456,7 @@
         ifnull(a.delay_date,0) delayDate
         from plan_check_list a
         left join plan_time_temp b on a.id=b.plan_id
-        where a.del_flag = '0' and b.start_time_all is not null
+        where a.del_flag = '0' and b.start_time_all is not null and a.status!='0'
         <if test="params.projectName!=null  and params.projectName!=''and params.projectName!='all'">
             and a.project_Name like concat('%',#{params.projectName},'%')
         </if>
@@ -549,6 +549,10 @@
         <if test='query.rectifySituationId!=null and query.rectifySituationId!=""'>
             and (pcl.rectify_situation_id = '${query.rectifySituationId}')
         </if>
+        <if test='query.questionEntryId!=null and query.questionEntryId!=""'>
+            and (pcl.question_entry_id like '%#{query.questionEntryId}%')
+        </if>
+
     </select>
     <select id="selectEntryByKeyAndLevel" resultType="java.util.Map" parameterType="map">
         select

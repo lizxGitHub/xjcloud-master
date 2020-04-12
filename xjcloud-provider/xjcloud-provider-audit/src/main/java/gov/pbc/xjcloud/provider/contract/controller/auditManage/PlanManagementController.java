@@ -221,7 +221,7 @@ public class PlanManagementController {
         List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
         try {
             List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
-            List<EntryInfo> list = entryService.list();
+            List<EntryInfo> list = entryService.listAll();
             Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                     .collect(Collectors.toMap(e -> e.getId(), e -> e));
             for (Map<String, Object> plan : planListold) {
@@ -258,7 +258,7 @@ public class PlanManagementController {
         try {
 //            query.setImplementingAgencyId(query.getSelect());
             List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
-            List<EntryInfo> list = entryService.list();
+            List<EntryInfo> list = entryService.listAll();
             Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                     .collect(Collectors.toMap(e -> e.getId(), e -> e));
             for (Map<String, Object> plan : planListold) {
@@ -607,7 +607,7 @@ public class PlanManagementController {
     public R planListGroup(@RequestParam Map<String, Object> params) {
 
         List<Map<String, Object>> mapList = planManagementService.groupCount(params);
-        List<EntryInfo> list = entryService.list();
+        List<EntryInfo> list = entryService.listAll();
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e));
         JSONObject jsonObject = new JSONObject();
@@ -706,7 +706,7 @@ public class PlanManagementController {
     @GetMapping("export/groupcount")
     public void export(@RequestParam Map<String, Object> params, HttpServletResponse response) {
         List<Map<String, Object>> mapList = planManagementService.groupCount(params);
-        List<EntryInfo> list = entryService.list();
+        List<EntryInfo> list = entryService.listAll();
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e));
         JSONObject jsonObject = new JSONObject();

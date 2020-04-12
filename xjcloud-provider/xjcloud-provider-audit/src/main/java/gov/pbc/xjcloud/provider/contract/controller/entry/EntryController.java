@@ -387,7 +387,7 @@ public class EntryController {
 
     @GetMapping("download/entry")
     public void downloadEntry(HttpServletResponse response) {
-        List<EntryInfo> list = entryService.list();
+        List<EntryInfo> list = entryService.listAll();
         Map<Integer, String> collect = categoryService.list().stream().collect(Collectors.toMap(e -> e.getId(), e -> e.getName()));
         SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(1000);
         sxssfWorkbook.createSheet("数据");
