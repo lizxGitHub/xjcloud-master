@@ -3,13 +3,13 @@ package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.PlanConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
-import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
@@ -485,7 +485,7 @@ public class PlanManagementController {
             if (StringUtils.isBlank(id)) {
                 return r.failed("参数错误，请检查");
             }
-            List<EntryInfo> list = entryService.list();
+            List<EntryInfo> list = entryService.listAll();
             Map<String, EntryInfo> entryMap = list.stream().filter(Objects::nonNull).collect(Collectors.toMap(e -> e.getId(), e -> e,(e1,e2)->e1));
             PlanCheckList planOne = planManagementService.getById(id);
             PlanCheckListVO planCheckListDTO = changeToDTO(planOne);

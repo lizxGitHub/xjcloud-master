@@ -21,4 +21,6 @@ public interface EntryMapper extends IBaseMapper<EntryInfo> {
      * @param entryInfo
      */
     void updateBySql(EntryInfo entryInfo);
+
+    List<EntryInfo> listAll();
 }

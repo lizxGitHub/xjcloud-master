@@ -61,4 +61,20 @@
         order by a.created_time desc
 
     </select>
+
+    <select id="listAll" resultMap="EntryInfoVOMap">
+   SELECT
+	a.id,
+	a.NAME,
+	a.name1,
+	a.name2,
+	a.name3,
+	a.type_code,
+	a.created_by,
+	a.created_time,
+	a.category_fk,
+	( SELECT b.NAME FROM entry_category b WHERE a.category_fk = b.id ) category_name
+FROM
+	entry_info a
+    </select>
 </mapper>

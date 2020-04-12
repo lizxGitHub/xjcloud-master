@@ -29,4 +29,8 @@ public class EntryServiceImpl extends IBaseServiceImpl<EntryMapper, EntryInfo> i
         page.setRecords(list);
         return page;
     }
+
+    public List<EntryInfo> listAll(){
+        return entryMapper.listAll();
+    }
 }
