@@ -155,8 +155,13 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
-    public List<Map<String, Object>> groupCountEntry() {
-        return planManagementMapper.groupCountEntry();
+    public List<Map<String, Object>> groupCountEntry(String auditYear) {
+        return planManagementMapper.groupCountEntry(auditYear);
+    }
+
+    @Override
+    public List<Map<String, Object>> groupCountProType(String auditYear, String deptId) {
+        return planManagementMapper.groupCountProType(auditYear, deptId);
     }
 
     @Override

@@ -34,6 +34,7 @@
         <result column="delay_remarks" property="delayRemarks"/>
         <result column="rectify_way" property="rectifyWay"/>
         <result column="rectify_evaluation" property="rectifyEvaluation"/>
+        <result column="question_type" property="questionType"/>
         <collection property="planInfos" ofType="gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo">
             <id property="id" column="id"/>
             <result property="statusUser" column="status_user"/>
@@ -419,6 +420,7 @@
         a.audit_admin_id,
         a.delay_remarks,
         a.rectify_way,
-        a.rectify_evaluation
+        a.rectify_evaluation,
+        a.question_type
     </sql>
 </mapper>

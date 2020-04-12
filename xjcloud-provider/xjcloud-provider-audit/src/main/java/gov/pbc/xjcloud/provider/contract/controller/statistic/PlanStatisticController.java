@@ -186,11 +186,29 @@ public class PlanStatisticController {
      */
     @ApiOperation("基本情况")
     @RequestMapping("/questionStatisticBasic")
-    public R questionStatisticBasic() {
+    public R questionStatisticBasic(String auditYear) {
         R<JSONObject> r = new R<>();
         try {
             JSONObject data = new JSONObject();
-            List<Map<String, Object>> list = planManagementService.groupCountEntry();
+            List<Map<String, Object>> list = planManagementService.groupCountEntry(auditYear);
+            data.put("statisticData", list);
+            r.setData(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+    /**
+     * 项目类型
+     * @return
+     */
+    @ApiOperation("项目类型")
+    @RequestMapping("/questionStatisticProType")
+    public R questionStatisticProType(String auditYear, String deptId) {
+        R<JSONObject> r = new R<>();
+        try {
+            JSONObject data = new JSONObject();
+            List<Map<String, Object>> list = planManagementService.groupCountProType(auditYear, deptId);
             data.put("statisticData", list);
             r.setData(data);
         } catch (Exception e) {

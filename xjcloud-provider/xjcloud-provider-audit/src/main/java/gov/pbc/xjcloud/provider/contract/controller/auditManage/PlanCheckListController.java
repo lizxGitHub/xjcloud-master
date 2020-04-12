@@ -151,8 +151,9 @@ public class PlanCheckListController {
                 planManagementService.addFileLog(planFile);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            r.failed(e.getMessage());
+            r.setCode(1002);
+            r.setMsg("系统错误");
+            return r;
         }
         return r;
     }
@@ -176,6 +177,49 @@ public class PlanCheckListController {
             String[] idArray = ids.split(",");
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+                if (StringUtils.isBlank(plan.getAuditYear())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getProjectName())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getProjectCode())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getImplementingAgencyId()) || plan.getImpAdminId() == 0) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getAuditObjectId())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getAuditNatureId())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getQuestionType())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getProblemSeverityId())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getProblemSeverityId())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getRectifySituationId())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getQuestionEntryId())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getProblemCharacterization())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                } else if (StringUtils.isBlank(plan.getProblemDescription())) {
+                    r.setCode(1002);
+                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                }
+                if (r.getCode() == 1002) {
+                    return r;
+                }
                 if (StringUtils.isNotBlank(fileUri)) {
                     PlanFile planFile = new PlanFile();
                     planFile.setId(IdGenUtil.uuid());

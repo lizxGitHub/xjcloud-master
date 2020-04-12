@@ -104,19 +104,70 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
     List<Map<String, Object>> groupCountEntryByQuery(@Param("query") PlanCheckList query, @Param("groupName")String groupName, @Param("groupField")String groupField);
 
     @Select({"<script>",
-            "SELECT * from (\n" +
-                    "SELECT tb1.deptId, COUNT(tb1.`code`) proNum, SUM(tb1.error) errorNum from \n" +
-                    "(\n" +
-                    "SELECT a.implementing_agency_id deptId, a.project_code code,\n" +
-                    "CASE WHEN a.`status` in (1001,1002,1003) THEN 1 ELSE 0 END as error\n" +
-                    "from \n" +
-                    "plan_check_list a \n" +
-                    "where a.del_flag = 0\n" +
-                    ") tb1 GROUP BY tb1.`code`\n" +
-                    ") tb2\n" +
-                    "ORDER BY tb2.errorNum desc LIMIT 5",
+            "SELECT\n" +
+                    "	*\n" +
+                    "FROM\n" +
+                    "	(\n" +
+                    "		SELECT\n" +
+                    "			tb1.deptId,\n" +
+                    "			tb1.`name`,\n" +
+                    "			COUNT(tb1.`code`) proNum,\n" +
+                    "			SUM(tb1.error) errorNum\n" +
+                    "		FROM\n" +
+                    "			(\n" +
+                    "				SELECT\n" +
+                    "					a.implementing_agency_id deptId,\n" +
+                    "					a.project_code CODE,\n" +
+                    "					a.project_name NAME,\n" +
+                    "					CASE\n" +
+                    "				WHEN a.`status` IN (1001, 1004) THEN\n" +
+                    "					1\n" +
+                    "				ELSE\n" +
+                    "					0\n" +
+                    "				END AS error\n" +
+                    "				FROM\n" +
+                    "					plan_check_list a\n" +
+                    "				WHERE\n" +
+                    "					a.del_flag = 0\n" +
+                    "				AND a.audit_year = '${auditYear}'\n" +
+                    "				AND a.`status` IN (1001, 1002, 1003, 1004)\n" +
+                    "			) tb1\n" +
+                    "		GROUP BY\n" +
+                    "			tb1.deptId,\n" +
+                    "			tb1.`name`\n" +
+                    "	) tb2\n" +
+                    "ORDER BY\n" +
+                    "	tb2.proNum DESC,tb2.errorNum DESC\n" +
+                    "LIMIT 7",
             "</script>"})
-    List<Map<String, Object>> groupCountEntry();
+    List<Map<String, Object>> groupCountEntry(@Param("auditYear")String auditYear);
+
+    @Select({"<script>",
+            "SELECT\n" +
+                    "	tb1.type,\n" +
+                    "	tb1.num,\n" +
+                    "	ei.`name`\n" +
+                    "FROM\n" +
+                    "	(\n" +
+                    "		SELECT\n" +
+                    "			a.project_type type,\n" +
+                    "			COUNT(a.project_type) num\n" +
+                    "		FROM\n" +
+                    "			plan_check_list a\n" +
+                    "		WHERE\n" +
+                    "			a.del_flag = 0\n" +
+                    "		AND a.audit_year = '${auditYear}'\n" +
+                    "		AND a.implementing_agency_id = '${deptId}'\n" +
+                    "		AND a.`status` IN (1001, 1002, 1003, 1004)\n" +
+                    "		GROUP BY\n" +
+                    "			a.project_type\n" +
+                    "	) tb1\n" +
+                    "LEFT JOIN entry_info ei ON tb1.type = ei.id\n" +
+                    "ORDER BY\n" +
+                    "	tb1.num DESC\n" +
+                    "LIMIT 7",
+            "</script>"})
+    List<Map<String, Object>> groupCountProType(@Param("auditYear")String auditYear, @Param("deptId")String deptId);
 
 
     List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId, @Param("auditYear")String auditYear);
