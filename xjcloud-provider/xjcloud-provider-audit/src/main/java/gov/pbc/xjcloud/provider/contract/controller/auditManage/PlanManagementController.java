@@ -486,8 +486,7 @@ public class PlanManagementController {
                 return r.failed("参数错误，请检查");
             }
             List<EntryInfo> list = entryService.list();
-            Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
-                    .collect(Collectors.toMap(e -> e.getId(), e -> e));
+            Map<String, EntryInfo> entryMap = list.stream().filter(Objects::nonNull).collect(Collectors.toMap(e -> e.getId(), e -> e,(e1,e2)->e1));
             PlanCheckList planOne = planManagementService.getById(id);
             PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
             Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
