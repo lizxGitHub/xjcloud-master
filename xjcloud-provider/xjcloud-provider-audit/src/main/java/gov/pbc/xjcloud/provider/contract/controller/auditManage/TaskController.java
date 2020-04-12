@@ -666,8 +666,8 @@ public class TaskController {
         float days = 0f;
         if (planId != null && planId != 0) {
             PlanCheckListNew plan = planCheckListService.selectById(planId);
-            Date startTime = plan.getStartTime();
             Date currentTime = new Date();
+            Date startTime = plan.getStartTime() == null? currentTime : plan.getStartTime();
             long diff = currentTime.getTime() - startTime.getTime();
             days = diff / (1000 * 60 * 60 * 24);
             PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
