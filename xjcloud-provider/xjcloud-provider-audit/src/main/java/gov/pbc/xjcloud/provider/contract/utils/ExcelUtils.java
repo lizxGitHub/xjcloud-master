@@ -157,6 +157,7 @@ public class ExcelUtils {
         cs2.setBorderBottom(BorderStyle.THIN);
         cs2.setAlignment(HorizontalAlignment.CENTER);
         int startRow = 1;
+        filters.clear();
         if(filters!=null&&filters.size()>0) {
             Row row = sheet.createRow((short) startRow);
             org.apache.poi.ss.usermodel.Cell cell = row.createCell(0);
