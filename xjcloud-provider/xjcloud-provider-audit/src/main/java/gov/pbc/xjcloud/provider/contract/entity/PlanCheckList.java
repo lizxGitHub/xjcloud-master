@@ -260,4 +260,16 @@ public class PlanCheckList implements Serializable,Cloneable{
     private String functionType;
 
     private String auditSuggestions;
+
+    public String generateSetterMethod(String column,String type) {
+        String[] splits = column.split("_");
+        StringBuffer settterName = new StringBuffer(type);
+        for (String split : splits) {
+            String firstChar = split.substring(0, 1);
+            String otherChar = split.substring(1);
+            settterName.append(firstChar.toUpperCase() + otherChar);
+        }
+        return settterName.toString();
+    }
+
 }

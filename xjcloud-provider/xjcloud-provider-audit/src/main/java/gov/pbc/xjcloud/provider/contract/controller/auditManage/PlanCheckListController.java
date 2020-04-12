@@ -16,6 +16,7 @@ import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
 import gov.pbc.xjcloud.provider.contract.enumutils.ExportPlanHeaderEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
+import gov.pbc.xjcloud.provider.contract.exceptions.AppException;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
@@ -23,10 +24,7 @@ import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServic
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryCategoryServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
-import gov.pbc.xjcloud.provider.contract.utils.DeptUtil;
-import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
-import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
-import gov.pbc.xjcloud.provider.contract.utils.R2;
+import gov.pbc.xjcloud.provider.contract.utils.*;
 import gov.pbc.xjcloud.provider.contract.vo.DeptVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +35,7 @@ import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.NestedServletException;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -115,24 +114,20 @@ public class PlanCheckListController {
     }
 
     @PostMapping("/saveOrEditPlan")
-    public R<Boolean> saveOrEditPlan(PlanCheckListNew planCheckList) {
+    public R<Boolean> saveOrEditPlan( @RequestBody PlanCheckListNew planCheckList) {
         R<Boolean> r = new R<>();
         try {
-            if (planCheckList.getId() == 0) {
-                int code = (int) ((Math.random() * 9 + 1) * 1000);
-                planCheckList.setProjectCode("PROJECT-" + code);
-                Calendar date = Calendar.getInstance();
-                String year = String.valueOf(date.get(Calendar.YEAR));
-                planCheckList.setAuditYear(year);
-            }
             String fileUri = planCheckList.getFileUri();
 //            planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
-            if (planCheckList.getId() == 0) {
+            if (null==planCheckList.getId()||planCheckList.getId() == 0) {
+                planCheckList.setProjectCode(new PlanCheckList().generateProjectCode());
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planCheckList.setStatus("0");
                 planCheckList.setCreatedTime(new Date());
-                planCheckListService.saveReturnPK(planCheckList);
-                int planId = planCheckList.getId();
+                planCheckListService.save(planCheckList);
+                QueryWrapper<PlanCheckListNew> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("project_code",planCheckList.getProjectCode());
+                int planId = planCheckListService.getOne(queryWrapper).getId();
                 List<PlanInfo> planInfoList = new ArrayList<>();
                 PlanInfo planInfo1 = new PlanInfo();
                 planInfo1.setUserId(planCheckList.getImpUserId());
@@ -424,13 +419,14 @@ public class PlanCheckListController {
             PlanCheckList plan = null;
             List<String> prjCode = new ArrayList<>(maxRow);
             planList = new ArrayList<>(maxRow - 1);
+            StringJoiner error = new StringJoiner("\n");
             for (int startRow = 1; startRow <= maxRow; startRow++) {
                 colIndex = new AtomicInteger();
                 Row row = planSheet.getRow(startRow);
                 plan = new PlanCheckList();
-                initPlanProperty(plan, row, colIndex, entryNameValue);
+                initPlanProperty(plan, row, colIndex, startRow, entryNameValue, error);
                 String auditObjectId = plan.getAuditObjectId();
-                if(deptNameValue.containsKey(auditObjectId)){
+                if(null!= auditObjectId&&deptNameValue.containsKey(auditObjectId)){
                     plan.setAuditObjectId(deptNameValue.get(auditObjectId).toString());
                 }
                 plan.setConcatQuestionEntry();
@@ -442,6 +438,9 @@ public class PlanCheckListController {
                 plan.setProjectCode(plan.generateProjectCode());
                 prjCode.add(plan.getProjectCode());
                 planList.add(plan);
+            }
+            if(error.length()>0){
+                throw new AppException(error.toString());
             }
             QueryWrapper<PlanCheckList> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("project_code", prjCode);
@@ -469,26 +468,38 @@ public class PlanCheckListController {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
+        }catch (AppException e) {
+            e.printStackTrace();
+            return R.failed(e.getMessage());
+        }catch (Exception e){
+            if(e instanceof NestedServletException){
+                return R.failed("登录信息过期，请重新登录");
+            }else {
+                return R.failed("上传失败，请稍后重试");
+            }
         }
         return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + planList.size() + "条数据" : "导入失败");
     }
 
-    private void initPlanProperty(PlanCheckList plan, Row row, AtomicInteger colIndex, Map<String, String> entryNameValue) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private void initPlanProperty(PlanCheckList plan, Row row, AtomicInteger colIndex, int startRow, Map<String, String> entryNameValue, StringJoiner error) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ExportPlanHeaderEnum[] headerEnums = ExportPlanHeaderEnum.values();
         for (int i = 0; i < headerEnums.length; i++) {
             ExportPlanHeaderEnum header = headerEnums[i];
             String column = header.getColumn();
-            String settterMethod = generateSetterMethod(column);
+            String settterMethod = plan.generateSetterMethod(column,"set");
             Method method = plan.getClass().getMethod(settterMethod, String.class);
             method.setAccessible(true);
-            Cell cell = row.getCell(colIndex.getAndIncrement());
-            cell.setCellType(CellType.STRING);
-            String value = cell.getStringCellValue();
+            int i1 = colIndex.getAndIncrement();
+            Cell cell = row.getCell(i1);
+            if(header.isRequired()&&null==cell){
+                error.add("第"+(i1+1)+"列"+",第"+(startRow+1)+"行【"+header.getName()+"】数据不能为空");
+                continue;
+            }
+            String value = DrExcelUtil.getStringVal(cell);
             if(entryNameValue.containsKey(value)){
                 value = entryNameValue.get(value);
             }
             method.invoke(plan, new Object[]{value});
-
         }
 //        Cell cellprojectName = row.getCell(colIndex.getAndIncrement());
 //        Cell cellprojectType = row.getCell(colIndex.getAndIncrement());
@@ -550,22 +561,6 @@ public class PlanCheckListController {
 //        plan.setAuditingExperience(auditingExperience);
     }
 
-    /**
-     * column 转setter方法名称
-     *
-     * @param column
-     * @return
-     */
-    private String generateSetterMethod(String column) {
-        String[] splits = column.split("_");
-        StringBuffer settterName = new StringBuffer("set");
-        for (String split : splits) {
-            String firstChar = split.substring(0, 1);
-            String otherChar = split.substring(1);
-            settterName.append(firstChar.toUpperCase() + otherChar);
-        }
-        return settterName.toString();
-    }
 
     private String setEntryValue(Map<String, String> entryNameValue, String entryName) {
         if (entryNameValue.containsKey(entryName)) {

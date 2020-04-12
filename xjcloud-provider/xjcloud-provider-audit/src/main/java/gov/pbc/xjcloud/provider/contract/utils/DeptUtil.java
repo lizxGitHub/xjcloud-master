@@ -25,7 +25,7 @@ public class DeptUtil {
 
     private Lock lock = new ReentrantLock(false);
 
-    public List<DeptVO> findChildBank(Integer deptId, String lastFilter) {
+    public List<DeptVO> findChildBank(Integer deptId, String lastFilter)  {
         if (null == deptId) {
             return new ArrayList<>();
         }

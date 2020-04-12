@@ -1,7 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import io.swagger.models.auth.In;
@@ -16,15 +15,14 @@ import java.util.Set;
 
 @Data
 @Table(name="plan_check_list")
+@TableName(value = "plan_check_list")
 public class PlanCheckListNew implements Serializable,Cloneable{
 
     /** 主键 */
-    @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="id")
-    @SequenceGenerator(name="id",sequenceName="S_QUENSE",allocationSize=1)
-    private int id;
+    @TableId(type = IdType.AUTO)
+    private Integer id;
     /** 创建人 */
-    private int createdBy ;
+    private Integer createdBy ;
     /** 创建时间 */
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createdTime ;
@@ -150,7 +148,7 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     private Date archiveTime ;
     /** 结果录入时间 */
     private Date resultEnterTime ;
-
+    @TableField(exist = false)
     private Set<PlanInfo> planInfos;
 
     @TableField(exist = false)
@@ -181,23 +179,41 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     private String questionEntryId3 ;
     @TableField(exist = false)
     private String questionEntryId4 ;
-
+    @TableField
     private String agencyLevel;
-
+    @TableField
     private String enterTime;
-
+    @TableField
     private String orgType;
-
+    @TableField
     private String managerDutyType;
-
+    @TableField
     private String riskType;
-
+    @TableField
     private String functionType;
-
+    @TableField
     private String auditSuggestions;
     /**
      * 问题类型
      */
+    @TableField
     private String questionType;
+
+    /**
+     * column 转setter方法名称
+     *
+     * @param column
+     * @return
+     */
+    private String generateSetterMethod(String column,String type) {
+        String[] splits = column.split("_");
+        StringBuffer settterName = new StringBuffer(type);
+        for (String split : splits) {
+            String firstChar = split.substring(0, 1);
+            String otherChar = split.substring(1);
+            settterName.append(firstChar.toUpperCase() + otherChar);
+        }
+        return settterName.toString();
+    }
 
 }
