@@ -178,45 +178,46 @@ public class PlanCheckListController {
             String[] idArray = ids.split(",");
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+                String msg = "请完善项目名称为 " + plan.getProjectName() + "编号为" + plan.getProjectCode() + "的项目";
                 if (StringUtils.isBlank(plan.getAuditYear())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getProjectName())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getProjectCode())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getImplementingAgencyId()) || plan.getImpAdminId() == 0) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getAuditObjectId())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getAuditNatureId())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getQuestionType())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getProblemSeverityId())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getProblemSeverityId())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getRectifySituationId())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getQuestionEntryId())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getProblemCharacterization())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getProblemDescription())) {
                     r.setCode(1002);
-                    r.setMsg("请完善编号为" + plan.getProjectCode() + "的项目");
+                    r.setMsg(msg);
                 }
                 if (r.getCode() == 1002) {
                     return r;
