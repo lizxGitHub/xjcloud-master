@@ -477,6 +477,7 @@ public class PlanCheckListController {
                 plan.setConcatQuestionEntry();
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
                 plan.setImplementingAgencyId(implementingAgencyId);
+                plan.setImpUserId(createdBy);
                 plan.setCreatedBy(createdBy);
                 plan.setStatus("0");
                 plan.setCreatedTime(new Date());
