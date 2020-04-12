@@ -178,7 +178,7 @@ public class PlanCheckListController {
             String[] idArray = ids.split(",");
             for (String id : idArray) {
                 PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
-                String msg = "请完善项目名称为 " + plan.getProjectName() + "编号为" + plan.getProjectCode() + "的项目";
+                String msg = "请完善项目名称为 " + plan.getProjectName() + "，编号为" + plan.getProjectCode() + "的项目";
                 if (StringUtils.isBlank(plan.getAuditYear())) {
                     r.setCode(1002);
                     r.setMsg(msg);
