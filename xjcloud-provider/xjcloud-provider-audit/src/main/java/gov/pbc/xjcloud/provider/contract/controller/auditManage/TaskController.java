@@ -656,4 +656,24 @@ public class TaskController {
         }
         return userCenterService.user(id);
     }
+
+    /**
+     * @param
+     * @return
+     */
+    @GetMapping("/days")
+    public String initDays(Integer planId) {
+        float days = 0f;
+        if (planId != null && planId != 0) {
+            PlanCheckListNew plan = planCheckListService.selectById(planId);
+            Date startTime = plan.getStartTime();
+            Date currentTime = new Date();
+            long diff = currentTime.getTime() - startTime.getTime();
+            days = diff / (1000 * 60 * 60 * 24);
+            PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
+            planTimeTemp.setDays(days);
+            planTimeTempService.updateById(planTimeTemp);
+        }
+        return String.valueOf((int)days);
+    }
 }
