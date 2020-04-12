@@ -669,7 +669,7 @@ public class TaskController {
             Date currentTime = new Date();
             Date startTime = plan.getStartTime() == null? currentTime : plan.getStartTime();
             long diff = currentTime.getTime() - startTime.getTime();
-            days = diff / (1000 * 60 * 60 * 24);
+            days = diff / (1000 * 60 * 60 * 24) + 1;
             PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
             planTimeTemp.setDays(days);
             planTimeTempService.updateById(planTimeTemp);
