@@ -198,6 +198,7 @@ public class PlanCheckListNew implements Serializable,Cloneable{
      */
     @TableField
     private String questionType;
+    private String implementingAgencyName ;
 
     /**
      * column 转setter方法名称
