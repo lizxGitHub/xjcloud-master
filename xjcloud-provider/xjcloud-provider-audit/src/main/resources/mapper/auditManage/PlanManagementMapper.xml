@@ -535,22 +535,22 @@
             and (pcl.implementing_agency_id in ('${query.implementingAgencyId}'))
         </if>
         <if test='query.auditNatureId!=null and query.auditNatureId!=""'>
-            and (pcl.audit_nature_id ='${query.auditNatureId}')
+            and (pcl.audit_nature_id =#{query.auditNatureId})
         </if>
-        <if test='query.auditObjectId!=null and query.auditObjectId!=""'>
-            and (pcl.audit_object_id = '${query.auditObjectId}')
+        <if test='query.auditObjectId !=null and query.auditObjectId !="" '>
+            and (pcl.audit_object_id = #{query.auditObjectId})
         </if>
-        <if test='query.projectType!=null and query.projectType!=""'>
-            and (pcl.project_Type = '${query.projectType}')
+        <if test='query.projectType !=null and query.projectType !="" '>
+            and (pcl.project_Type = #{query.projectType})
         </if>
-        <if test='query.problemSeverityId!=null and query.problemSeverityId!=""'>
-            and (pcl.problem_severity_id ='${query.problemSeverityId}')
+        <if test='query.problemSeverityId !=null and query.problemSeverityId !="" '>
+            and (pcl.problem_severity_id = #{query.problemSeverityId} )
         </if>
-        <if test='query.rectifySituationId!=null and query.rectifySituationId!=""'>
-            and (pcl.rectify_situation_id = '${query.rectifySituationId}')
+        <if test="query.rectifySituationId !=null and query.rectifySituationId!=''">
+            and (pcl.rectify_situation_id = #{query.rectifySituationId,jdbcType=VARCHAR})
         </if>
         <if test='query.questionEntryId!=null and query.questionEntryId!=""'>
-            and (pcl.question_entry_id like '%#{query.questionEntryId}%')
+            and (pcl.question_entry_id like concat('%',#{query.questionEntryId},'%'))
         </if>
 
     </select>
