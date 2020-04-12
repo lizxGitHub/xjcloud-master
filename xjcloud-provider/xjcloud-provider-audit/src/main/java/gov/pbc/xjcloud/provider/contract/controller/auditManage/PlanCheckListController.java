@@ -137,7 +137,8 @@ public class PlanCheckListController {
                 planInfoList.add(planInfo1);
                 planInfoService.saveBatch(planInfoList);
             } else {
-                planCheckListService.updatePlanById(planCheckList);
+//                planCheckListService.updatePlanById(planCheckList);
+                planCheckListService.updateBatchById(Arrays.asList(planCheckList),1);
             }
             if (StringUtils.isNotBlank(fileUri)) {
                 PlanFile planFile = new PlanFile();
