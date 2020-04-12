@@ -1,0 +1,141 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: xjcloud-provider-audit
+  # 配置中心
+  cloud:
+    config:
+      fail-fast: true
+      name: ${spring.application.name}
+      uri: http://172.18.47.232:8888
+      discovery:
+        enabled: true
+        service-id: xjcloud-config
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    timeout: 5000
+    jedis:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 0
+        max-wait: -1
+  datasource:
+    name: xj_cloud
+    url: jdbc:mysql://39.108.50.114:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    username: lrst
+    password: lrst7089
+#    url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+#    username: root
+#    password: miao
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver  #mysql-connector 6  需要指定时区
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 600000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+#    springboot上传配置
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-request-size: 100MB
+      resolve-lazily: false
+  http:
+    encoding:
+      force: true
+#      max-file-size: ${spring.servlet.multipart.max-file-size:100MB}
+#      spring.servlet.multipart.enabled=true，是否支持 multipart 上传文件
+#      spring.servlet.multipart.file-size-threshold=0，支持文件写入磁盘
+#      spring.servlet.multipart.location=，上传文件的临时目录
+#      spring.servlet.multipart.max-file-size=10Mb，最大支持文件大小
+#      spring.servlet.multipart.max-request-size=10Mb，最大支持请求大小
+#      spring.servlet.multipart.resolve-lazily=false，是否支持 multipart 上传文件时懒加载
+#    rabbitmq:
+#        host: 127.0.0.1
+#        port: 5672
+#        username: test
+#        password: 123456
+server:
+  port: 8666
+  undertow:
+    max-http-post-size: 0
+    io-threads: 4
+    worker-threads: 20
+    buffer-size: 1024
+    direct-buffers: true
+# 注册中心配置
+eureka:
+  instance:
+    prefer-ip-address: true
+#    ip-address: 127.0.0.1
+    ip-address: 39.108.50.114
+  client:
+    fetch-registry: true
+    service-url:
+      defaultZone: http://root:root@${EUREKA_HOST:39.108.50.114}:${EUREKA_PORT:8761}/eureka/
+#      defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapper/**/*.xml
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+audit:
+  custom-header-prefix: auditHeader
+  gate-way:
+    service-id: xjcloud-gateway
+    url: http://39.108.50.114:9999
+  auth-url: ${audit.gate-way.url}/auth/oauth/token
+  user-url: ${audit.gate-way.url}/admin/users/info
+  users-url: ${audit.gate-way.url}/admin/users
+  tenant-url: ${audit.gate-way.url}/admin/users/tenant/1   # 这个1 是租户id
+  Authorization: Basic eGpjbG91ZDp4amNsb3Vk
+  token-name: Authorization
+  flow-key: auditApply
+  file:
+    uploadPrefix: audit-upload
+    staticAccessPath: /${audit.file.uploadPrefix}/** # 静态资源访问配置
+#    uploadFolder: D:/java-project/${audit.file.uploadPrefix}/ #windows上传地址
+    appUrl: ${eureka.instance.ip-address}:${server.port} #返回给前端的访问地址
+    uploadFolder: /xjcloud/${audit.file.uploadPrefix}/ #linux上传地址
+
+feign:
+  hystrix:
+    enabled: false
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+ribbon:
+  ReadTimeout: 120000   #负载均衡超时时间，默认值5000
+  ConnectTimeout: 120000 #ribbon请求连接的超时时间，默认值2000
+  maxAutoRetries: 0
+
+#  hystrix 熔断机制
+hystrix:
+  command:
+    default:
+      circuitBreaker:
+        sleepWindowInMilliseconds: 100000
+        forceClosed: true
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+  shareSecurityContext: true
