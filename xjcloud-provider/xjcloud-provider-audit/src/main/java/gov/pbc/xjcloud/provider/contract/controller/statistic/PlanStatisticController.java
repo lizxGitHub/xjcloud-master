@@ -16,6 +16,7 @@ import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementServi
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +51,9 @@ public class PlanStatisticController {
         this.deptUtil = deptUtil;
         this.userCenterService = userCenterService;
     }
+
+    @Value("${audit.superDeptId}")
+    private int superDeptId;
 
     /**
      * 审计统计图表
@@ -243,7 +247,7 @@ public class PlanStatisticController {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         Long resultCount = 0L;
         try {
-            if (deptId != 0 && deptId != 10100) {
+            if (deptId != 0 && deptId != superDeptId) {
                 resultList =  planManagementService.statisticPlanReportByDeptId(page.getCurrent()-1, page.getSize(), auditYear, deptId);
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
             } else {
