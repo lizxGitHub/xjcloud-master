@@ -53,7 +53,7 @@ public class CommonController {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new R().setCode(1).setData(new HashMap<>());
+        return new R().setCode(-1).setData(new HashMap<>());
     }
 
 }
