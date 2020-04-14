@@ -185,7 +185,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "</script>"})
     List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear);
     @Select({"<script>",
-            "select pcl.implementing_agency_id implementingAgencyId,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
+            "select IFNULL(pcl.implementing_agency_id,'${deptId}') implementingAgencyId,IFNULL(sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END),0) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
                     +"IFNULL(sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount"
                     +" from plan_check_list pcl "
                     +" where pcl.del_flag='0'" +
