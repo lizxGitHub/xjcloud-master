@@ -159,6 +159,30 @@ public class PlanCheckListController {
         return r;
     }
 
+    @PostMapping("/editBatchByIds")
+    public R<Boolean> editBatchByIds(
+            HttpServletRequest request,
+            @RequestParam(name = "ids", required = true) String ids,
+            @RequestParam(name = "implementingAgencyId", required = true) String implementingAgencyId,
+            @RequestParam(name = "implementingAgencyName", required = true) String implementingAgencyName,
+            @RequestParam(name = "impAdmin", required = true) int impAdmin,
+            @RequestParam(name = "auditObjectId", required = true) String auditObjectId,
+            @RequestParam(name = "auditAdmin", required = true) int auditAdmin) {
+        R<Boolean> r = new R<>();
+
+        String[] idArray = ids.split(",");
+        for (String id : idArray) {
+            PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+            plan.setImplementingAgencyId(implementingAgencyId);
+            plan.setImplementingAgencyName(implementingAgencyName);
+            plan.setImpAdminId(impAdmin);
+            plan.setAuditObjectId(auditObjectId);
+            plan.setAuditAdminId(auditAdmin);
+            planCheckListService.updatePlanById(plan);
+        }
+        return r.setData(true);
+    }
+
     /**
      * 更改状态
      *
