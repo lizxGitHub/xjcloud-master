@@ -673,11 +673,16 @@ public class TaskController {
             PlanCheckListNew plan = planCheckListService.selectById(planId);
             Date currentTime = new Date();
             Date startTime = plan.getStartTime() == null? currentTime : plan.getStartTime();
-            long diff = currentTime.getTime() - startTime.getTime();
-            days = diff / (1000 * 60 * 60 * 24) + 1;
-            PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
-            planTimeTemp.setDays(days);
-            planTimeTempService.updateById(planTimeTemp);
+            String auditStatus = plan.getAuditStatus();
+            ArrayList<String> strArray = new ArrayList(Arrays.asList("1004", "1005", "1007", "1008", "1009", "1017", "1014"));
+            if (strArray.contains(auditStatus)) { // 1005 1007 1008 1009 1017 1014
+                long diff = currentTime.getTime() - startTime.getTime();
+                days = (float) Math.ceil(diff / (1000 * 60 * 60 * 24));
+//                days = diff;
+                PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
+                planTimeTemp.setDays(days);
+                planTimeTempService.updateById(planTimeTemp);
+            }
         }
         return String.valueOf((int)days);
     }

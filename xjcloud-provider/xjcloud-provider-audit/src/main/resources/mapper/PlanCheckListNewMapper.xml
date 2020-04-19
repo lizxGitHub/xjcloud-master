@@ -21,6 +21,7 @@
         <result column="may_affect" property="mayAffect"/>
         <result column="rectification_suggestions" property="rectificationSuggestions"/>
         <result column="audit_basis" property="auditBasis"/>
+        <result column="audit_status" property="auditStatus"/>
         <result column="audit_classification_id" property="auditClassificationId"/>
         <result column="auditing_experience" property="auditingExperience"/>
         <result column="risk_assessment_id" property="riskAssessmentId"/>
@@ -377,6 +378,7 @@
         a.may_affect,
         a.rectification_suggestions,
         a.audit_basis,
+        a.audit_status,
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,
@@ -415,6 +417,7 @@
         a.may_affect,
         a.rectification_suggestions,
         a.audit_basis,
+        a.audit_status,
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,
