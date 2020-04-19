@@ -22,6 +22,7 @@
         <result column="rectification_suggestions" property="rectificationSuggestions"/>
         <result column="audit_basis" property="auditBasis"/>
         <result column="audit_status" property="auditStatus"/>
+        <result column="audit_status1" property="auditStatus1"/>
         <result column="audit_classification_id" property="auditClassificationId"/>
         <result column="auditing_experience" property="auditingExperience"/>
         <result column="risk_assessment_id" property="riskAssessmentId"/>
@@ -191,6 +192,9 @@
         </if>
         <if test="plan.auditStatus!=null and plan.auditStatus!=''">
             `audit_status`=#{plan.auditStatus},
+        </if>
+        <if test="plan.auditStatus1!=null and plan.auditStatus1!=''">
+            `audit_status1`=#{plan.auditStatus1},
         </if>
         <if test="plan.startTime!=null">
             `start_time`=#{plan.startTime,jdbcType=TIMESTAMP},
@@ -382,6 +386,7 @@
         a.rectification_suggestions,
         a.audit_basis,
         a.audit_status,
+        a.audit_status1,
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,
@@ -420,7 +425,7 @@
         a.may_affect,
         a.rectification_suggestions,
         a.audit_basis,
-        a.audit_status,
+        a.audit_status1,
         a.audit_classification_id,
         a.auditing_experience,
         a.plan_time,

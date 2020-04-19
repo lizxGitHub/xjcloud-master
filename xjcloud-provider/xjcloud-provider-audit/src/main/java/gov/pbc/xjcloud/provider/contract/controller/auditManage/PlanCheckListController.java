@@ -127,7 +127,12 @@ public class PlanCheckListController {
                 planCheckListService.save(planCheckList);
                 QueryWrapper<PlanCheckListNew> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("project_code",planCheckList.getProjectCode());
-                int planId = planCheckListService.getOne(queryWrapper).getId();
+                int planId = 0;
+                try {
+                    planId = planCheckListService.getOne(queryWrapper).getId();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 List<PlanInfo> planInfoList = new ArrayList<>();
                 PlanInfo planInfo1 = new PlanInfo();
                 planInfo1.setUserId(planCheckList.getImpUserId());
@@ -154,6 +159,7 @@ public class PlanCheckListController {
         } catch (Exception e) {
             r.setCode(1002);
             r.setMsg("系统错误");
+            e.getMessage();
             return r;
         }
         return r;
@@ -289,7 +295,7 @@ public class PlanCheckListController {
                         //项目启动时间
                         plan.setStartTime(new Date());
                         plan.setStatus("1001"); //正在实施
-                        plan.setAuditStatus(String.valueOf(PlanStatusEnum.PLAN_IMP_REJECT.getCode()));
+                        plan.setAuditStatus1(String.valueOf(PlanStatusEnum.PLAN_IMP_REJECT.getCode()));
                         planCheckListService.updatePlanById(plan);
 
                         PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(plan.getId());

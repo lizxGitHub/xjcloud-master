@@ -106,22 +106,21 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
     @Select({"<script>",
             "SELECT\n" +
-                    "	*\n" +
+                    "	tb2.deptId,\n" +
+                    "	COUNT(tb2.deptId) proNum,\n" +
+                    "	SUM(tb2.num) errorNum\n" +
                     "FROM\n" +
                     "	(\n" +
                     "		SELECT\n" +
                     "			tb1.deptId,\n" +
-                    "			tb1.`name`,\n" +
-                    "			COUNT(tb1.`code`) proNum,\n" +
-                    "			SUM(tb1.error) errorNum\n" +
+                    "			COUNT(tb1.`NAME`) num\n" +
                     "		FROM\n" +
                     "			(\n" +
                     "				SELECT\n" +
                     "					a.implementing_agency_id deptId,\n" +
-                    "					a.project_code CODE,\n" +
                     "					a.project_name NAME,\n" +
                     "					CASE\n" +
-                    "				WHEN a.`status` IN (1001, 1004) THEN\n" +
+                    "				WHEN a.`status` IN (1001, 1002, 1003, 1004) THEN\n" +
                     "					1\n" +
                     "				ELSE\n" +
                     "					0\n" +
@@ -134,12 +133,10 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "				AND a.`status` IN (1001, 1002, 1003, 1004)\n" +
                     "			) tb1\n" +
                     "		GROUP BY\n" +
-                    "			tb1.deptId,\n" +
-                    "			tb1.`name`\n" +
+                    "			tb1.`NAME`\n" +
                     "	) tb2\n" +
-                    "ORDER BY\n" +
-                    "	tb2.proNum DESC,tb2.errorNum DESC\n" +
-                    "LIMIT 7",
+                    "GROUP BY\n" +
+                    "	tb2.deptId",
             "</script>"})
     List<Map<String, Object>> groupCountEntry(@Param("auditYear")String auditYear);
 
@@ -166,7 +163,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "LEFT JOIN entry_info ei ON tb1.type = ei.id\n" +
                     "ORDER BY\n" +
                     "	tb1.num DESC\n" +
-                    "LIMIT 7",
+                    "",
             "</script>"})
     List<Map<String, Object>> groupCountProType(@Param("auditYear")String auditYear, @Param("deptId")String deptId);
 

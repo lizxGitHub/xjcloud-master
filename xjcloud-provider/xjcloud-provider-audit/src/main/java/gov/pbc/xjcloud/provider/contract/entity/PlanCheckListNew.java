@@ -141,6 +141,11 @@ public class PlanCheckListNew implements Serializable,Cloneable{
      * auditStatus
      */
     private String auditStatus;
+
+    /**
+     * auditStatus
+     */
+    private String auditStatus1;
     /**
      * 驳回反馈
      */

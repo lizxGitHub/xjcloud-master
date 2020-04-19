@@ -433,7 +433,8 @@ public class TaskController {
             //更新时间
             planTimeTempService.updateById(planTimeTemp);
             //更新计划
-            plan.setAuditStatus(statusStr);
+//            plan.setAuditStatus(statusStr);
+            plan.setAuditStatus1(statusStr);
             planCheckListService.updatePlanById(plan);
 
             if (StringUtils.isNotBlank((String) params.get("fileUri"))) {
@@ -673,12 +674,15 @@ public class TaskController {
             PlanCheckListNew plan = planCheckListService.selectById(planId);
             Date currentTime = new Date();
             Date startTime = plan.getStartTime() == null? currentTime : plan.getStartTime();
-            String auditStatus = plan.getAuditStatus();
+            String auditStatus1 = plan.getAuditStatus1();
             ArrayList<String> strArray = new ArrayList(Arrays.asList("1004", "1005", "1007", "1008", "1009", "1017", "1014"));
-            if (strArray.contains(auditStatus)) { // 1005 1007 1008 1009 1017 1014
+            if (strArray.contains(auditStatus1)) { // 1005 1007 1008 1009 1017 1014
                 long diff = currentTime.getTime() - startTime.getTime();
                 double f1 = new BigDecimal((float)diff/(1000 * 60 * 60 * 24)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
                 days = (float) Math.ceil(f1);
+                if (days <= 0) {
+                    days = 1;
+                }
 //                days = diff;
                 PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
                 planTimeTemp.setDays(days);
@@ -702,7 +706,7 @@ public class TaskController {
             PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
             plan.setAuditUserId(Integer.valueOf(auditUser));
             //更新计划
-            plan.setAuditStatus("1005");
+            plan.setAuditStatus1("1005");
             planCheckListService.updatePlanById(plan);
 
             //审计对象一般员工
@@ -742,7 +746,7 @@ public class TaskController {
             //项目归档时间
             plan.setArchiveTime(new Date());
             //更新计划
-            plan.setAuditStatus("1013");
+            plan.setAuditStatus1("1013");
             planCheckListService.updatePlanById(plan);
 
             map.put("auditStatus", 1013);
