@@ -574,7 +574,7 @@
         <if test='query.questionEntryId!=null and query.questionEntryId!=""'>
             and (pcl.question_entry_id like concat('%',#{query.questionEntryId},'%'))
         </if>
-
+        where pcl.status!='0' and pcl.status!=null
     </select>
     <select id="selectEntryByKeyAndLevel" resultType="java.util.Map" parameterType="map">
         select
