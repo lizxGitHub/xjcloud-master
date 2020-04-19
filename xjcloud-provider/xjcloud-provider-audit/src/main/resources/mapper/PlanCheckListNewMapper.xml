@@ -204,6 +204,9 @@
         <if test="plan.projectName!=null and plan.projectName!=''">
             `project_name`=#{plan.projectName},
         </if>
+        <if test="plan.implementingAgencyName!=null and plan.implementingAgencyName!=''">
+            `implementing_agency_name`=#{plan.implementingAgencyName},
+        </if>
         `id`=#{plan.id}
         WHERE
             (`id`=#{plan.id})
