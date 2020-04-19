@@ -115,6 +115,11 @@ public class PlanCheckListNew implements Serializable,Cloneable{
      * 整改评价
      */
     private String rectifyEvaluation;
+
+    /**
+     * 整改评价  员工
+     */
+    private String evaluation;
     /**
      * 延期时间
      */

@@ -222,6 +222,10 @@ public class TaskController {
             if (params.get("opinion") != null) {
                 opinion = (String) params.get("opinion");
             }
+            String evaluation = ""; //整改评价
+            if (params.get("evaluation") != null) {
+                evaluation = (String) params.get("evaluation");
+            }
             String delayDate = ""; //延迟天数
             if (params.get("delayDate") != null) {
                 delayDate = (String) params.get("delayDate");
@@ -374,7 +378,8 @@ public class TaskController {
                 planTimeTemp.setEndTimeAll(endTimeAll);
                 //项目实施结束
                 plan.setStatus("1002"); //实施结束
-
+                //实施一般员工评价
+                plan.setEvaluation(evaluation);
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1006");
                 //实施部门管理员
