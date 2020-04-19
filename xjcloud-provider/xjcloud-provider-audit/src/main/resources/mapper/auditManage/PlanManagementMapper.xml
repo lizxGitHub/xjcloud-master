@@ -375,6 +375,9 @@
         <if test="params.auditObjectId!=null and params.auditObjectId=='all'">
             ,a.audit_object_id `name`
         </if>
+        <if test="params.rectifySituationId!=null and params.rectifySituationId=='all'">
+            ,a.rectify_Situation_Id `name`
+        </if>
         <if test="params.auditNatureId!=null and params.auditNatureId=='all'">
             ,a.audit_nature_id `name`
         </if>
