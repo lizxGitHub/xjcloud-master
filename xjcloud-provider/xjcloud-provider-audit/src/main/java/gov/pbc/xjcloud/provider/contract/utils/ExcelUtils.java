@@ -224,6 +224,9 @@ public class ExcelUtils {
                     if ("java.sql.Timestamp".equals(typeName)) {
                         cv = DateUtils.dateToString((Date) obj, DateUtils.YYYY_MM_DD_HH_MM_SS);
                     }else {
+                        if(keys[i].equals("days")||keys[i].equals("over_days")){
+                            obj=Integer.parseInt(obj.toString())<0?0:Integer.parseInt(obj.toString());
+                        }
                         cv=obj.toString();
                     }
                 }

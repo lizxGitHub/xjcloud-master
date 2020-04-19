@@ -460,7 +460,7 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
             if (month.get() == 7) {
                 value.put("name", String.format("整改%d个月小于一年", month.get() - 1));
             } else if (month.get() == 8) {
-                value.put("name", String.format("整改%d一年以上", month.get() - 1));
+                value.put("name", String.format("整改一年以上", month.get() - 1));
             } else {
                 value.put("name", String.format("整改%d个月", month.get()));
             }

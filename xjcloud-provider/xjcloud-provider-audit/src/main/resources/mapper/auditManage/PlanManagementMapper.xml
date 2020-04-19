@@ -389,7 +389,7 @@
         </if>
         from plan_check_list a
         left join plan_time_temp b on a.id=b.plan_id
-        where a.del_flag = '0'
+        where a.del_flag = '0' and length(a.status)>0
         <if test="params.projectName!=null  and params.projectName!=''and params.projectName!='all'">
             and a.project_Name like concat('%',#{params.projectName},'%')
         </if>
@@ -574,7 +574,14 @@
         <if test='query.questionEntryId!=null and query.questionEntryId!=""'>
             and (pcl.question_entry_id like concat('%',#{query.questionEntryId},'%'))
         </if>
-        where pcl.status!='0' and pcl.status!=null
+        and pcl.status!='0' and pcl.status is not null
+        <if test="pageStart!=null">
+            limit ${pageStart}
+        </if>
+        <if test="pageNo!=null">
+            ,${pageNo}
+        </if>
+
     </select>
     <select id="selectEntryByKeyAndLevel" resultType="java.util.Map" parameterType="map">
         select

@@ -254,9 +254,8 @@ public class PlanManagementController {
     @ApiOperation("审计查询")
     @GetMapping(value = {"/search/planList", ""})
     public R searchPlanList(PlanCheckList query, Page<Map<String, Object>> page) {
-        List<Map<String, Object>> planList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> planList = new ArrayList<>();
         try {
-//            query.setImplementingAgencyId(query.getSelect());
             List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             List<EntryInfo> list = entryService.listAll();
             Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
