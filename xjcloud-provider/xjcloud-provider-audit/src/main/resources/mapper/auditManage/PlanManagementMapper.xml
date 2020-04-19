@@ -468,25 +468,45 @@
     <select id="selectEntryByQuery" resultType="java.util.Map">
         select pcl.audit_year,
         pcl.implementing_agency_id implementingAgencyId,
-        pcl.audit_object_id
-        auditObjectId,
+        pcl.implementing_agency_id,
+        pcl.audit_object_id  auditObjectId,
+        pcl.audit_object_id ,
+        pcl.audit_nature_id ,
+        pcl.risk_assessment_id ,
         pcl.id,
         pcl.project_code,
         pcl.project_name,
         project_type_entry.name
         project_type,
         pcl.question_entry_id questionEntryId,
-        pcl.problem_severity_id
-        problemSeverityId,
-        pcl.status,
+        pcl.question_entry_id,
+        pcl.problem_severity_id    problemSeverityId,
+        pcl.problem_severity_id ,
+        (case pcl.status
+        when '1001' then '正在实施'
+        when '1002' then '实施结束'
+        when '1003' then '已归档'
+        when '1004' then '延期整改'
+        else '正在立项' end
+        ) status,
+        pcl.rectify_evaluation,
+        pcl.rectify_result,
+        (select datediff(start_time_all,now())-pcl.plan_time from plan_time_temp where pcl.id=plan_time_temp.plan_id) over_days,
         pcl.audit_basis auditBasis,
+        pcl.audit_basis,
+        pcl.auditing_experience,
         pcl.audit_classification_id auditClassificationId,
+        pcl.audit_classification_id ,
         pcl.auditing_experience auditingExperience,audit_nature_entry.name
         audit_nature_name,
         problem_severity_entry.name problem_severity_name,
         rectify_situation_entry.name rectify_situation_name,
         risk_assessment_entry.name risk_assessment_name,
         pcl.problem_characterization,
+        pcl.enter_time,
+        (select DATE_FORMAT(start_time_all,'%Y-%m-%d') from plan_time_temp where plan_time_temp.plan_id=pcl.id ) start_time_all,
+        (select days from plan_time_temp where plan_time_temp.plan_id=pcl.id ) days,
+        pcl.frequency frequency,
         pcl.problem_description
         from plan_check_list pcl
         left join entry_info project_type_entry on pcl.project_type=project_type_entry.id and

@@ -5,12 +5,13 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
+import gov.pbc.xjcloud.provider.contract.config.SpringContextHolder;
+import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -203,6 +204,20 @@ public class ExcelUtils {
             for (int j = 0; j < keys.length; j++) {
                 org.apache.poi.ss.usermodel.Cell cell = row1.createCell(j);
                 Object obj = list.get(i).get(keys[j]);
+                if(keys[j].equals("implementing_agency_id")||keys[j].equals("audit_object_id")){
+                    if(null!=deptMap.get(obj)){
+                        obj=deptMap.get(obj);
+                    }else  if(StringUtils.isNotBlank((String) obj)){
+                        R rdept = userCenterService.dept(Integer.parseInt(obj.toString()));
+                        JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                        if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                            JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                            if(null!=deptData && null!= deptData.get("name")){
+                                obj= deptData.get("name");
+                            }
+                        }
+                    }
+                }
                 String cv = "";
                 if (null != obj) {
                     String typeName = obj.getClass().getTypeName();
@@ -219,4 +234,8 @@ public class ExcelUtils {
         }
         return wb;
     }
+
+    private static UserCenterService userCenterService= SpringContextHolder.getBean(UserCenterService.class);
+
+    private static Map<String,String> deptMap=new HashMap<>();
 }
