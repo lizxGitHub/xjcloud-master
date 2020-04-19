@@ -177,7 +177,9 @@
         SELECT id,`NAME` name FROM `entry_info` where id = #{id, jdbcType=VARCHAR} and del_flag = '0'
     </select>
     <select id="getShortPlans" resultType="java.util.HashMap">
-        SELECT a.id, a.status FROM `plan_check_list` a where a.del_flag='0'
+        SELECT a.id, a.status,b.`name` rsName FROM `plan_check_list` a
+        LEFT JOIN entry_info b on a.rectify_situation_id = b.id
+         where a.del_flag='0'
         <if test="status!=null and status!=''">
             and a.status =#{status}
         </if>

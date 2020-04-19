@@ -226,25 +226,30 @@ public class AuditPlanInfoController {
 
             int total = 0;
             int notRectified = 0; //未整改问题个数
+            int rectifieding = 0; //正在整改问题个数
             for (Map<String, Object> shortPlan : shortPlans) {
                 int status = Integer.valueOf(shortPlan.get("status").toString());
+                String rsName = (String) shortPlan.get("rsName");
                 if (0 != status) {
                     total += 1;
-                    if (1001 == status || 1004 == status) { //未整改跟延期整改
+                    if ("未整改".equals(rsName)) {
                         notRectified += 1;
+                    } else if ("正在整改".equals(rsName)) {
+                        rectifieding += 1;
                     }
                 }
             }
             double percentage = 0;
             if (total != 0) {
-                percentage = new BigDecimal((float) notRectified / total).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                percentage = new BigDecimal((float) (notRectified+rectifieding) / total).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             }
             jsonObjectIn.put("deptId", key); //地区id
             jsonObjectIn.put("name", value); //地区名称
             jsonObjectIn.put("dept", key); //地区id
             jsonObjectIn.put("total", total); //总问题数
             jsonObjectIn.put("notRectified", notRectified); //未整改问题数
-            jsonObjectIn.put("value", percentage); //未整改占比
+            jsonObjectIn.put("rectifieding", rectifieding); //正在整改问题数
+            jsonObjectIn.put("value", percentage); //督促整改占比
             jSONArray.add(jsonObjectIn);
         }
         jsonObject.put("data", jSONArray);
