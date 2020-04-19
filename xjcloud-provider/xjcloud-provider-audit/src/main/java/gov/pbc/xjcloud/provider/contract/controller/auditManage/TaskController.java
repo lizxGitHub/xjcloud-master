@@ -20,7 +20,6 @@ import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import gov.pbc.xjcloud.provider.contract.vo.ac.ActAuditVO;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,8 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -677,7 +677,8 @@ public class TaskController {
             ArrayList<String> strArray = new ArrayList(Arrays.asList("1004", "1005", "1007", "1008", "1009", "1017", "1014"));
             if (strArray.contains(auditStatus)) { // 1005 1007 1008 1009 1017 1014
                 long diff = currentTime.getTime() - startTime.getTime();
-                days = (float) Math.ceil(diff / (1000 * 60 * 60 * 24));
+                double f1 = new BigDecimal((float)diff/(1000 * 60 * 60 * 24)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+                days = (float) Math.ceil(f1);
 //                days = diff;
                 PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(planId);
                 planTimeTemp.setDays(days);
