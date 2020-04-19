@@ -676,4 +676,69 @@ public class TaskController {
         }
         return String.valueOf((int)days);
     }
+
+    @PostMapping("/editBatchAuditUser")
+    public R<Boolean> editBatchAuditUser(
+            @RequestParam(name = "params", required = true) String params,
+            @RequestParam(name = "auditUser", required = true) String auditUser) {
+        R<Boolean> r = new R<>();
+        //获取代办
+        Map<String, Object> map = new HashMap<>();
+        String[] paramsArray = params.split(",");
+        for (String param : paramsArray) {
+            String id = param.split("_")[0];
+            String taskId = param.split("_")[1];
+            PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+            plan.setAuditUserId(Integer.valueOf(auditUser));
+            //更新计划
+            plan.setAuditStatus("1005");
+            planCheckListService.updatePlanById(plan);
+
+            //审计对象一般员工
+            PlanInfo planInfo = new PlanInfo();
+            planInfo.setUserId(plan.getAuditUserId());
+            planInfo.setStatusUser("1006"); //待完善
+            planInfo.setPlanId(plan.getId());
+            planInfo.setType(1);
+            planInfoService.save(planInfo);
+            //审计对象管理员
+            planInfoService.updateProjectByPlanUserId(id, String.valueOf(plan.getAuditAdminId()), "1006");
+
+
+            map.put("auditStatus", 1005);
+            map.put("auditUserAssignee", plan.getAuditUserId());
+            //流程
+            r = activitiService.complete(taskId, map);
+        }
+        return r.setData(true);
+    }
+
+    @PostMapping("/editBatchArchive")
+    public R<Boolean> editBatchArchive(
+            @RequestParam(name = "params", required = true) String params,
+            @RequestParam(name = "opinion", required = true) String opinion) {
+        R<Boolean> r = new R<>();
+        //获取代办
+        Map<String, Object> map = new HashMap<>();
+        String[] paramsArray = params.split(",");
+        for (String param : paramsArray) {
+            String id = param.split("_")[0];
+            String taskId = param.split("_")[1];
+            PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+            plan.setRectifyEvaluation(opinion);
+            //项目实施结束
+            plan.setStatus("1003"); //实施结束
+            //项目归档时间
+            plan.setArchiveTime(new Date());
+            //更新计划
+            plan.setAuditStatus("1013");
+            planCheckListService.updatePlanById(plan);
+
+            map.put("auditStatus", 1013);
+            //流程
+            r = activitiService.complete(taskId, map);
+        }
+        return r.setData(true);
+    }
+
 }
