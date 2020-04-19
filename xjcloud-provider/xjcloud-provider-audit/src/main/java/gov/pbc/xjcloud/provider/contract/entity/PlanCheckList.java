@@ -30,6 +30,8 @@ public class PlanCheckList implements Serializable,Cloneable{
 
 
     private String rectifyEvaluation;
+
+    private String evaluation;
     /** 更新人 */
     @Column(name = "update_by")
     @TableField(exist = false)

@@ -61,6 +61,8 @@ public class PlanCheckListVO  {
 
     private String auditStatus;
 
+    private String evaluation;
+
     /** 审计对象 */
     @TableField(exist = false)
     private String auditObjectName ;
