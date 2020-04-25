@@ -71,6 +71,9 @@
         <if test="query.projectType!=null and query.projectType!=''">
             and a.project_type like concat('%',concat(#{query.projectType},'%'))
         </if>
+        <if test="query.auditObjectId!=null and query.auditObjectId!=''">
+            and a.audit_object_id like concat('%',concat(#{query.auditObjectId},'%'))
+        </if>
         <if test="query.auditNatureId!=null and query.auditNatureId!=''">
             and a.audit_nature_id like concat('%',concat(#{query.auditNatureId},'%'))
         </if>
