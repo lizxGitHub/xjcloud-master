@@ -4,36 +4,21 @@
  */
 package gov.pbc.xjcloud.provider.contract.controller;
 
+import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
+import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
+import gov.pbc.xjcloud.provider.contract.utils.ExcelUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
-import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
-import gov.pbc.xjcloud.provider.contract.service.entry.EntryFlowService;
-import gov.pbc.xjcloud.provider.contract.service.entry.EntryService;
-import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryServiceImpl;
-import gov.pbc.xjcloud.provider.contract.utils.ExcelUtils;
-import gov.pbc.xjcloud.provider.contract.utils.PageUtil;
-import gov.pbc.xjcloud.provider.contract.vo.entry.EntryFlowVO;
-import gov.pbc.xjcloud.provider.contract.vo.entry.EntryInfoVO;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.springframework.web.bind.annotation.RestController;
 
 /**   
  * @Description:           
@@ -60,7 +45,7 @@ public class ExportController {
                     "实施机构名称","审计对象", "审计性质", "审计依据",
                     "审计分类", "审计经验", "年度","整改情况",
                     "风险评估","整改开始时间","出现频次","整改时长",
-                    "超时时长","整改结果","整改评估"
+                    "超时时长","整改结果","归档评估","整改评估","风险评估"
             };
             String[] keys = new String[] {
                     "project_name", "project_type","status","question_entry_id",
@@ -68,7 +53,7 @@ public class ExportController {
                     "implementing_agency_id", "audit_object_id", "audit_nature_id","audit_basis",
                     "audit_classification_id","auditing_experience", "audit_year","rectify_situation_name",
                     "risk_assessment_id","start_time_all","frequency","days",
-                    "over_days","rectify_result","rectify_evaluation"
+                    "over_days","rectify_result","rectify_evaluation","evaluation","risk_assessment_id"
             };
             List<Map<String, Object>> list = planManagementService.selectEntryByQuery(query, null, null);
             Map<String, String> entryNameValue = entryService.listAll().stream().filter(e -> org.apache.commons.lang3.StringUtils.isNotBlank(e.getConcatName())).

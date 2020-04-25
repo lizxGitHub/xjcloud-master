@@ -1,14 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.*;
-
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSONObject;
 import gov.pbc.xjcloud.provider.contract.config.SpringContextHolder;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
@@ -16,12 +7,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * excel导出工具类
@@ -29,6 +24,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
  * @since JDK 1.8
  */
 public class ExcelUtils {
+    private static UserCenterService userCenterService= SpringContextHolder.getBean(UserCenterService.class);
+
+    private static Map<String,String> deptMap=new HashMap<>();
     /**
      * 带头部导出
      * @author duanj
@@ -224,8 +222,9 @@ public class ExcelUtils {
                     if ("java.sql.Timestamp".equals(typeName)) {
                         cv = DateUtils.dateToString((Date) obj, DateUtils.YYYY_MM_DD_HH_MM_SS);
                     }else {
-                        if(keys[i].equals("days")||keys[i].equals("over_days")){
-                            obj=Integer.parseInt(obj.toString())<0?0:Integer.parseInt(obj.toString());
+                        if(keys[j].contains("days")){
+                            BigDecimal decimal = new BigDecimal(obj.toString());
+                            obj=decimal.intValue()<0?0:decimal.intValue();
                         }
                         cv=obj.toString();
                     }
@@ -237,8 +236,4 @@ public class ExcelUtils {
         }
         return wb;
     }
-
-    private static UserCenterService userCenterService= SpringContextHolder.getBean(UserCenterService.class);
-
-    private static Map<String,String> deptMap=new HashMap<>();
 }

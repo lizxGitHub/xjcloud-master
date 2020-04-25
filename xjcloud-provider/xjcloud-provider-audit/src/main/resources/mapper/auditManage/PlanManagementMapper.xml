@@ -478,6 +478,7 @@
         pcl.audit_object_id ,
         pcl.audit_nature_id ,
         pcl.risk_assessment_id ,
+        pcl.evaluation ,
         pcl.id,
         pcl.project_code,
         pcl.project_name,
@@ -534,10 +535,10 @@
             '%${query.problemDescription}%')
         </if>
         <if test='query.auditYearStart!=null and query.auditYearStart!=""'>
-            and (pcl.audit_year <![CDATA[>=]]>  '${query.auditYearStart}')
+            and (pcl.audit_year <![CDATA[>=]]>  #{query.auditYearStart})
         </if>
         <if test='query.auditYearEnd!=null and query.auditYearEnd!=""'>
-            and (pcl.audit_year <![CDATA[<=]]>  '%{query.auditYearEnd}')
+            and (pcl.audit_year <![CDATA[<=]]>  #{query.auditYearEnd})
         </if>
         <if test="query.costTimeEnd!=null and query.costTimeEnd!=''">
             and TIMESTAMPDIFF( DAY, pit.start_time_all, IFNULL( pit.end_time_all, NOW( ) ) )<![CDATA[<=]]>
