@@ -10,6 +10,9 @@ import gov.pbc.xjcloud.provider.contract.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -109,6 +112,7 @@ public class LoginController {
         };
         return f1.apply(map);
     }
+
 
 
 }

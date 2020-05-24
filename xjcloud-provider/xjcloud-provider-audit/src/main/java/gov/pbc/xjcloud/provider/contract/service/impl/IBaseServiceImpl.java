@@ -30,7 +30,7 @@ public class IBaseServiceImpl<M extends BaseMapper<T>, T> extends ServiceImpl<IB
         } catch (ConstraintViolationException ex) {
             List<String> messageList = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
             String msg = StringUtils.join(messageList, "；");
-            res.failed(msg);
+            res = R.failed(msg);
         }
     }
 

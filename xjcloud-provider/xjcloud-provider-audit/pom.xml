@@ -17,6 +17,7 @@
     <description>xjcloud-provider-audit project</description>
 
     <properties>
+        <artifactId>${project.artifactId}</artifactId>
         <java.version>1.8</java.version>
         <spring-cloud.version>Greenwich.SR4</spring-cloud.version>
     </properties>
