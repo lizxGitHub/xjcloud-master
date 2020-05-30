@@ -56,7 +56,7 @@ public class CasLoginController {
         if(StringUtils.isBlank(page)){
             page="/system/login";
         }
-        return "redirect:http://audit.xjcloud.wlq.pbc.gov:8555/"+page+".html";
+        return "redirect:http://xjcloud-audit.xjcloud.wlq.pbc.gov:8555/"+page+".html";
     }
     void iniTCookie(Cookie cookie){
         Optional.of(cookie).ifPresent(e->{
