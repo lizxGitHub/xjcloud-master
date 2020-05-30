@@ -348,6 +348,18 @@ public class PlanManagementController {
     }
 
     /**
+     * 审计对象
+     *
+     * @return
+     */
+    @ApiOperation("审计对象与实施机构")
+    @GetMapping("/getAuditAndImpObject")
+    public R<List<DeptVO>> getAuditAndImpObject(@RequestParam(name = "deptId", required = true) Integer deptId, String lastFilter) {
+        List<DeptVO> deptChild = deptUtil.findChildBank(0, "中支");
+        return R.ok(deptChild);
+    }
+
+    /**
      * 创建编辑问题
      *
      * @return
