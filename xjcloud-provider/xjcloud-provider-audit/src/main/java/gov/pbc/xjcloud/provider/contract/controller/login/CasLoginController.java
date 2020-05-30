@@ -42,7 +42,7 @@ public class CasLoginController {
         }
         Cookie[] cookies = request.getCookies();
         System.out.println("========= COOKIE =======");
-        if(null!=cookies){
+        if(null!=cookies&&StringUtils.isBlank(token)){
             for (Cookie cookie : cookies) {
                 if(cookie.getName().equals(Authorization)){
                     tokenCookie.setValue(cookie.getValue());
