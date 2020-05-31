@@ -58,6 +58,9 @@ public class PlanCheckListVO  {
     /** 审计对象 */
     @Column(name = "audit_object_id")
     private String auditObjectId ;
+    /** 审计对象 */
+    @Column(name = "audit_object_id_new")
+    private String auditObjectIdNew ;
 
     private String auditStatus;
 

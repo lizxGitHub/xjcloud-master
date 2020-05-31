@@ -173,6 +173,7 @@ public class PlanCheckListController {
             @RequestParam(name = "implementingAgencyName", required = true) String implementingAgencyName,
             @RequestParam(name = "impAdmin", required = true) int impAdmin,
             @RequestParam(name = "auditObjectId", required = true) String auditObjectId,
+            @RequestParam(name = "auditObjectIdNew", required = true) String auditObjectIdNew,
             @RequestParam(name = "auditAdmin", required = true) int auditAdmin) {
         R<Boolean> r = new R<>();
 
@@ -184,6 +185,7 @@ public class PlanCheckListController {
             plan.setImpAdminId(impAdmin);
             plan.setAuditObjectId(auditObjectId);
             plan.setAuditAdminId(auditAdmin);
+            plan.setAuditObjectIdNew(auditObjectIdNew);
             planCheckListService.updatePlanById(plan);
         }
         return r.setData(true);

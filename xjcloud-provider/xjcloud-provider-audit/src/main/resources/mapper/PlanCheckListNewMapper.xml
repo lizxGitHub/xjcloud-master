@@ -109,6 +109,9 @@
         <if test="plan.auditObjectId!=null and plan.auditObjectId!=''">
             `audit_object_id`=#{plan.auditObjectId},
         </if>
+        <if test="plan.auditObjectIdNew!=null and plan.auditObjectIdNew!=''">
+            `audit_object_id_new`=#{plan.auditObjectIdNew},
+        </if>
         <if test="plan.auditNatureId!=null and plan.auditNatureId!=''">
             `audit_nature_id`=#{plan.auditNatureId},
         </if>

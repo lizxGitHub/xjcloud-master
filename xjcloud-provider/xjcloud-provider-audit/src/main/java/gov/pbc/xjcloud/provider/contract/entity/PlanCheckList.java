@@ -60,6 +60,9 @@ public class PlanCheckList implements Serializable,Cloneable{
     /** 审计对象 */
     @Column(name = "audit_object_id")
     private String auditObjectId ;
+    /** 审计对象 */
+    @Column(name = "audit_object_id_new")
+    private String auditObjectIdNew ;
     /** 审计性质 */
     @Column(name = "audit_nature_id")
     private String auditNatureId ;

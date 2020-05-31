@@ -39,6 +39,8 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     private String implementingAgencyId ;
     /** 审计对象 */
     private String auditObjectId ;
+    /** 审计对象 */
+    private String auditObjectIdNew ;
     /** 审计性质 */
     private String auditNatureId ;
     /** 审计年度 */
