@@ -200,7 +200,7 @@ public class AuditPlanInfoController {
     public JSONObject getAuditObjectByIAId (@RequestParam(name = "IAId", required = true) int IAId ) {
         JSONObject jsonObject = new JSONObject();
         //按dept查询问题数 key
-        List deptChild = deptUtil.findChildBank(IAId, "支行");
+        List deptChild = deptUtil.findChildBank(IAId, "");
         jsonObject.put("AuditObject", deptChild);
         return jsonObject;
     }
@@ -220,7 +220,7 @@ public class AuditPlanInfoController {
             String key = entry.getKey();
             String value = entry.getValue();
             //按dept查询问题数 key
-            List deptChild = deptUtil.findChildBank(Integer.parseInt(key), "支行");
+            List deptChild = deptUtil.findChildBank(Integer.parseInt(key), "");
             List<Map<String, Object>> shortPlans = planManagementService.getShortPlans(deptChild, "", auditYear);
             //返回的结果是所有问题的list 根据code来判断是未完成
 

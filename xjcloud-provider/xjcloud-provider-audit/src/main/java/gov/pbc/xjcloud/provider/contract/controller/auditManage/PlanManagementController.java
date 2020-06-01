@@ -118,7 +118,16 @@ public class PlanManagementController {
                 query.put("deptId", deptIdArray);
                 List deptChild = new ArrayList();
                 for (String deptId : deptIdArray) {
-                    deptChild.addAll(deptUtil.findChildBank(Integer.parseInt(deptId), "支行"));
+                    if ("10000".equals(deptId)) {
+                        R<List<DeptVO>> r_list = this.getAuditAndImpObject(10000, "");
+                        List<DeptVO> list = r_list.getData();
+                        for (int i = 0; i < list.size(); i++) {
+                            DeptVO d = list.get(i);
+                            deptChild.addAll(deptUtil.findChildBank(d.getDeptId(), ""));
+                        }
+                    } else {
+                        deptChild.addAll(deptUtil.findChildBank(Integer.parseInt(deptId), ""));
+                    }
                 }
                 query.put("auditObj", deptChild);
             }
@@ -341,7 +350,7 @@ public class PlanManagementController {
     @GetMapping("/getAuditObject")
     public R<List<DeptVO>> getAuditObject(@RequestParam(name = "deptId", required = true) Integer deptId, String lastFilter) {
         if (StringUtils.isBlank(lastFilter)) {
-            lastFilter = "支行";
+            lastFilter = "";
         }
         List<DeptVO> deptList = deptUtil.findChildBank(deptId, lastFilter);
         return R.ok(deptList);

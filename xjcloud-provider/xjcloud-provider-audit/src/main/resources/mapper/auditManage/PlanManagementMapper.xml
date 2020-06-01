@@ -9,6 +9,7 @@
         <result column="project_type" property="projectType"/>
         <result column="implementing_agency_id" property="implementingAgencyId"/>
         <result column="audit_object_id" property="auditObjectId"/>
+        <result column="audit_object_id_new" property="auditObjectIdNew"/>
         <result column="audit_nature_id" property="auditNatureId"/>
         <result column="audit_year" property="auditYear"/>
         <result column="status" property="status"/>
@@ -77,6 +78,7 @@
         a.project_type,
         a.implementing_agency_id,
         a.audit_object_id,
+        a.audit_object_id_new,
         en3.`name` audit_nature_id,
         a.audit_year,
         a.status,

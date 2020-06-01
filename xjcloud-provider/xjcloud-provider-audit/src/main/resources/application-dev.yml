@@ -30,7 +30,7 @@ spring:
 #    password: lrst7089
     url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     username: root
-    password: password
+    password: Lrst123456
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver  #mysql-connector 6  需要指定时区
     filters: stat
@@ -87,7 +87,7 @@ audit:
   custom-header-prefix: auditHeader
   gate-way:
     service-id: xjcloud-gateway
-    url: http://xjcloud.wlq.pbc.gov:9999
+    url: http://localhost:9999
   auth-url: ${audit.gate-way.url}/auth/oauth/token
   user-url: ${audit.gate-way.url}/admin/users/info
   users-url: ${audit.gate-way.url}/admin/users

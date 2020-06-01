@@ -467,7 +467,7 @@ public class PlanCheckListController {
             return R.failed("上传文件不能为空");
         }
         boolean result = false;
-        List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(implementingAgencyId),"支行");
+        List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(implementingAgencyId),"");
         Map<String, Integer> tempMap = deptList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
         deptNameValue.clear();
         deptNameValue.putAll(tempMap);
