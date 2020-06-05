@@ -3,11 +3,12 @@ package gov.pbc.xjcloud.provider.contract.utils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.*;
 @Log4j2
 public class HttpRequestUtil {
@@ -38,11 +39,11 @@ public class HttpRequestUtil {
             connection.setRequestProperty("connection", "Keep-Alive");
             connection.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            Optional.of(headers).ifPresent(e -> {
-                e.entrySet().stream().filter(Objects::nonNull).forEach(x -> {
+            if(null!=headers&&!headers.isEmpty()){
+                headers.entrySet().stream().filter(Objects::nonNull).forEach(x -> {
                     connection.setRequestProperty(x.getKey(), x.getValue());
                 });
-            });
+            }
             // 建立实际的连接
             connection.connect();
             // 获取所有响应头字段
