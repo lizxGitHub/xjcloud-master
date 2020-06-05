@@ -41,7 +41,7 @@ public class HttpRequestUtil {
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             if(null!=headers&&!headers.isEmpty()){
                 headers.entrySet().stream().filter(Objects::nonNull).forEach(x -> {
-                    connection.setRequestProperty(x.getKey(), x.getValue());
+                    connection.setRequestProperty(x.getKey(), x.getValue().trim());
                 });
             }
             // 建立实际的连接
