@@ -461,13 +461,15 @@ public class PlanCheckListController {
     private ConcurrentHashMap<String, Integer> deptNameValue = new ConcurrentHashMap<>();
 
     @PostMapping("import")
-    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file,  @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId) {
+    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file,  @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId, @RequestParam("implementingAgencyNewId") String implementingAgencyNewId) {
         Sheet planSheet;
         if (null == file) {
             return R.failed("上传文件不能为空");
         }
         boolean result = false;
         List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(implementingAgencyId),"");
+        List<DeptVO> deptList1 = deptUtil.findChildBank(Integer.valueOf(implementingAgencyNewId),"");
+        deptList.addAll(deptList1);
         Map<String, Integer> tempMap = deptList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
         deptNameValue.clear();
         deptNameValue.putAll(tempMap);
