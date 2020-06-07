@@ -45,7 +45,9 @@ public class CasLoginController {
                 }
             }
         }
-        response.addCookie(tokenCookie);
+        if(StrUtil.isNotBlank(tokenCookie.getValue())){
+            response.addCookie(tokenCookie);
+        }
         if (StrUtil.isBlank(tokenCookie.getValue())) {
             response.addCookie(errorCookie);
         }
