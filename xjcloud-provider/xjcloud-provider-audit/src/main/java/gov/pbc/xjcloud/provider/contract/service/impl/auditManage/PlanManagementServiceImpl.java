@@ -195,6 +195,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
+    public List<Map<String, Object>> getShortPlansNew(int implementingAgencyId, String status, String auditYear) {
+        return planManagementMapper.getShortPlansNew(implementingAgencyId, status, auditYear);
+    }
+
+    @Override
     public int saveReturnPK(PlanCheckList planCheckList) {
         return planManagementMapper.saveReturnPK(planCheckList);
     }

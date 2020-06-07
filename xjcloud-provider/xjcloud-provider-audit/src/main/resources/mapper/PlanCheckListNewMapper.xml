@@ -9,6 +9,7 @@
         <result column="project_type" property="projectType"/>
         <result column="created_by" property="createdBy"/>
         <result column="implementing_agency_id" property="implementingAgencyId"/>
+        <result column="implementing_agency_new_id" property="implementingAgencyNewId"/>
         <result column="audit_object_id" property="auditObjectId"/>
         <result column="audit_nature_id" property="auditNatureId"/>
         <result column="audit_year" property="auditYear"/>
@@ -105,6 +106,9 @@
         </if>
         <if test="plan.implementingAgencyId!=null and plan.implementingAgencyId!=''">
             `implementing_agency_id`=#{plan.implementingAgencyId},
+        </if>
+        <if test="plan.implementingAgencyNewId!=null and plan.implementingAgencyNewId!=''">
+            `implementing_agency_new_id`=#{plan.implementingAgencyNewId},
         </if>
         <if test="plan.auditObjectId!=null and plan.auditObjectId!=''">
             `audit_object_id`=#{plan.auditObjectId},
@@ -259,6 +263,7 @@
             `project_name`,
             `project_type`,
             `implementing_agency_id`,
+            `implementing_agency_new_id`,
             `audit_object_id`,
             `audit_nature_id`,
             `audit_year`,
@@ -314,6 +319,9 @@
             </if>
             <if test="planCheckList.implementingAgencyId != null and planCheckList.implementingAgencyId !=''">
                 #{planCheckList.implementingAgencyId},
+            </if>
+            <if test="planCheckList.implementingAgencyNewId != null and planCheckList.implementingAgencyNewId !=''">
+                #{planCheckList.implementingAgencyNewId},
             </if>
             <if test="planCheckList.auditObjectId != null and planCheckList.auditObjectId !=''">
                 #{planCheckList.auditObjectId},
@@ -381,6 +389,7 @@
         a.project_code,
         a.project_name,
         a.project_type,
+        a.implementing_agency_new_id,
         a.implementing_agency_id,
         a.audit_object_id,
         a.audit_nature_id,
@@ -421,6 +430,7 @@
         a.project_code,
         a.project_name,
         a.project_type,
+        a.implementing_agency_new_id,
         a.implementing_agency_id,
         a.audit_object_id,
         a.audit_nature_id,

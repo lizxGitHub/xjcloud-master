@@ -55,6 +55,9 @@ public class PlanCheckListVO  {
     /** 实施机构 */
     @Column(name = "implementing_agency_id")
     private String implementingAgencyId ;
+    /** 实施机构 */
+    @Column(name = "implementing_agency_new_id")
+    private String implementingAgencyNewId ;
     /** 审计对象 */
     @Column(name = "audit_object_id")
     private String auditObjectId ;

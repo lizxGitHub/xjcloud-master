@@ -216,6 +216,8 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
     List<Map<String, Object>> getShortPlans(@Param("deptChild") List deptChild, @Param("status") String status, @Param("auditYear") String auditYear);
 
+    List<Map<String, Object>> getShortPlansNew(@Param("implementingAgencyId") int implementingAgencyId, @Param("status") String status, @Param("auditYear") String auditYear);
+
     int saveReturnPK(@Param("planCheckList") PlanCheckList planCheckList);
 
     /**

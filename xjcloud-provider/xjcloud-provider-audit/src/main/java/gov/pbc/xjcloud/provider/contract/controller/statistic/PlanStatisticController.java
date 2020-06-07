@@ -245,7 +245,7 @@ public class PlanStatisticController {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         Long resultCount = 0L;
         try {
-            if (deptId != 0 && deptId != 10100) {
+            if (deptId != 0 && deptId != 10000) {
                 resultList =  planManagementService.statisticPlanReportByDeptId(page.getCurrent()-1, page.getSize(), auditYear, deptId);
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
             } else {

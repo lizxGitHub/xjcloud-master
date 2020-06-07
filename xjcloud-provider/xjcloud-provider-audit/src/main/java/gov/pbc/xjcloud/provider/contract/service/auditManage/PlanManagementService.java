@@ -40,5 +40,8 @@ public interface PlanManagementService extends IService<PlanCheckList> {
 
     List<Map<String, Object>> getShortPlans(List deptChild, String status, String auditYear);
 
+
+    List<Map<String, Object>> getShortPlansNew(int implementingAgencyId, String status, String auditYear);
+
     int saveReturnPK(PlanCheckList planCheckList);
 }

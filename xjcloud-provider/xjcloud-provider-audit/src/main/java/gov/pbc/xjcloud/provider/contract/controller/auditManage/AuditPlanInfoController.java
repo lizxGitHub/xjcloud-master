@@ -221,7 +221,9 @@ public class AuditPlanInfoController {
             String value = entry.getValue();
             //按dept查询问题数 key
             List deptChild = deptUtil.findChildBank(Integer.parseInt(key), "");
-            List<Map<String, Object>> shortPlans = planManagementService.getShortPlans(deptChild, "", auditYear);
+//            List<Map<String, Object>> shortPlans = planManagementService.getShortPlans(deptChild, "", auditYear);
+            List<Map<String, Object>> shortPlans = planManagementService.getShortPlansNew(Integer.parseInt(key), "", auditYear);
+
             //返回的结果是所有问题的list 根据code来判断是未完成
 
             int total = 0;

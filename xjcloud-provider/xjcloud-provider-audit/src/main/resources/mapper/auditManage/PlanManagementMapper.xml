@@ -7,6 +7,7 @@
         <result column="project_code" property="projectCode"/>
         <result column="project_name" property="projectName"/>
         <result column="project_type" property="projectType"/>
+        <result column="implementing_agency_new_id" property="implementingAgencyNewId"/>
         <result column="implementing_agency_id" property="implementingAgencyId"/>
         <result column="audit_object_id" property="auditObjectId"/>
         <result column="audit_object_id_new" property="auditObjectIdNew"/>
@@ -147,6 +148,9 @@
         <if test="query.implementingAgencyId!=null and query.implementingAgencyId!=''">
             and a.implementing_agency_id like concat('%',concat(#{query.implementingAgencyId},'%'))
         </if>
+        <if test="query.implementingAgencyNewId!=null and query.implementingAgencyNewId!=''">
+            and a.implementing_agency_new_id like concat('%',concat(#{query.implementingAgencyNewId},'%'))
+        </if>
         <if test="query.auditYear!=null and query.auditYear!=''">
             and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
         </if>
@@ -199,6 +203,20 @@
                 and a.audit_object_id = 0
             </otherwise>
         </choose>
+    </select>
+    <select id="getShortPlansNew" resultType="java.util.HashMap">
+        SELECT a.id, a.status,b.`name` rsName FROM `plan_check_list` a
+        LEFT JOIN entry_info b on a.rectify_situation_id = b.id
+         where a.del_flag='0'
+        <if test="status!=null and status!=''">
+            and a.status =#{status}
+        </if>
+        <if test="auditYear!=null and auditYear!=''">
+            and a.audit_year like concat('%',concat(#{auditYear},'%'))
+        </if>
+        <if test="implementingAgencyId!=null and implementingAgencyId!=''">
+            and implementing_agency_id='${implementingAgencyId}'
+        </if>
     </select>
     <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
@@ -383,8 +401,8 @@
         <if test="params.auditNatureId!=null and params.auditNatureId=='all'">
             ,a.audit_nature_id `name`
         </if>
-        <if test="params.implementingAgencyId!=null and params.implementingAgencyId=='all'">
-            ,a.implementing_agency_id `name`
+        <if test="params.implementingAgencyNewId!=null and params.implementingAgencyNewId=='all'">
+            ,a.implementing_agency_new_id `name`
         </if>
         <if test="params.projectType!=null and params.projectType=='all'">
             ,a.project_type `name`
@@ -416,8 +434,8 @@
         <if test="params.rectifySituationId!=null  and params.rectifySituationId!=''and params.rectifySituationId!='all'">
             and a.rectify_Situation_Id = #{params.rectifySituationId}
         </if>
-        <if test="params.implementingAgencyId!=null  and params.implementingAgencyId!=''and params.implementingAgencyId!='all'">
-            and a.implementing_Agency_Id = #{params.implementingAgencyId}
+        <if test="params.implementingAgencyNewId!=null  and params.implementingAgencyNewId!=''and params.implementingAgencyId!='all'">
+            and a.implementing_Agency_new_Id = #{params.implementingAgencyNewId}
         </if>
         <if test="params.problemDescription!=null and params.problemDescription!='' and params.problemDescription!='all'">
             and a.problem_description like concat('%',#{params.problemDescription},'%')
@@ -476,6 +494,8 @@
         select pcl.audit_year,
         pcl.implementing_agency_id implementingAgencyId,
         pcl.implementing_agency_id,
+        pcl.implementing_agency_new_id implementingAgencyNewId,
+        pcl.implementing_agency_new_id,
         pcl.audit_object_id  auditObjectId,
         pcl.audit_object_id ,
         pcl.audit_nature_id ,
@@ -562,6 +582,9 @@
         <if test='query.implementingAgencyId!=null and query.implementingAgencyId!=""'>
             and (pcl.implementing_agency_id in ('${query.implementingAgencyId}'))
         </if>
+        <if test='query.implementingAgencyNewId!=null and query.implementingAgencyNewId!=""'>
+            and (pcl.implementing_agency_new_id in ('${query.implementingAgencyNewId}'))
+        </if>
         <if test='query.auditNatureId!=null and query.auditNatureId!=""'>
             and (pcl.audit_nature_id =#{query.auditNatureId})
         </if>
@@ -635,6 +658,7 @@
             `project_name`,
             `project_type`,
             `implementing_agency_id`,
+            `implementing_agency_new_id`,
             `audit_object_id`,
             `audit_nature_id`,
             `audit_year`,
@@ -671,6 +695,9 @@
             </if>
             <if test="planCheckList.implementingAgencyId != null">
                 #{planCheckList.implementingAgencyId},
+            </if>
+            <if test="planCheckList.implementingAgencyNewId != null">
+                #{planCheckList.implementingAgencyNewId},
             </if>
             <if test="planCheckList.auditObjectId != null">
                 #{planCheckList.auditObjectId},

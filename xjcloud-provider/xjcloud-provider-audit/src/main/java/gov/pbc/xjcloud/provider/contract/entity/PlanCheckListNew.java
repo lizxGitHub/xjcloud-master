@@ -35,8 +35,10 @@ public class PlanCheckListNew implements Serializable,Cloneable{
     private String projectName ;
     /** 项目类型 */
     private String projectType ;
-    /** 实施机构 */
+    /** 实施机构父 */
     private String implementingAgencyId ;
+    /** 实施机构 */
+    private String implementingAgencyNewId ;
     /** 审计对象 */
     private String auditObjectId ;
     /** 审计对象 */
