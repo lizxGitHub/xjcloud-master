@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -512,6 +513,10 @@ public class PlanCheckListController {
                 plan.setConcatQuestionEntry();
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
                 plan.setImplementingAgencyId(implementingAgencyId);
+                if(StrUtil.isNotBlank(implementingAgencyNewId)&&implementingAgencyNewId.equals("10000")){
+                    plan.setImplementingAgencyNewId(implementingAgencyNewId);
+                    plan.setImplementingAgencyName("乌鲁木齐中支");
+                }
                 plan.setImpUserId(createdBy);
                 plan.setCreatedBy(createdBy);
                 plan.setStatus("0");
