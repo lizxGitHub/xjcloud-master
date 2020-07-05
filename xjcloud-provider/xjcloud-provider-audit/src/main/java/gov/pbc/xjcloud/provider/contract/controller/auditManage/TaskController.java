@@ -230,6 +230,10 @@ public class TaskController {
             if (params.get("delayDate") != null) {
                 delayDate = (String) params.get("delayDate");
             }
+            int userId = 0;
+            if (params.get("userId") != null) {
+                userId = (int) params.get("userId");
+            }
             int status = (int) params.get("auditStatus");
             String statusStr = params.get("auditStatus").toString();
             String mark = "";
@@ -245,8 +249,10 @@ public class TaskController {
                 if (plan.getAuditUserId() == 0) {
                     return complete.setData(false);
                 }
+                plan.setAuditAdminId(userId);
                 //流程添加审计对象员工
                 params.put("auditUserAssignee", plan.getAuditUserId());
+                params.put("auditLeaderAssignee", userId);
 //                //审计对象管理员
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
                 //审计对象一般员工
@@ -257,7 +263,7 @@ public class TaskController {
                 planInfo1.setType(1);
                 planInfoService.save(planInfo1);
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
+                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(userId), "1006");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (StringUtils.isBlank(plan.getRectifyWay())) {
                     return complete.setData(false);
@@ -451,6 +457,7 @@ public class TaskController {
 
             params.remove("bizKey");
             params.remove("opinion");
+            params.remove("userId");
             complete = activitiService.complete(taskId, params);
         } catch (Exception e) {
             e.printStackTrace();

@@ -19,6 +19,7 @@ import gov.pbc.xjcloud.provider.contract.enumutils.ExportPlanHeaderEnum;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.exceptions.AppException;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
+import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
@@ -73,11 +74,17 @@ public class PlanCheckListController {
     @Autowired
     private AuditActivitiService auditActivitiService;
 
+    @Autowired
+    private UserCenterService userCenterService;
+
     @Resource
     private PlanTimeTempServiceImpl planTimeTempService;
 
     @Autowired
     private PlanManagementServiceImpl planManagementService;
+
+    @Autowired
+    AuditActivitiService activitiService;
 
 //    final String[] planExcelHeader = new String[]
 //            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
@@ -268,7 +275,8 @@ public class PlanCheckListController {
                 }
                 if (userId == plan.getImpAdminId()) {
                     if (statusUser.equals("1002")) { //确认
-                        if (plan.getAuditAdminId() == 0) {
+                        List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象管理员").getData();
+                        if (list.size() < 1) {
                             return r.setData(false);
                         }
                         planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1003");
@@ -288,12 +296,15 @@ public class PlanCheckListController {
                         planInfo2.setType(1);
                         planInfoService.save(planInfo2);
                         //审计对象管理员
-                        PlanInfo planInfo3 = new PlanInfo();
-                        planInfo3.setUserId(plan.getAuditAdminId());
-                        planInfo3.setStatusUser("1004"); //待完善
-                        planInfo3.setPlanId(plan.getId());
-                        planInfo3.setType(1);
-                        planInfoService.save(planInfo3);
+                        for (int i = 0; i < list.size(); i++) {
+                            Map m = (Map) list.get(i);
+                            PlanInfo planInfo3 = new PlanInfo();
+                            planInfo3.setUserId(Integer.valueOf(String.valueOf(m.get("userId"))));
+                            planInfo3.setStatusUser("1004"); //待完善
+                            planInfo3.setPlanId(plan.getId());
+                            planInfo3.setType(1);
+                            planInfoService.save(planInfo3);
+                        }
 
                         //项目启动时间
                         plan.setStartTime(new Date());
@@ -336,18 +347,27 @@ public class PlanCheckListController {
                 }
 
                 //启动流程
-                if (userId == plan.getImpAdminId() && statusUser.equals("1002") && plan.getAuditAdminId() != 0) {
+                if (userId == plan.getImpAdminId() && statusUser.equals("1002")) {
                     int createdBy = plan.getCreatedBy(); //创建人
                     int impUserAssignee = plan.getImpUserId(); //
                     int implLeaderAssignee = plan.getImpAdminId(); //
                     int auditUserAssignee = plan.getAuditUserId(); //
                     int auditLeaderAssignee = plan.getAuditAdminId(); //
 
+                    List<String> auditLeaderAssigneeList = new ArrayList<>();
+                    List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象管理员").getData();
+                    for (int i = 0; i < list.size(); i++) {
+                        Map m = (Map)list.get(i);
+                        auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
+                    }
+
                     JSONObject varsJSONObject = new JSONObject();
                     varsJSONObject.put("impUserAssignee", impUserAssignee);
                     varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
                     varsJSONObject.put("auditUserAssignee", auditUserAssignee);
-                    varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
+//                    varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
+                    varsJSONObject.put("auditLeaderAssigneeList", auditLeaderAssigneeList);
+                    varsJSONObject.put("passAB", true);
                     varsJSONObject.put("createdBy", createdBy);
                     varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_IMP_REJECT.getCode());
                     varsJSONObject.put("delayDate", null);
