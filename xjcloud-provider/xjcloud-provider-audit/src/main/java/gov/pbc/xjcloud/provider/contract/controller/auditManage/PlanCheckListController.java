@@ -353,6 +353,7 @@ public class PlanCheckListController {
                 //启动流程
                 if (userId == plan.getImpAdminId() && statusUser.equals("1002")) {
 
+                    String auditFlowDefKeyStr = auditFlowDefKey;
                     int createdBy = plan.getCreatedBy(); //创建人
                     int impUserAssignee = plan.getImpUserId(); //
                     int implLeaderAssignee = plan.getImpAdminId(); //
@@ -389,7 +390,7 @@ public class PlanCheckListController {
                             planInfo1.setType(1);
                             planInfoService.save(planInfo1);
                         }
-                        auditFlowDefKey = auditFlowDefKey + "_1";
+                        auditFlowDefKeyStr = auditFlowDefKeyStr + "_1";
                     }
                     varsJSONObject.put("impUserAssignee", impUserAssignee);
                     varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
@@ -411,7 +412,7 @@ public class PlanCheckListController {
 
                     String vars = varsJSONObject.toJSONString();
                     //启动流程
-                    R2<Boolean> auditApply = auditActivitiService.start(auditFlowDefKey, Integer.valueOf(id), vars);
+                    R2<Boolean> auditApply = auditActivitiService.start(auditFlowDefKeyStr, Integer.valueOf(id), vars);
                     if (!auditApply.getData()) {
                         return r.setMsg("流程启动失败:" + auditApply.getMsg());
                     }

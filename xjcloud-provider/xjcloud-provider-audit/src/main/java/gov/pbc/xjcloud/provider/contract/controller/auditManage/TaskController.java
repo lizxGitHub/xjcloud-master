@@ -77,8 +77,9 @@ public class TaskController {
             Map<String, Object> params = new HashMap<>();
             params.put("size", 1000);
             params.put("current", 1);
-            R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
-            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKey + "_1", params);
+            String auditFlowDefKeyStr = auditFlowDefKey;
+            R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKeyStr, params);
+            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKeyStr + "_1", params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
             LinkedHashMap<String, Object> actTaskMapData1 = actTaskMap1.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
@@ -130,8 +131,9 @@ public class TaskController {
                 userId = Integer.parseInt(request.getParameter("userId"));
             }
             String status = request.getParameter("status");
-            R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
-            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKey + "_1", params);
+            String auditFlowDefKeyStr = auditFlowDefKey;
+            R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKeyStr, params);
+            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKeyStr + "_1", params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
             LinkedHashMap<String, Object> actTaskMapData1 = actTaskMap1.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
@@ -175,8 +177,9 @@ public class TaskController {
             if (!params.containsKey("current")) {
                 params.put("current", 1);
             }
-            R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
-            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKey + "_1", params);
+            String auditFlowDefKeyStr = auditFlowDefKey;
+            R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKeyStr, params);
+            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKeyStr + "_1", params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
             LinkedHashMap<String, Object> actTaskMapData1 = actTaskMap1.getData();
             List<Map<String, String>> resultList0 = (List<Map<String, String>>) actTaskMapData.get("records");
@@ -278,20 +281,23 @@ public class TaskController {
                 //审计对象管理员
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(userId), "1006");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
-                if (StringUtils.isBlank(plan.getRectifyWay())) {
-                    return complete.setData(false);
-                }
-                startTimePartOne = new Date();
-                planTimeTemp.setStartTimePartOne(startTimePartOne);
+                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+                    params.put("auditStatus", 1019);
+                } else {
+                    if (StringUtils.isBlank(plan.getRectifyWay())) {
+                        return complete.setData(false);
+                    }
+                    startTimePartOne = new Date();
+                    planTimeTemp.setStartTimePartOne(startTimePartOne);
 //                //实施部门管理员
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
 //                //审计对象管理员
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
-                //审计对象员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
-                //实施部门员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
-
+                    //审计对象员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
+                    //实施部门员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                }
             } else if (PlanStatusEnum.RECTIFY_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
                 endTimePartOne = new Date();
@@ -376,14 +382,18 @@ public class TaskController {
 //                if (StringUtils.isBlank(plan.getRectifyResult())) {
 //                    return complete.setData(false);
 //                }
-                startTimePartTwo = new Date();
-                planTimeTemp.setStartTimePartTwo(startTimePartTwo);
-                //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
-                //审计对象一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
-                //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
+                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+                    params.put("auditStatus", 1020);
+                } else {
+                    startTimePartTwo = new Date();
+                    planTimeTemp.setStartTimePartTwo(startTimePartTwo);
+                    //实施部门一般员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                    //审计对象一般员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
+                    //审计对象管理员
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
+                }
             } else if (PlanStatusEnum.IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
@@ -426,12 +436,16 @@ public class TaskController {
                 //审计对象领导
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
             } else if (PlanStatusEnum.DELAY_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
-                //实施部门一般员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
-                //审计对象员工
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
-                //审计对象领导
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+                    params.put("auditStatus", 1021);
+                } else {
+                    //实施部门一般员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
+                    //审计对象员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
+                    //审计对象领导
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+                }
             } else if (PlanStatusEnum.DELAY_IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
