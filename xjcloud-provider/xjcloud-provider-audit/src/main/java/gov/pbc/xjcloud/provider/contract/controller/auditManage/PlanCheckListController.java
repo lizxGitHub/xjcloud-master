@@ -35,6 +35,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.NestedServletException;
@@ -85,6 +86,9 @@ public class PlanCheckListController {
 
     @Autowired
     AuditActivitiService activitiService;
+
+    @Value("${audit.flow-key:auditApply}")
+    private String auditFlowDefKey;
 
 //    final String[] planExcelHeader = new String[]
 //            {"计划名称","项目类型","审计性质","问题词条","问题严重程度","整改情况","问题定性","问题描述","可能影响","整改建议","审计分类","风险评估","审计依据","审计经验"};
@@ -348,6 +352,7 @@ public class PlanCheckListController {
 
                 //启动流程
                 if (userId == plan.getImpAdminId() && statusUser.equals("1002")) {
+
                     int createdBy = plan.getCreatedBy(); //创建人
                     int impUserAssignee = plan.getImpUserId(); //
                     int implLeaderAssignee = plan.getImpAdminId(); //
@@ -355,21 +360,46 @@ public class PlanCheckListController {
                     int auditLeaderAssignee = plan.getAuditAdminId(); //
 
                     List<String> auditLeaderAssigneeList = new ArrayList<>();
+                    List<String> auditUserInnerList = new ArrayList<>();
                     List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象管理员").getData();
                     for (int i = 0; i < list.size(); i++) {
                         Map m = (Map)list.get(i);
                         auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
                     }
-
                     JSONObject varsJSONObject = new JSONObject();
+                    int auditStatus = 1004;
+                    if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+                        auditStatus = 1018;
+                        int nsDeptId = 0;
+                        List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(plan.getAuditObjectIdNew()), "内审科");
+                        for (int i = 0; i < deptList.size(); i++) {
+                            DeptVO deptVO = deptList.get(i);
+                            nsDeptId = deptVO.getDeptId();
+                            break;
+                        }
+                        List listns = (List)userCenterService.getUsersByRoleNameAndDept(nsDeptId, "内审管理员").getData();
+                        for (int i = 0; i < listns.size(); i++) {
+                            Map m = (Map)listns.get(i);
+                            auditUserInnerList.add(String.valueOf(m.get("userId")));
+                            //内审人员
+                            PlanInfo planInfo1 = new PlanInfo();
+                            planInfo1.setUserId(Integer.valueOf(String.valueOf(m.get("userId"))));
+                            planInfo1.setStatusUser("1006"); //下发
+                            planInfo1.setPlanId(plan.getId());
+                            planInfo1.setType(1);
+                            planInfoService.save(planInfo1);
+                        }
+                        auditFlowDefKey = auditFlowDefKey + "_1";
+                    }
                     varsJSONObject.put("impUserAssignee", impUserAssignee);
                     varsJSONObject.put("impLeaderAssignee", implLeaderAssignee);
                     varsJSONObject.put("auditUserAssignee", auditUserAssignee);
 //                    varsJSONObject.put("auditLeaderAssignee", auditLeaderAssignee);
                     varsJSONObject.put("auditLeaderAssigneeList", auditLeaderAssigneeList);
+                    varsJSONObject.put("auditUserInnerList", auditUserInnerList);
                     varsJSONObject.put("passAB", true);
                     varsJSONObject.put("createdBy", createdBy);
-                    varsJSONObject.put("auditStatus", PlanStatusEnum.PLAN_IMP_REJECT.getCode());
+                    varsJSONObject.put("auditStatus", auditStatus);
                     varsJSONObject.put("delayDate", null);
                     varsJSONObject.put("projectName", plan.getProjectName());
                     varsJSONObject.put("projectCode", plan.getProjectCode());
@@ -381,7 +411,7 @@ public class PlanCheckListController {
 
                     String vars = varsJSONObject.toJSONString();
                     //启动流程
-                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                    R2<Boolean> auditApply = auditActivitiService.start(auditFlowDefKey, Integer.valueOf(id), vars);
                     if (!auditApply.getData()) {
                         return r.setMsg("流程启动失败:" + auditApply.getMsg());
                     }

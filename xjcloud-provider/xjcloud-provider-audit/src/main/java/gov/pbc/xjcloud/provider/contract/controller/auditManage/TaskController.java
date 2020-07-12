@@ -78,8 +78,12 @@ public class TaskController {
             params.put("size", 1000);
             params.put("current", 1);
             R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
+            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKey + "_1", params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
+            LinkedHashMap<String, Object> actTaskMapData1 = actTaskMap1.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
+            List<Map<String, String>> resultList1 = (List<Map<String, String>>) actTaskMapData1.get("records");
+            resultList.addAll(resultList1);
             Map<Integer, Map<String, String>> collect = resultList.stream().filter(e -> StringUtils.isNotBlank(e.get("bizKey"))).collect(Collectors.toMap(e -> Integer.parseInt(e.get("bizKey")), e -> e));
             page = planCheckListService.selectByStatuses(page, query, array);
             page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
@@ -127,8 +131,12 @@ public class TaskController {
             }
             String status = request.getParameter("status");
             R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
+            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKey + "_1", params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
+            LinkedHashMap<String, Object> actTaskMapData1 = actTaskMap1.getData();
             List<Map<String, String>> resultList = (List<Map<String, String>>) actTaskMapData.get("records");
+            List<Map<String, String>> resultList1 = (List<Map<String, String>>) actTaskMapData1.get("records");
+            resultList.addAll(resultList1);
             // 当前登录用户的流程数据
             Map<Integer, Map<String, String>> collect = resultList.stream().filter(e -> StringUtils.isNotBlank(e.get("bizKey"))).collect(Collectors.toMap(e -> Integer.parseInt(e.get("bizKey")), e -> e,(e1,e2)->e1));
             page = planCheckListService.selectAll(page, query, type, userId, status);
@@ -168,7 +176,12 @@ public class TaskController {
                 params.put("current", 1);
             }
             R<LinkedHashMap<String, Object>> actTaskMap = activitiService.todo(auditFlowDefKey, params);
+            R<LinkedHashMap<String, Object>> actTaskMap1 = activitiService.todo(auditFlowDefKey + "_1", params);
             LinkedHashMap<String, Object> actTaskMapData = actTaskMap.getData();
+            LinkedHashMap<String, Object> actTaskMapData1 = actTaskMap1.getData();
+            List<Map<String, String>> resultList0 = (List<Map<String, String>>) actTaskMapData.get("records");
+            List<Map<String, String>> resultList1 = (List<Map<String, String>>) actTaskMapData1.get("records");
+            resultList0.addAll(resultList1);
             List<ActAuditVO> resultList = ((List<Map>) actTaskMapData.get("records")).stream().filter(Objects::nonNull).map(actVO -> {
                 String actJsonStr = JSONObject.toJSONString(actVO);
                 ActAuditVO actAuditVO = JSONUtil.toBean(actJsonStr, ActAuditVO.class);
@@ -475,6 +488,11 @@ public class TaskController {
      */
     @GetMapping("getTaskView")
     public ResponseEntity taskView(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
+        processDefKey = auditFlowDefKey;
+        PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(businessId));
+        if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+            processDefKey = auditFlowDefKey + "_1";
+        }
         return activitiService.getTaskView(processDefKey, businessId);
     }
 
@@ -518,6 +536,11 @@ public class TaskController {
     @GetMapping("taskHistory")
     public R taskHistory(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
         try {
+            processDefKey = auditFlowDefKey;
+            PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(businessId));
+            if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+                processDefKey = auditFlowDefKey + "_1";
+            }
             R<List<Map<String,Object>>> history = activitiService.history(processDefKey, businessId);
             List<Map<String, Object>> data = history.getData();
             Map<String,Object> start = new HashMap<>();

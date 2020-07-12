@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -58,6 +59,9 @@ public class AuditPlanInfoController {
 
     @Autowired
     private DeptUtil deptUtil;
+
+    @Value("${audit.flow-key:auditApply}")
+    private String auditFlowDefKey;
 
     @ApiOperation("审计页面信息")
     @GetMapping(value = {"page", ""})
@@ -167,7 +171,7 @@ public class AuditPlanInfoController {
 
                     String vars = varsJSONObject.toJSONString();
                     //启动流程
-                    R2<Boolean> auditApply = auditActivitiService.start("auditApply", Integer.valueOf(id), vars);
+                    R2<Boolean> auditApply = auditActivitiService.start(auditFlowDefKey, Integer.valueOf(id), vars);
                     if(!auditApply.getData()){
                         return r.setMsg("流程启动失败:"+auditApply.getMsg());
                     }
