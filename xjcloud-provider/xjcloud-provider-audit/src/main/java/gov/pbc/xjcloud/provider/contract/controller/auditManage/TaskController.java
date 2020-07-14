@@ -258,9 +258,14 @@ public class TaskController {
             }
             PlanCheckListNew plan = planCheckListService.getById(planId);
             PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(plan.getId());
+            R<List> auditLeaderAssigneeListR = activitiService.getTaskVariable(taskId, "auditLeaderAssigneeList");
+            List auditLeaderAssigneeList = auditLeaderAssigneeListR.getData();
             if (PlanStatusEnum.PLAN_IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1004");
+                for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1004");
+                }
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1004");
             } else if (PlanStatusEnum.PLAN_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (plan.getAuditUserId() == 0) {
                     return complete.setData(false);
@@ -269,8 +274,6 @@ public class TaskController {
                 //流程添加审计对象员工
                 params.put("auditUserAssignee", plan.getAuditUserId());
                 params.put("auditLeaderAssignee", userId);
-//                //审计对象管理员
-//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
                 //审计对象一般员工
                 PlanInfo planInfo1 = new PlanInfo();
                 planInfo1.setUserId(plan.getAuditUserId());
@@ -279,7 +282,10 @@ public class TaskController {
                 planInfo1.setType(1);
                 planInfoService.save(planInfo1);
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(userId), "1006");
+                for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1006");
+                }
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(userId), "1006");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1019);
@@ -289,10 +295,6 @@ public class TaskController {
                     }
                     startTimePartOne = new Date();
                     planTimeTemp.setStartTimePartOne(startTimePartOne);
-//                //实施部门管理员
-//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1001");
-//                //审计对象管理员
-//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
                     //实施部门员工
@@ -307,10 +309,6 @@ public class TaskController {
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1003");
                 //实施部门员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1005");
-//                //实施部门管理员
-//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
-//                //审计对象管理员
-//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1005");
             } else if (PlanStatusEnum.RECTIFY_COMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if ("1".equals(mark)) { //整改领导
                     planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
@@ -320,16 +318,25 @@ public class TaskController {
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1003");
                     //审计对象管理员
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1002");
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1002");
+                    }
+//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1002");
                 } else if ("2".equals(mark)) { //实施员工
-                    planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), opinion);
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), opinion);
+                    }
+//                    planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), opinion);
                     endTimePartTwo = new Date();
                     daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
                     planTimeTemp.setDays(daysPart);
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                     //审计对象管理员
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1005");
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1005");
+                    }
+//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1005");
                     //实施机构员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1002");
                 } else if ("3".equals(mark)) { //实施领导
@@ -350,15 +357,6 @@ public class TaskController {
 
                     //项目整改结果录入时间
                     plan.setResultEnterTime(new Date());
-
-//                    //实施部门一般员工
-//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
-//                    //实施部门管理员
-//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1003");
-//                    //审计对象管理员
-//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
-//                    //审计对象一般员工
-//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                     //实施机构员工
@@ -392,7 +390,10 @@ public class TaskController {
                     //审计对象一般员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
                     //审计对象管理员
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1001");
+                    }
+//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
                 }
             } else if (PlanStatusEnum.IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
@@ -416,7 +417,10 @@ public class TaskController {
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1004");
                 //审计对象管理员
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
+                for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1006");
+                }
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 plan.setRectifyEvaluation(opinion);
                 days = daysOfTwo(planTimeTemp.getStartTimeAll(), planTimeTemp.getEndTimeAll()) - planTimeTemp.getDays();
@@ -434,7 +438,10 @@ public class TaskController {
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
                 //审计对象领导
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
+                for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1001");
+                }
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
             } else if (PlanStatusEnum.DELAY_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1021);
@@ -444,7 +451,10 @@ public class TaskController {
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1005");
                     //审计对象领导
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1003");
+                    }
+//                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1003");
                 }
             } else if (PlanStatusEnum.DELAY_IMP_AUDIT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
@@ -460,7 +470,10 @@ public class TaskController {
                 //审计对象一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
                 //审计对象领导
-                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
+                for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1001");
+                }
+//                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
             }
 
             //更新时间
