@@ -94,7 +94,9 @@ public class PlanOutTimeSchedule {
         List<PlanCheckListDTO> deadLineList = planManagementService.findDeadlinePlanList();
         deadLineList.stream().filter(Objects::nonNull).forEach(e -> {
             int days = e.getDays();
-            int month = (int) (Math.floor(days / 10.0));
+            // TODO #苗 暂时不计算真实天数
+//            int month = (int) (Math.floor(days / 30.0));
+            int month = Math.round(7);
             //超时两个月
             if (month == 2) {
                 submitTask(e, OverTimeConstants.TYPE_1);
