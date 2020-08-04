@@ -2,6 +2,7 @@ package gov.pbc.xjcloud.provider.contract.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 @Data
 @Table(name="plan_check_list")
-public class PlanCheckList implements Serializable,Cloneable{
+public class PlanCheckList extends Model<PlanCheckList> implements Serializable,Cloneable{
 
     /** 创建人 */
     @Column(name = "created_by")

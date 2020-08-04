@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import io.swagger.models.auth.In;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Data
 @Table(name="plan_check_list")
 @TableName(value = "plan_check_list")
-public class PlanCheckListNew implements Serializable,Cloneable{
+public class PlanCheckListNew extends Model<PlanCheckListNew> implements Serializable,Cloneable{
 
     /** 主键 */
     @TableId(type = IdType.AUTO)

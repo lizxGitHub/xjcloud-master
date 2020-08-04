@@ -2,7 +2,9 @@ package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.contract.dto.PlanCheckListDTO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
@@ -202,6 +204,21 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     @Override
     public int saveReturnPK(PlanCheckList planCheckList) {
         return planManagementMapper.saveReturnPK(planCheckList);
+    }
+
+    @Override
+    public List<PlanCheckListDTO> findDeadlinePlanList() {
+        return this.planManagementMapper.findDeadlinePlanList();
+    }
+
+    @Override
+    public PlanOverTimeTip findCheckListTip(PlanOverTimeTip dtoObj) {
+        return this.planManagementMapper.findCheckListTip(dtoObj);
+    }
+
+    @Override
+    public int insertTip(PlanOverTimeTip tip) {
+        return this.planManagementMapper.insertTip(tip);
     }
 
     /**

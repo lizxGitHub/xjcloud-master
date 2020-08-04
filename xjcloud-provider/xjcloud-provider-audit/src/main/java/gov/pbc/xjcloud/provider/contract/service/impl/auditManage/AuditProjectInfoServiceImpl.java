@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = {Exception.class})
 public class AuditProjectInfoServiceImpl extends IBaseServiceImpl<AuditProjectInfoMapper, AuditProjectInfo> implements AuditProjectInfoService {
-
     @Resource
     private AuditProjectInfoMapper auditProjectInfoMapper;
 

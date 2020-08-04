@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.feign.dept;
 
 import gov.pbc.xjcloud.provider.contract.utils.R;
+import gov.pbc.xjcloud.provider.usercenter.api.entity.SysDept;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

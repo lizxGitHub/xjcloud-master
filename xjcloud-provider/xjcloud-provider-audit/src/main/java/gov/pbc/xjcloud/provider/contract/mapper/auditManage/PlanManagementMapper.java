@@ -1,7 +1,9 @@
 package gov.pbc.xjcloud.provider.contract.mapper.auditManage;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import gov.pbc.xjcloud.provider.contract.dto.PlanCheckListDTO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
+import gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.mapper.IBaseMapper;
 import gov.pbc.xjcloud.provider.contract.vo.PlanFileVO;
@@ -259,4 +261,24 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
 
     List<Map<String, Object>> selectEntryByKeyAndLevel(Map<String, String> params);
+
+    /**
+     * 查询所有已过期项目
+     * @return
+     */
+    List<PlanCheckListDTO> findDeadlinePlanList();
+
+    /**
+     * 查找提示记录
+     * @param dtoObj
+     * @return
+     */
+    PlanOverTimeTip findCheckListTip(PlanOverTimeTip dtoObj);
+
+    /**
+     * 插入提醒记录
+     * @param tip
+     * @return
+     */
+    int insertTip(PlanOverTimeTip tip);
 }

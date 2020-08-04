@@ -185,7 +185,7 @@
     <select id="getShortPlans" resultType="java.util.HashMap">
         SELECT a.id, a.status,b.`name` rsName FROM `plan_check_list` a
         LEFT JOIN entry_info b on a.rectify_situation_id = b.id
-         where a.del_flag='0'
+        where a.del_flag='0'
         <if test="status!=null and status!=''">
             and a.status =#{status}
         </if>
@@ -207,7 +207,7 @@
     <select id="getShortPlansNew" resultType="java.util.HashMap">
         SELECT a.id, a.status,b.`name` rsName FROM `plan_check_list` a
         LEFT JOIN entry_info b on a.rectify_situation_id = b.id
-         where a.del_flag='0'
+        where a.del_flag='0'
         <if test="status!=null and status!=''">
             and a.status =#{status}
         </if>
@@ -362,6 +362,36 @@
         or audit_admin_id=#{userId})
         and status!=#{status}
     </select>
+    <!--
+    impParentId 实施父级机构
+    impId 实施机构
+    auditId 审计机构
+    auditParentId 审计父级机构
+    -->
+    <select id="findDeadlinePlanList" parameterType="hashmap"
+            resultType="gov.pbc.xjcloud.provider.contract.dto.PlanCheckListDTO">
+        SELECT
+            a.id planId,
+            a.project_name planName,
+            a.implementing_agency_new_id impParentId,
+            a.implementing_agency_id impId,
+            a.audit_object_id auditId,
+            audit_object_id auditParentId,
+            (
+            TIMESTAMPDIFF( DAY, t.start_time_all, IFNULL( t.end_time_all, NOW( ) ) ) - ifnull( a.plan_time, 0 ) + ifnull( a.delay_date, 0 )
+            ) days
+        FROM
+            `plan_check_list` a
+            LEFT JOIN plan_time_temp t ON a.id = t.plan_id
+        WHERE
+            a.del_flag = '0'
+        and status!='1013'
+        and (
+            TIMESTAMPDIFF( DAY, t.start_time_all, IFNULL( t.end_time_all, NOW( ) ) ) - ifnull( a.plan_time, 0 ) + ifnull( a.delay_date, 0 )
+            )<![CDATA[ >=  10
+
+        ]]>
+    </select>
     <select id="getDeadlinePlanPage" resultMap="PlanCheckListMapper">
         SELECT
         <include refid="select"/>
@@ -496,7 +526,7 @@
         pcl.implementing_agency_id,
         pcl.implementing_agency_new_id implementingAgencyNewId,
         pcl.implementing_agency_new_id,
-        pcl.audit_object_id  auditObjectId,
+        pcl.audit_object_id auditObjectId,
         pcl.audit_object_id ,
         pcl.audit_nature_id ,
         pcl.risk_assessment_id ,
@@ -508,7 +538,7 @@
         project_type,
         pcl.question_entry_id questionEntryId,
         pcl.question_entry_id,
-        pcl.problem_severity_id    problemSeverityId,
+        pcl.problem_severity_id problemSeverityId,
         pcl.problem_severity_id ,
         (case pcl.status
         when '1001' then '正在实施'
@@ -519,7 +549,8 @@
         ) status,
         pcl.rectify_evaluation,
         pcl.rectify_result,
-        (select datediff(start_time_all,now())-pcl.plan_time from plan_time_temp where pcl.id=plan_time_temp.plan_id) over_days,
+        (select datediff(start_time_all,now())-pcl.plan_time from plan_time_temp where pcl.id=plan_time_temp.plan_id)
+        over_days,
         pcl.audit_basis auditBasis,
         pcl.audit_basis,
         pcl.auditing_experience,
@@ -532,7 +563,8 @@
         risk_assessment_entry.name risk_assessment_name,
         pcl.problem_characterization,
         pcl.enter_time,
-        (select DATE_FORMAT(start_time_all,'%Y-%m-%d') from plan_time_temp where plan_time_temp.plan_id=pcl.id ) start_time_all,
+        (select DATE_FORMAT(start_time_all,'%Y-%m-%d') from plan_time_temp where plan_time_temp.plan_id=pcl.id )
+        start_time_all,
         (select days from plan_time_temp where plan_time_temp.plan_id=pcl.id ) days,
         pcl.frequency frequency,
         pcl.problem_description
@@ -616,7 +648,7 @@
         select
         id,
         ifnull(t.name,'') name
-         from ( select
+        from ( select
         id
         ,
         <if test="level==1">
@@ -646,6 +678,10 @@
         <if test="name3!=null and name3!=''">
             and name3 =#{name3}
         </if>) t group by name
+    </select>
+    <select id="findCheckListTip" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip">
+        select id,tip_Assignee tipAssignee
+         from  plan_overtime_tip where plan_id=#{planId} and over_type=#{overType}
     </select>
 
     <insert id="saveReturnPK" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList"
@@ -761,5 +797,12 @@
     <insert id="addFileLog">
         insert into plan_files(id,upload_user,file_uri,created_time,biz_key,task_id,task_name)
          values(#{id},#{uploadUser},#{fileUri},#{createdTime},#{bizKey},#{taskId},#{taskName})
+    </insert>
+    <insert id="insertTip" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip">
+        <selectKey>
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into plan_overtime_tip(over_type,tip_assignee,del_flag,plan_id)
+        values(#{overType},#{tipAssignee},#{delFlag},#{planId})
     </insert>
 </mapper>

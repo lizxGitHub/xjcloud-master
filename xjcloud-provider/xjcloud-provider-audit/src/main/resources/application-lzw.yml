@@ -3,18 +3,9 @@ spring:
     allow-bean-definition-overriding: true
   application:
     name: xjcloud-provider-audit
-  # 配置中心
-#  cloud:
-#    config:
-#      fail-fast: true
-#      name: ${spring.application.name}
-#      uri: http://172.18.47.232:8888
-#      discovery:
-#        enabled: true
-#        service-id: xjcloud-config
   redis:
     database: 1
-    host: 127.0.0.1
+    host: 103.45.130.8
     port: 6379
     timeout: 5000
     jedis:
@@ -25,9 +16,9 @@ spring:
         max-wait: -1
   datasource:
     name: xj_cloud
-    url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://103.45.130.8:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     username: root
-    password: password
+    password: Lrst123456
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver  #mysql-connector 6  需要指定时区
     filters: stat
@@ -71,7 +62,7 @@ eureka:
     fetch-registry: true
     service-url:
 #      defaultZone: http://root:root@${EUREKA_HOST:xjcloud.wlq.pbc.gov}:${EUREKA_PORT:8761}/eureka/
-      defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+      defaultZone: http://root:root@${EUREKA_HOST:103.45.130.8}:${EUREKA_PORT:8761}/eureka/
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -99,6 +90,15 @@ audit:
     appUrl: ${eureka.instance.ip-address}:${server.port} #返回给前端的访问地址
     uploadFolder: /xjcloud/${audit.file.uploadPrefix}/ #linux上传地址
   superDeptId: 10100
+  tip:
+    key: auditTip #审计超时提醒流程
+    username: auditTip
+    password: U8N49WynHAGTioUFDcPiOA== #前端密文密码 ，如下：
+#    {
+#      iv: iv,
+#      mode: CryptoJS.mode.CBC,
+#      padding: CryptoJS.pad.ZeroPadding
+#  })
 feign:
   hystrix:
     enabled: false

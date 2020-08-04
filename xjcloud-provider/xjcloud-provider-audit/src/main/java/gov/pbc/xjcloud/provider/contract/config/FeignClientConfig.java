@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.config;
 
+import cn.hutool.core.util.StrUtil;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -74,21 +75,13 @@ public class FeignClientConfig implements RequestInterceptor {
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         String headerValue = request.getHeader(tokenName);
         if (StringUtils.isBlank(headerValue)) {
-            throw new NullArgumentException("无法获取认证信息");
+            if(StrUtil.isNotBlank(AuthorizationContextHolder.getAuthorization())){
+                headerValue = AuthorizationContextHolder.getAuthorization();
+            }else {
+                throw new NullArgumentException("无法获取认证信息");
+            }
         }
         template.header(tokenName, headerValue);
         template.header(SecurityConstants.FROM,SecurityConstants.FROM_IN);
-//        Enumeration<String> headerNames = request.getHeaderNames();
-//        if (headerNames != null) {
-//            while (headerNames.hasMoreElements()) {
-//                String name = headerNames.nextElement();
-//                Enumeration<String> values = request.getHeaders(name);
-//                while (values.hasMoreElements()) {
-//                    String value = values.nextElement();
-//                    System.out.println(name + "---" + value);
-//                    template.header(name, value);
-//                }
-//            }
-//        }
     }
 }
