@@ -79,6 +79,8 @@ public class AopTip {
         headers.put("Authorization", authorization);
         headers.put("TENANT_ID", "1");
         headers.put("isToken", "false");
+        headers.put("grant_type", "password");
+        headers.put("scope", "server");
         String s = HttpRequestUtil.sendPost(authUrl, sb.toString(), headers);
         /**
          * s:{"access_token":"6173ab6d-fca1-4658-965f-270a196df48f",
