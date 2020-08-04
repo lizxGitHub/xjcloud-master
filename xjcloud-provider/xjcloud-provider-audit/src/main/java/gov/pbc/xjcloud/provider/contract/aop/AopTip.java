@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -29,9 +30,8 @@ import java.util.Map;
 @Slf4j
 @Aspect
 @Component
-@SuppressWarnings("All")
-@AllArgsConstructor
 public class AopTip {
+
     @Value("${audit.auth-url}")
     private String authUrl;
 
@@ -44,14 +44,12 @@ public class AopTip {
     @Value("${audit.token-name:Authorization}")
     private String tokenName;
 
-    @Autowired
+    @Resource
     private AuditTipConfiguration tipConfiguration;
 
-    @Autowired
+    @Resource
     private UsernameSchedule usernameSchedule;
 
-    @Value("${audit.tip.key:auditTip}")
-    private String tipKey;
 
     @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService.start(..))")
     public void pointCut() {
