@@ -7,13 +7,11 @@ import gov.pbc.xjcloud.provider.contract.config.AuditTipConfiguration;
 import gov.pbc.xjcloud.provider.contract.config.AuthorizationContextHolder;
 import gov.pbc.xjcloud.provider.contract.schedule.UsernameSchedule;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
-import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -56,8 +54,17 @@ public class AopTip {
         log.info(String.format("切面定义：%s", this.getClass().getName()));
     }
 
+    @SneakyThrows
+    @Around("execution(* gov.pbc.xjcloud.provider.contract.schedule.PlanOutTimeSchedule.getBankLeader(..))")
+    public void getBankLeader(ProceedingJoinPoint pjp) {
+        log.info(String.format("切面定义：%s", this.getClass().getName()));
+        iniToken(pjp);
+        pjp.proceed();
+        AuthorizationContextHolder.clear();
+    }
+
     @Before("pointCut()")
-    private void iniToken() {
+    private void iniToken(JoinPoint joinPoint) {
         StringBuilder sb = new StringBuilder();
         Map<String, String> params = Maps.newHashMap();
         BeanUtil.copyProperties(tipConfiguration, params);

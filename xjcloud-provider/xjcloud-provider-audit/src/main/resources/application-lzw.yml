@@ -93,6 +93,7 @@ audit:
   tip:
     key: auditTip #审计超时提醒流程
     username: auditTip
+    bankLeaderRole: 行长
     password: U8N49WynHAGTioUFDcPiOA== #前端密文密码 ，如下：
 #    {
 #      iv: iv,

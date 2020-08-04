@@ -6,18 +6,17 @@ import com.google.common.collect.Maps;
 import gov.pbc.xjcloud.provider.contract.config.AuditTipConfiguration;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.OverTimeConstants;
-import gov.pbc.xjcloud.provider.contract.controller.socket.WebSocketServer;
 import gov.pbc.xjcloud.provider.contract.dto.PlanCheckListDTO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip;
+import gov.pbc.xjcloud.provider.contract.exceptions.AppException;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
-import gov.pbc.xjcloud.provider.contract.service.PlanCheckListService;
+import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,18 +34,19 @@ import java.util.stream.Collectors;
 @Component
 @EnableScheduling
 @Slf4j
+@SuppressWarnings("all")
 public class PlanOutTimeSchedule {
 
     @Resource
     private PlanManagementServiceImpl planManagementService;
     @Resource
-    private PlanCheckListService planCheckListService;
-    @Resource
-    private WebSocketServer socketServer;
-    @Resource
     private RemoteDeptService deptService;
     @Resource
     private AuditActivitiService auditActivitiService;
+    @Resource
+    private UserCenterService userCenterService;
+    @Resource
+    private AuditTipConfiguration tipConfiguration;
 
 
     @Value("${audit.tip.key:auditTip}")
@@ -61,7 +61,7 @@ public class PlanOutTimeSchedule {
     }
 
     /**
-     * 频次统计定时任务 五分钟一次
+     *
      */
     @Scheduled(fixedRate = 1000 * 60 * 5)
     public void sequencyCount() {
@@ -140,35 +140,58 @@ public class PlanOutTimeSchedule {
             log.info("已发送提醒");
             return;
         }
-        switch (overType) {
-            case 1:
-                //同级审批 2个月  推送至被审计部门的分管行领导，即整改部门的分管行领导
-                if (e.getImpParentId().equals(e.getAuditParentId())) {
-                    doSameLevelTip(e, overType, tip);
-                } else { //上审下 整改超时2个月，推送至被审计部门的分管行领导，即整改部门的分管行领导（下级单位）
-                    tip.setTipAssignee(chargeLeader);
-                }
-                break;
-            case 2:
-                //同级审批 3个月  推送至内审部门的协管行领导，无协管行领导推送至分管行领导
-                if (e.getImpParentId().equals(e.getAuditParentId())) {
-                    tip.setTipAssignee(chargeLeader);
-                } else { //上审下 整改超时3个月，推送至被审计单位的行长（下级单位） todo 行长
-                    tip.setTipAssignee(contractLeader);
-                }
-                break;
-            case 3:
-                //同级审批 6个月 整改超时6个月，推送至行长
-                if (e.getImpParentId().equals(e.getAuditParentId())) {
-                    tip.setTipAssignee(contractLeader);
-                } else { //上审下 整改超时6个月，推送至上级行对下级行的联系行领导
-                    tip.setTipAssignee(contractParentLeader);
-                }
-                break;
+        try {
+            switch (overType) {
+                case 1:
+                    //同级审批 2个月  推送至被审计部门的分管行领导，即整改部门的分管行领导
+                    if (e.getImpParentId().equals(e.getAuditParentId())) {
+                        doSameLevelTip(e, overType, tip);
+                    } else { //上审下 整改超时2个月，推送至被审计部门的分管行领导，即整改部门的分管行领导（下级单位）
+                        tip.setTipAssignee(chargeLeader);
+                    }
+                    break;
+                case 2:
+                    //同级审批 3个月  推送至内审部门的协管行领导，无协管行领导推送至分管行领导
+                    if (e.getImpParentId().equals(e.getAuditParentId())) {
+                        tip.setTipAssignee(chargeLeader);
+                    } else { //上审下 整改超时3个月，推送至被审计单位的行长（下级单位）
+                        Integer bankLeader = getBankLeader(e.getAuditParentId());
+                        tip.setTipAssignee(bankLeader);
+                    }
+                    break;
+                case 3:
+                    //同级审批 6个月 整改超时6个月，推送至行长
+                    if (e.getImpParentId().equals(e.getAuditParentId())) {
+                        Integer bankLeader = getBankLeader(e.getAuditParentId());
+                        tip.setTipAssignee(bankLeader);
+                    } else { //上审下 整改超时6个月，推送至上级行对下级行的联系行领导
+                        tip.setTipAssignee(contractParentLeader);
+                    }
+                    break;
+            }
+        } catch (AppException appException) {
+            log.error(appException.getMessage());
+            appException.printStackTrace();
+            return;
         }
         planManagementService.insertTip(tip);
         auditActivitiService.start(tipKey, tip.getId(), JSONObject.toJSONString(tip));
         log.info(JSONObject.toJSONString(tip));
+    }
+
+    /**
+     * 获取被审计部门的行长
+     *
+     * @param auditParentId
+     * @return
+     */
+    public Integer getBankLeader(Integer auditParentId) {
+        List list = (List) userCenterService.getUsersByRoleNameAndDept(auditParentId, tipConfiguration.getBankLeaderRole());
+        if (null == list || list.isEmpty()) {
+            log.error(String.format("%s 暂未设置行长", auditParentId));
+            return null;
+        }
+        return Integer.parseInt(((Map) list.get(0)).get("userId").toString());
     }
 
     /**

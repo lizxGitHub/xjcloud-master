@@ -25,6 +25,10 @@ public class AuditTipConfiguration {
      * 获取token的密码(密文   )
      */
     private String password;
+    /**
+     * 行长角色名称
+     */
+    private String bankLeaderRole;
 
 
 }
