@@ -53,7 +53,7 @@ public class AopTip {
     @Value("${audit.tip.key:auditTip}")
     private String tipKey;
 
-    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService.start(..)")
+    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService.start(..))")
     public void pointCut() {
         log.info(String.format("切面定义：%s", this.getClass().getName()));
     }
