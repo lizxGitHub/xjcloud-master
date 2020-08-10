@@ -2,7 +2,9 @@ package gov.pbc.xjcloud.provider.contract.schedule;
 
 import com.alibaba.fastjson.JSONObject;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
+@Order(1)
 @EnableScheduling
 public class UsernameSchedule {
 
@@ -44,7 +47,7 @@ public class UsernameSchedule {
         if (userMap.containsKey(username)) {
             return userMap.get(username);
         }
-        throw new NullPointerException("该用户不存在");
+        throw new NullPointerException(String.format("该用户不存在,%s",username));
     }
 
 }

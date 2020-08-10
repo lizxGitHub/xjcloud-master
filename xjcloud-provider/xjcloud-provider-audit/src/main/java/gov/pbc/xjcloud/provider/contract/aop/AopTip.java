@@ -9,9 +9,10 @@ import gov.pbc.xjcloud.provider.contract.schedule.UsernameSchedule;
 import gov.pbc.xjcloud.provider.contract.utils.HttpRequestUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -55,24 +56,23 @@ public class AopTip {
     }
 
     @SneakyThrows
-    @Around("execution(* gov.pbc.xjcloud.provider.contract.schedule.PlanOutTimeSchedule.getBankLeader(..))")
-    public void getBankLeader(ProceedingJoinPoint pjp) {
+    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.schedule.PlanOutTimeSchedule.getBankLeader(..))")
+    public void getBankLeader() {
         log.info(String.format("切面定义：%s", this.getClass().getName()));
-        iniToken(pjp);
-        pjp.proceed();
-        AuthorizationContextHolder.clear();
+        iniToken();
     }
 
-    @Before("pointCut()")
-    private void iniToken(JoinPoint joinPoint) {
+    @Before("getBankLeader()")
+    public void iniToken() {
         StringBuilder sb = new StringBuilder();
         Map<String, String> params = Maps.newHashMap();
-        BeanUtil.copyProperties(tipConfiguration, params);
+        params.put("scope","server");
+        params.put("grant_type","password");
+        params.put("username",tipConfiguration.getUsername());
+        params.put("password",tipConfiguration.getPassword());
         params.entrySet().stream().forEach(e -> {
             try {
-                if (e.getKey().equals("password")) {
-                    e.setValue(URLEncoder.encode(e.getValue(), "UTF-8"));
-                }
+                e.setValue(URLEncoder.encode(e.getValue(), "UTF-8"));
                 if (e.getKey().equals("username")) { //登陆过滤
                     e.setValue(URLEncoder.encode(usernameSchedule.getUsername(e.getValue()), "UTF-8"));
                 }
@@ -105,6 +105,11 @@ public class AopTip {
 
     @After("pointCut()")
     public void after() {
+        AuthorizationContextHolder.clear();
+    }
+
+    @After("getBankLeader()")
+    public void aftergetBankLeader() {
         AuthorizationContextHolder.clear();
     }
 }

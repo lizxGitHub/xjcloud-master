@@ -338,7 +338,13 @@ public class PlanManagementController {
     @ApiOperation("获取部门角色")
     @GetMapping("/getUsersByRoleNameAndDept")
     public R getUsersByRoleNameAndDept(@RequestParam(name = "deptId", required = true) int deptId, @RequestParam(name = "roleName", required = true) String roleName) {
-        return R.ok(userCenterService.getUsersByRoleNameAndDept(deptId, roleName).getData());
+        gov.pbc.xjcloud.provider.contract.utils.R result = null;
+        try {
+            result = userCenterService.getUsersByRoleNameAndDept(deptId, roleName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok(result.getData());
     }
 
     /**

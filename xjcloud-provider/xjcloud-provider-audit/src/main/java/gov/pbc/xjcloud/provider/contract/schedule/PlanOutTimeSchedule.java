@@ -3,6 +3,7 @@ package gov.pbc.xjcloud.provider.contract.schedule;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import gov.pbc.xjcloud.provider.contract.aop.AopTip;
 import gov.pbc.xjcloud.provider.contract.config.AuditTipConfiguration;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.constants.OverTimeConstants;
@@ -15,8 +16,10 @@ import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.R;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -47,6 +50,9 @@ public class PlanOutTimeSchedule {
     private UserCenterService userCenterService;
     @Resource
     private AuditTipConfiguration tipConfiguration;
+
+    @Autowired
+    private AopTip aopTip;
 
 
     @Value("${audit.tip.key:auditTip}")
@@ -96,7 +102,7 @@ public class PlanOutTimeSchedule {
             int days = e.getDays();
             // TODO #苗 暂时不计算真实天数
 //            int month = (int) (Math.floor(days / 30.0));
-            int month = Math.round(7);
+            int month = (int)(Math.random()*7);
             //超时两个月
             if (month == 2) {
                 submitTask(e, OverTimeConstants.TYPE_1);
@@ -142,6 +148,7 @@ public class PlanOutTimeSchedule {
             log.info("已发送提醒");
             return;
         }
+        aopTip.iniToken();
         try {
             switch (overType) {
                 case 1:
@@ -179,6 +186,7 @@ public class PlanOutTimeSchedule {
         planManagementService.insertTip(tip);
         auditActivitiService.start(tipKey, tip.getId(), JSONObject.toJSONString(tip));
         log.info(JSONObject.toJSONString(tip));
+        aopTip.after();
     }
 
     /**
@@ -188,7 +196,7 @@ public class PlanOutTimeSchedule {
      * @return
      */
     public Integer getBankLeader(Integer auditParentId) {
-        List list = (List) userCenterService.getUsersByRoleNameAndDept(auditParentId, tipConfiguration.getBankLeaderRole());
+        List list = (List) userCenterService.getUsersByRoleNameAndDept(auditParentId, tipConfiguration.getBankLeaderRole()).getData();
         if (null == list || list.isEmpty()) {
             log.error(String.format("%s 暂未设置行长", auditParentId));
             return null;

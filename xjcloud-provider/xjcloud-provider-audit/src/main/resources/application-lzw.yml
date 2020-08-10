@@ -5,7 +5,8 @@ spring:
     name: xjcloud-provider-audit
   redis:
     database: 1
-    host: 103.45.130.8
+#    host: 103.45.130.8
+    host: localhost
     port: 6379
     timeout: 5000
     jedis:
@@ -16,9 +17,11 @@ spring:
         max-wait: -1
   datasource:
     name: xj_cloud
-    url: jdbc:mysql://103.45.130.8:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+#    url: jdbc:mysql://103.45.130.8:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     username: root
-    password: Lrst123456
+    password: password
+#    password: Lrst123456
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver  #mysql-connector 6  需要指定时区
     filters: stat
@@ -55,14 +58,15 @@ server:
 # 注册中心配置
 eureka:
   instance:
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    prefer-ip-adress: true
+#    ip-address: 127.0.0.1
 #    ip-address: xjcloud.wlq.pbc.gov
   client:
     fetch-registry: true
     service-url:
-#      defaultZone: http://root:root@${EUREKA_HOST:xjcloud.wlq.pbc.gov}:${EUREKA_PORT:8761}/eureka/
-      defaultZone: http://root:root@${EUREKA_HOST:103.45.130.8}:${EUREKA_PORT:8761}/eureka/
+      defaultZone: http://root:root@${EUREKA_HOST:xjcloud.wlq.pbc.gov}:${EUREKA_PORT:8761}/eureka/
+#      defaultZone: http://root:root@${EUREKA_HOST:103.45.130.8}:${EUREKA_PORT:8761}/eureka/
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -87,7 +91,7 @@ audit:
     uploadPrefix: audit-upload
     staticAccessPath: /${audit.file.uploadPrefix}/** # 静态资源访问配置
 #    uploadFolder: D:/java-project/${audit.file.uploadPrefix}/ #windows上传地址
-    appUrl: ${eureka.instance.ip-address}:${server.port} #返回给前端的访问地址
+    appUrl: ${spring.cloud.client.ip-address}:${server.port} #返回给前端的访问地址
     uploadFolder: /xjcloud/${audit.file.uploadPrefix}/ #linux上传地址
   superDeptId: 10100
   tip:

@@ -57,31 +57,37 @@ public class FeignClientConfig implements RequestInterceptor {
     }
 
 
-
     public FeignClientConfig() {
 
     }
 
     /**
      * feign远程调用请求头，认证参数配置
+     *
      * @param template
      */
     @Override
     public void apply(RequestTemplate template) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) {
+        String headerValue;
+        if (StrUtil.isNotBlank(AuthorizationContextHolder.getAuthorization())) {
+            headerValue = AuthorizationContextHolder.getAuthorization();
+            template.header(tokenName, headerValue);
+            template.header(SecurityConstants.FROM, SecurityConstants.FROM_IN);
+            return;
+        } else if (requestAttributes == null) {
             return;
         }
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        String headerValue = request.getHeader(tokenName);
+        headerValue = request.getHeader(tokenName);
         if (StringUtils.isBlank(headerValue)) {
-            if(StrUtil.isNotBlank(AuthorizationContextHolder.getAuthorization())){
+            if (StrUtil.isNotBlank(AuthorizationContextHolder.getAuthorization())) {
                 headerValue = AuthorizationContextHolder.getAuthorization();
-            }else {
+            } else {
                 throw new NullArgumentException("无法获取认证信息");
             }
         }
         template.header(tokenName, headerValue);
-        template.header(SecurityConstants.FROM,SecurityConstants.FROM_IN);
+        template.header(SecurityConstants.FROM, SecurityConstants.FROM_IN);
     }
 }

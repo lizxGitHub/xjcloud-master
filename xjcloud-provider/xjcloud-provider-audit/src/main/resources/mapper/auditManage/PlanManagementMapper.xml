@@ -388,7 +388,7 @@
         and status!='1013'
         and (
             TIMESTAMPDIFF( DAY, t.start_time_all, IFNULL( t.end_time_all, NOW( ) ) ) - ifnull( a.plan_time, 0 ) + ifnull( a.delay_date, 0 )
-            )<![CDATA[ >=  10
+            )<![CDATA[ >=  0
 
         ]]>
     </select>
