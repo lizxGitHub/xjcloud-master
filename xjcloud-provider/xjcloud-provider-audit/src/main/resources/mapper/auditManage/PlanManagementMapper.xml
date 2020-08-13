@@ -798,8 +798,8 @@
         insert into plan_files(id,upload_user,file_uri,created_time,biz_key,task_id,task_name)
          values(#{id},#{uploadUser},#{fileUri},#{createdTime},#{bizKey},#{taskId},#{taskName})
     </insert>
-    <insert id="insertTip" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip">
-        <selectKey>
+    <insert id="insertTip" useGeneratedKeys="true" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip">
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into plan_overtime_tip(over_type,tip_assignee,del_flag,plan_id)

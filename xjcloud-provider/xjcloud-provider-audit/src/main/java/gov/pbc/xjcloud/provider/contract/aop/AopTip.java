@@ -50,19 +50,19 @@ public class AopTip {
     private UsernameSchedule usernameSchedule;
 
 
-    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService.start(..))")
-    public void pointCut() {
-        log.info(String.format("切面定义：%s", this.getClass().getName()));
-    }
-
-    @SneakyThrows
-    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.schedule.PlanOutTimeSchedule.getBankLeader(..))")
-    public void getBankLeader() {
-        log.info(String.format("切面定义：%s", this.getClass().getName()));
-        iniToken();
-    }
-
-    @Before("getBankLeader()")
+//    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService.start(..))")
+//    public void pointCut() {
+//        log.info(String.format("切面定义：%s", this.getClass().getName()));
+//    }
+//
+//    @SneakyThrows
+//    @Pointcut("execution(* gov.pbc.xjcloud.provider.contract.schedule.PlanOutTimeSchedule.getBankLeader(..))")
+//    public void getBankLeader() {
+//        log.info(String.format("切面定义：%s", this.getClass().getName()));
+//        iniToken();
+//    }
+//
+//    @Before("getBankLeader()")
     public void iniToken() {
         StringBuilder sb = new StringBuilder();
         Map<String, String> params = Maps.newHashMap();
@@ -103,12 +103,12 @@ public class AopTip {
     }
 
 
-    @After("pointCut()")
+//    @After("pointCut()")
     public void after() {
         AuthorizationContextHolder.clear();
     }
 
-    @After("getBankLeader()")
+//    @After("getBankLeader()")
     public void aftergetBankLeader() {
         AuthorizationContextHolder.clear();
     }

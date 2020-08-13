@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import gov.pbc.xjcloud.provider.contract.exceptions.AppException;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public class PlanOverTimeTip {
+    @TableId(value = "id")
     private Integer id;
 
     private String planId;

@@ -1,5 +1,6 @@
 package gov.pbc.xjcloud.provider.contract.schedule;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -93,6 +95,7 @@ public class PlanOutTimeSchedule {
      * 频次统计定时任务 10分钟一次
      */
     @Scheduled(cron = "0/10 * * * * ?")
+    @Transactional(rollbackFor = Exception.class)
     public void sequencyOvertimeTip() {
         System.out.println("hehehehehhehe");
         Map<String, Object> params = Maps.newHashMap();
@@ -101,8 +104,8 @@ public class PlanOutTimeSchedule {
         deadLineList.stream().filter(Objects::nonNull).forEach(e -> {
             int days = e.getDays();
             // TODO #苗 暂时不计算真实天数
-//            int month = (int) (Math.floor(days / 30.0));
-            int month = (int)(Math.random()*7);
+            int month = (int) (Math.floor(days / 30.0));
+//            int month = (int)(Math.random()*10);
             //超时两个月
             if (month == 2) {
                 submitTask(e, OverTimeConstants.TYPE_1);
