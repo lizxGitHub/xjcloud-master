@@ -14,7 +14,8 @@ spring:
   #        service-id: xjcloud-config
   redis:
     database: 1
-    host: 127.0.0.1
+    host: xjcloud.wlq.pbc.gov
+    #    host: 127.0.0.1
     port: 6379
     timeout: 5000
     jedis:
@@ -25,7 +26,10 @@ spring:
         max-wait: -1
   datasource:
     name: xj_cloud
-    url: jdbc:mysql://localhost:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    #    url: jdbc:mysql://xjcloud.wlq.pbc.gov:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    #    username: lrst
+    #    password: lrst7089
+    url: jdbc:mysql://xjcloud.wlq.pbc.gov:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     username: root
     password: Lrst123456
     type: com.alibaba.druid.pool.DruidDataSource
@@ -43,7 +47,7 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
-#    springboot上传配置
+  #    springboot上传配置
   servlet:
     multipart:
       enabled: true
@@ -54,7 +58,7 @@ spring:
     encoding:
       force: true
 server:
-  port: 8081
+  port: 8666
   undertow:
     max-http-post-size: 0
     io-threads: 4
@@ -65,13 +69,13 @@ server:
 eureka:
   instance:
     prefer-ip-address: true
-    ip-address: 127.0.0.1
-  #    ip-address: xjcloud.wlq.pbc.gov
+    #    ip-address: 127.0.0.1
+    ip-address: xjcloud.wlq.pbc.gov
   client:
     fetch-registry: true
     service-url:
-      #      defaultZone: http://root:root@${EUREKA_HOST:xjcloud.wlq.pbc.gov}:${EUREKA_PORT:8761}/eureka/
-      defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+      defaultZone: http://root:root@${EUREKA_HOST:xjcloud.wlq.pbc.gov}:${EUREKA_PORT:8761}/eureka/
+#      defaultZone: http://root:root@${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

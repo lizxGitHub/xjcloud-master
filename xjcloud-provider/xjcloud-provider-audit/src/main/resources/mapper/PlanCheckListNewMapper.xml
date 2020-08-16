@@ -393,6 +393,7 @@
         a.implementing_agency_new_id,
         a.implementing_agency_id,
         a.audit_object_id,
+        a.audit_object_id_new,
         a.audit_nature_id,
         a.audit_year,
         a.status,

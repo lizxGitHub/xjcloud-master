@@ -203,6 +203,24 @@ public class PlanCheckListController {
         return r.setData(true);
     }
 
+    @PostMapping("/editDownDeptById")
+    public R<Boolean> editDownDeptById(
+            HttpServletRequest request,
+            @RequestParam(name = "ids", required = true) String ids,
+            @RequestParam(name = "auditObjectId", required = true) String auditObjectId,
+            @RequestParam(name = "auditAdmin", required = true) int auditAdmin) {
+        R<Boolean> r = new R<>();
+
+        String[] idArray = ids.split(",");
+        for (String id : idArray) {
+            PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+            plan.setAuditObjectId(auditObjectId);
+            plan.setAuditAdminId(auditAdmin);
+            planCheckListService.updatePlanById(plan);
+        }
+        return r.setData(true);
+    }
+
     /**
      * 更改状态
      *
