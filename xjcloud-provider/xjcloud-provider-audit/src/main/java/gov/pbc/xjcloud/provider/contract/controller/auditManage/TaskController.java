@@ -686,7 +686,7 @@ public class TaskController {
         }
         try {
             if (StringUtils.isBlank(roleName)) {
-                roleName = "审计实施一般角色";
+                roleName = "内审实施人员角色";
             }
             //获取实施部门的一般人员
             R r = userCenterService.getUsersByRoleNameAndDept(deptId, roleName);

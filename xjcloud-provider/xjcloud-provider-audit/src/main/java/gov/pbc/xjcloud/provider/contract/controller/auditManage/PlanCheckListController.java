@@ -297,7 +297,7 @@ public class PlanCheckListController {
                 }
                 if (userId == plan.getImpAdminId()) {
                     if (statusUser.equals("1002")) { //确认
-                        List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象管理员").getData();
+                        List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
                         if (list.size() < 1) {
                             return r.setData(false);
                         }
@@ -380,7 +380,7 @@ public class PlanCheckListController {
 
                     List<String> auditLeaderAssigneeList = new ArrayList<>();
                     List<String> auditUserInnerList = new ArrayList<>();
-                    List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象管理员").getData();
+                    List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
                     for (int i = 0; i < list.size(); i++) {
                         Map m = (Map)list.get(i);
                         auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));

@@ -251,6 +251,7 @@
             and b.status_user = #{status}
         </if>
         and a.del_flag = 0
+        and a.status != 1003
         ORDER BY a.created_time desc
     </select>
 
