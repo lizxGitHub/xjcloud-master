@@ -104,8 +104,8 @@ public class PlanOutTimeSchedule {
         deadLineList.stream().filter(Objects::nonNull).forEach(e -> {
             int days = e.getDays();
             // TODO #苗 暂时不计算真实天数
-            int month = (int) (Math.floor(days / 30.0));
-//            int month = (int)(Math.random()*10);
+//            int month = (int) (Math.floor(days / 30.0));
+            int month = (int)(Math.random()*10);
             //超时两个月
             if (month == 2) {
                 submitTask(e, OverTimeConstants.TYPE_1);
@@ -124,6 +124,10 @@ public class PlanOutTimeSchedule {
         dtoObj.setOverType(overType);
         PlanOverTimeTip timeTip = planManagementService.findCheckListTip(dtoObj);
         PlanOverTimeTip tip = new PlanOverTimeTip();
+        Map processParam = tip.getProcessParam();
+        Map missionMap = Maps.newHashMap();
+        processParam.put("mission",missionMap);
+        missionMap.put("basicTitle","超时任务【"+e.getPlanName()+"】");
         tip.setOverType(overType);
         tip.setDelFlag(DelConstants.EXITED);
         tip.setPlanId(e.getPlanId());
@@ -186,8 +190,9 @@ public class PlanOutTimeSchedule {
             appException.printStackTrace();
             return;
         }
+        missionMap.put("createrId",tip.getTipAssignee());
         planManagementService.insertTip(tip);
-        auditActivitiService.start(tipKey, tip.getId(), JSONObject.toJSONString(tip));
+        auditActivitiService.start(tipKey, tip.getId(), JSONObject.toJSONString(tip.getProcessParam()));
         log.info(JSONObject.toJSONString(tip));
         aopTip.after();
     }

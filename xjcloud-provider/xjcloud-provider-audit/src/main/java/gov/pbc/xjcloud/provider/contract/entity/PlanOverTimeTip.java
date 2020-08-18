@@ -1,11 +1,15 @@
 package gov.pbc.xjcloud.provider.contract.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.collect.Maps;
 import gov.pbc.xjcloud.provider.contract.exceptions.AppException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 /**
  * 超时
@@ -25,6 +29,12 @@ public class PlanOverTimeTip {
     private Integer overType;
 
     private Integer tipAssignee;
+
+    /**
+     * 流程启动参数
+     */
+    @TableField(exist = false)
+    private Map<String,Object> processParam= Maps.newHashMap();
 
     private Integer tenantId;
 
