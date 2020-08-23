@@ -104,7 +104,8 @@ audit:
     uploadFolder: /xjcloud/${audit.file.uploadPrefix}/ #linux上传地址
   superDeptId: 10100
   tip:
-    key: auditTip #审计超时提醒流程
+#    key: auditTip #审计超时提醒流程
+    key: Mission2 #通用流程2
     username: auditTip
     bankLeaderRole: 行长
     password: U8N49WynHAGTioUFDcPiOA== #前端密文密码 ，如下：

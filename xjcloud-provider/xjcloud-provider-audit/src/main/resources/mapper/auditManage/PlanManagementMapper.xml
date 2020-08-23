@@ -575,7 +575,7 @@
         ) status,
         pcl.rectify_evaluation,
         pcl.rectify_result,
-        (select datediff(start_time_all,now())-pcl.plan_time from plan_time_temp where pcl.id=plan_time_temp.plan_id)
+        (select datediff(start_time_all,now())-pcl.plan_time from plan_time_temp where pcl.id=plan_time_temp.plan_id limit 1)
         over_days,
         pcl.audit_basis auditBasis,
         pcl.audit_basis,
@@ -589,9 +589,9 @@
         risk_assessment_entry.name risk_assessment_name,
         pcl.problem_characterization,
         pcl.enter_time,
-        (select DATE_FORMAT(start_time_all,'%Y-%m-%d') from plan_time_temp where plan_time_temp.plan_id=pcl.id )
+        (select DATE_FORMAT(start_time_all,'%Y-%m-%d') from plan_time_temp where plan_time_temp.plan_id=pcl.id limit 1)
         start_time_all,
-        (select days from plan_time_temp where plan_time_temp.plan_id=pcl.id ) days,
+        (select days from plan_time_temp where plan_time_temp.plan_id=pcl.id limit 1) days,
         pcl.frequency frequency,
         pcl.problem_description
         from plan_check_list pcl

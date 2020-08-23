@@ -4,6 +4,7 @@
  */
 package gov.pbc.xjcloud.provider.contract.controller.statistic;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @Description:
@@ -241,7 +243,7 @@ public class PlanStatisticController {
 
     @ApiOperation("审计查询")
     @GetMapping(value = {"report", ""})
-    public R planList(Page<Map<String, Object>> page, String auditYear, int deptId) {
+    public R planList(Page<Map<String, Object>> page, String auditYear, int deptId,Boolean isSuperAdmin) {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         Long resultCount = 0L;
         try {
@@ -282,6 +284,10 @@ public class PlanStatisticController {
                         data.put("timeoutCount", "0");
                         resultList.add(data);
                     }
+                }
+                if(BooleanUtil.isTrue(isSuperAdmin)){
+                    List<Map<String, Object>> collect = resultList.stream().filter(e -> e.get("implementingAgencyId").equals(deptId)).collect(Collectors.toList());
+                    resultList = collect;
                 }
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReport());
             }

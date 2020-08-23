@@ -169,6 +169,7 @@ public class PlanCheckList extends Model<PlanCheckList> implements Serializable,
     /**
      * 超时类型
      */
+    @TableField(exist = false)
     private String overTimeType;
     /**
      * 延期时间
