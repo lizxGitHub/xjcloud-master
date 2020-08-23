@@ -280,47 +280,73 @@
 
     </select>
     <select id="countPlan" resultType="java.util.Map">
-        select
+        SELECT t2.projectSum,pcl.planSum,pcl.finishCount,pcl.nofinishCount,t3.overTimeNum,pcl.timeoutCount from
+        (select
+
         IFNULL(sum(case when status!= '0' then 1 else 0 end),0) planSum,
         IFNULL(sum(case when status='1003' then 1 else 0 end),0) finishCount,
         IFNULL(sum(case when STATUS != '1003' and STATUS != '0' then 1 else 0 end),0) nofinishCount,
         IFNULL(sum(case when status='1004' then 1 else 0 end),0) timeoutCount
         from
         plan_check_list where del_flag='0'
-        <if test='agencyId!=null and agencyId!=""'>
-            and implementing_agency_id='${agencyId}'
-        </if>
-        <if test='auditYear!=null and auditYear!=""'>
-            and audit_year='${auditYear}'
-        </if>
+            <if test='agencyId!=null and agencyId!=""'>
+                and implementing_agency_id='${agencyId}'
+            </if>
+            <if test='auditYear!=null and auditYear!=""'>
+                and audit_year='${auditYear}'
+            </if>
+        ) pcl,
+        (SELECT COUNT(t1.xm) projectSum from (select COUNT(project_name) xm from plan_check_list where
+            del_flag='0'
+            <if test='agencyId!=null and agencyId!=""'>
+                and implementing_agency_id='${agencyId}'
+            </if>
+            <if test='auditYear!=null and auditYear!=""'>
+                and audit_year='${auditYear}'
+            </if>
+            GROUP BY project_name) t1) t2,
+        (SELECT COUNT(pt.plan_id) overTimeNum from plan_check_list pl LEFT JOIN plan_overtime_tip pt on pl.id = pt.plan_id where
+            pl.del_flag='0'
+                <if test='agencyId!=null and agencyId!=""'>
+                    and pl.implementing_agency_id='${agencyId}'
+                </if>
+                <if test='auditYear!=null and auditYear!=""'>
+                    and pl.audit_year='${auditYear}'
+                </if>
+            ) t3
     </select>
     <select id="selectAttentionPage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
         SELECT
-        a.id,
-        a.project_code,
-        a.project_name,
-        a.implementing_agency_id,
-        a.audit_object_id,
-        a.audit_nature_id,
-        a.audit_year,
-        a.status,
-        a.question_entry_id,
-        a.problem_severity_id,
-        rectify_situation_entry.name as rectify_situation_id,
-        a.problem_characterization,
-        a.problem_description,
-        a.may_affect,
-        a.rectification_suggestions,
-        a.audit_basis,
-        a.audit_classification_id,
-        a.auditing_experience,
-        a.risk_assessment_id
-        FROM
-        user_attention_check b
-        left join `plan_check_list` a on a.id = b.check_id
-        left join entry_info rectify_situation_entry on a.rectify_situation_id=rectify_situation_entry.id and
-        rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6
-        where a.del_flag='0'
+            a.id,
+            a.project_code,
+            a.project_name,
+            a.implementing_agency_id,
+            a.audit_object_id,
+            a.audit_nature_id,
+            a.audit_year,
+            a.status,
+            a.question_entry_id,
+            a.problem_severity_id,
+            rectify_situation_entry.name as rectify_situation_id,
+            a.problem_characterization,
+            a.problem_description,
+            a.may_affect,
+            a.rectification_suggestions,
+            a.audit_basis,
+            a.audit_classification_id,
+            a.auditing_experience,
+            a.risk_assessment_id,
+            case
+            when pt.plan_id != null then '已超时'
+            else '未超时'
+            end as overTimeType
+            FROM
+            user_attention_check b
+            left join `plan_check_list` a on a.id = b.check_id
+            left join entry_info rectify_situation_entry on a.rectify_situation_id=rectify_situation_entry.id and
+            rectify_situation_entry.del_flag=0 and rectify_situation_entry.category_fk=6
+            LEFT JOIN plan_overtime_tip pt on a.id = pt.plan_id
+            where a.del_flag='0'
         <if test="query.auditYear!=null and query.auditYear!=''">
             and a.audit_year like concat('%',concat(#{query.auditYear},'%'))
         </if>
@@ -805,4 +831,24 @@
         insert into plan_overtime_tip(over_type,tip_assignee,del_flag,plan_id)
         values(#{overType},#{tipAssignee},#{delFlag},#{planId})
     </insert>
+
+    <select id="selectProNumAndOverTime" resultType="java.util.Map" parameterType="map">
+        SELECT t2.projectSum,t3.overTimeNum from
+        (SELECT COUNT(t1.xm) projectSum from (select COUNT(project_name) xm from plan_check_list where del_flag='0'
+        <if test='implementingAgencyId!=null and implementingAgencyId!=""'>
+            and implementing_agency_id='${implementingAgencyId}'
+        </if>
+        <if test='auditYear!=null and auditYear!=""'>
+            and audit_year='${auditYear}'
+        </if>
+        GROUP BY project_name) t1) t2,
+        (SELECT COUNT(pt.plan_id) overTimeNum from plan_check_list pl LEFT JOIN plan_overtime_tip pt on pl.id = pt.plan_id where pl.del_flag='0'
+        <if test='implementingAgencyId!=null and implementingAgencyId!=""'>
+            and pl.implementing_agency_id='${implementingAgencyId}'
+        </if>
+        <if test='auditYear!=null and auditYear!=""'>
+            and pl.audit_year='${auditYear}'
+        </if>
+        ) t3
+    </select>
 </mapper>

@@ -62,4 +62,6 @@ public interface PlanManagementService extends IService<PlanCheckList> {
      * @return
      */
     int insertTip(PlanOverTimeTip tip);
+
+    Map<String, Object> selectProNumAndOverTime(int implementingAgencyId, String auditYear);
 }

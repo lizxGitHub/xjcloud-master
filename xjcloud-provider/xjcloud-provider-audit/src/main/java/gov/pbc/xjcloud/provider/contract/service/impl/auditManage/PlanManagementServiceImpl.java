@@ -221,6 +221,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         return this.planManagementMapper.insertTip(tip);
     }
 
+    @Override
+    public Map<String, Object> selectProNumAndOverTime(int implementingAgencyId, String auditYear) {
+        return planManagementMapper.selectProNumAndOverTime(implementingAgencyId, auditYear);
+    }
+
     /**
      * 按计划完成类型查询分页数据
      *

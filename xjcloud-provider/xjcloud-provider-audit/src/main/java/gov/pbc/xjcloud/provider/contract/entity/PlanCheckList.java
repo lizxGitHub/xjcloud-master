@@ -167,6 +167,10 @@ public class PlanCheckList extends Model<PlanCheckList> implements Serializable,
      */
     private String rectifyResult;
     /**
+     * 超时类型
+     */
+    private String overTimeType;
+    /**
      * 延期时间
      */
 //    @JsonFormat(pattern="yyyy-MM-dd",timezone="GMT+8")

@@ -281,4 +281,6 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      * @return
      */
     int insertTip(PlanOverTimeTip tip);
+
+    Map<String, Object> selectProNumAndOverTime(@Param("implementingAgencyId")int implementingAgencyId, @Param("auditYear")String auditYear);
 }
