@@ -16,4 +16,6 @@ public interface PlanInfoService extends IService<PlanInfo> {
     void updateProjectOpinionByPlanUserId(String planId, String userId, String opinion);
 
     void updateProjectByPlanUserId(String planId, String userId, String statusUser);
+
+    void deleteProjectByPlanUserId(String planId, String userId);
 }

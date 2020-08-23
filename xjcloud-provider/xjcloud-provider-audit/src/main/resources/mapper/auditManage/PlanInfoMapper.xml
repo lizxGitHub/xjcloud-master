@@ -58,6 +58,13 @@
             and `type` = 1
     </update>
 
+    <delete id="deleteProjectByPlanUserId">
+        DELETE from plan_info WHERE
+            plan_id = #{planId}
+            and user_id = #{userId}
+            and `type` = 1
+    </delete>
+
     <update id="updateProjectOpinionByPlanUserId">
         UPDATE plan_info
         SET

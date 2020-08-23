@@ -813,4 +813,55 @@ public class TaskController {
         return r.setData(true);
     }
 
+    @PostMapping("/editDownDeptById")
+    public R<Boolean> editDownDeptById(
+            @RequestParam(name = "id", required = true) String id,
+            @RequestParam(name = "taskId", required = true) String taskId,
+            @RequestParam(name = "auditStatus", required = true) String auditStatus,
+            @RequestParam(name = "auditObjectId", required = true) String auditObjectId) {
+        R<Boolean> r = new R<>();
+        //获取代办
+        Map<String, Object> map = new HashMap<>();
+        PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
+        if (!auditObjectId.equals(plan.getAuditObjectId())) {
+            //删除之前的审计对象管理员
+            List listOld = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+            if (listOld.size() < 1) {
+                return r.setData(false);
+            }
+            for (int i = 0; i < listOld.size(); i++) {
+                Map m = (Map) listOld.get(i);
+                planInfoService.deleteProjectByPlanUserId(id, String.valueOf(m.get("userId")));
+            }
+
+            plan.setAuditObjectId(auditObjectId);
+            //更新计划
+            plan.setAuditStatus1(auditStatus);
+            planCheckListService.updatePlanById(plan);
+
+            //审计对象管理员更新
+            List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+            if (list.size() < 1) {
+                return r.setData(false);
+            }
+            //流程中人员更改
+            List<String> auditLeaderAssigneeList = new ArrayList<>();
+            //审计对象管理员
+            for (int i = 0; i < list.size(); i++) {
+                Map m = (Map) list.get(i);
+                PlanInfo planInfo3 = new PlanInfo();
+                planInfo3.setUserId(Integer.valueOf(String.valueOf(m.get("userId"))));
+                planInfo3.setStatusUser("1004"); //待完善
+                planInfo3.setPlanId(plan.getId());
+                planInfo3.setType(1);
+                planInfoService.save(planInfo3);
+                auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
+            }
+            map.put("auditLeaderAssigneeList", auditLeaderAssigneeList);
+        }
+        map.put("auditStatus", Integer.valueOf(auditStatus));
+        //流程
+        r = activitiService.complete(taskId, map);
+        return r.setData(true);
+    }
 }

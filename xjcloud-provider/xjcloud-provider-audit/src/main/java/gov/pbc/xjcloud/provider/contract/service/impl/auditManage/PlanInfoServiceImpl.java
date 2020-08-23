@@ -46,4 +46,9 @@ public class PlanInfoServiceImpl extends IBaseServiceImpl<PlanInfoMapper, PlanIn
         planInfoMapper.updateProjectByPlanUserId(planId, userId, statusUser);
     }
 
+    @Override
+    public void deleteProjectByPlanUserId(String planId, String userId) {
+        planInfoMapper.deleteProjectByPlanUserId(planId, userId);
+    }
+
 }
