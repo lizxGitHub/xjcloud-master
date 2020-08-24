@@ -253,7 +253,6 @@ public class PlanStatisticController {
                     Map<String, Object> data = resultListOld.get(i);
                     Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(data.get("implementingAgencyId"))), auditYear);
                     data.put("projectSum", String.valueOf(m.get("projectSum")));
-                    data.put("overTimeNum", String.valueOf(m.get("overTimeNum")));
                     resultList.add(data);
                 }
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
@@ -266,7 +265,6 @@ public class PlanStatisticController {
                 for (Map<String, Object> statisData : resultListStatis) {
                     Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(statisData.get("implementingAgencyId"))), auditYear);
                     statisData.put("projectSum", String.valueOf(m.get("projectSum")));
-                    statisData.put("overTimeNum", String.valueOf(m.get("overTimeNum")));
                     datagroup.put(Integer.valueOf(statisData.get("implementingAgencyId").toString()), statisData);
                 }
                 for (DeptVO deptVO : deptChild) {
@@ -276,7 +274,7 @@ public class PlanStatisticController {
                     } else {
                         Map<String, Object> m = planManagementService.selectProNumAndOverTime(deptVO.getDeptId(), auditYear);
                         data.put("projectSum", String.valueOf(m.get("projectSum")));
-                        data.put("overTimeNum", String.valueOf(m.get("overTimeNum")));
+                        data.put("overTimeNum", "0");
                         data.put("implementingAgencyId", deptVO.getDeptId());
                         data.put("projectCount", "0");
                         data.put("finishCount", "0");
