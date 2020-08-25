@@ -104,6 +104,9 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
         } else if (StringUtils.isNotBlank(query.getOverTime())) {
             calculateOverTime(query);
         }
+        if (StringUtils.equals(query.getAuditObjectIdNew(), "all")) { //审计对象中支
+            query.setAuditObjectIdNew("");
+        }
 
         return planManagementMapper.selectEntryByQuery(query, pageStart, pageNo);
     }

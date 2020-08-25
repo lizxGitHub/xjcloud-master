@@ -602,8 +602,10 @@ public class PlanManagementController {
         JSONObject data = new JSONObject();
         JSONArray impData = new JSONArray();
         JSONArray auditData = new JSONArray();
+        JSONArray auditParentData = new JSONArray();
         Map<String, List<PlanCheckList>> impCollect = list.stream().filter(e -> StringUtils.isNotBlank(e.getImplementingAgencyId())).collect(Collectors.groupingBy(e -> e.getImplementingAgencyId()));
         Map<String, List<PlanCheckList>> auditCollect = list.stream().filter(e -> StringUtils.isNotBlank(e.getAuditObjectId())).collect(Collectors.groupingBy(e -> e.getAuditObjectId()));
+        Map<String, List<PlanCheckList>> auditParentCollect = list.stream().filter(e -> StringUtils.isNotBlank(e.getAuditObjectIdNew())).collect(Collectors.groupingBy(e -> e.getAuditObjectIdNew()));
         impCollect.entrySet().stream().forEach(e -> {
             gov.pbc.xjcloud.provider.contract.utils.R impR = userCenterService.dept(Integer.parseInt(e.getKey()));
             impData.add(impR.getData());
@@ -612,8 +614,13 @@ public class PlanManagementController {
             gov.pbc.xjcloud.provider.contract.utils.R impR = userCenterService.dept(Integer.parseInt(e.getKey()));
             auditData.add(impR.getData());
         });
+        auditParentCollect.entrySet().stream().forEach(e -> {
+            gov.pbc.xjcloud.provider.contract.utils.R impR = userCenterService.dept(Integer.parseInt(e.getKey()));
+            auditParentData.add(impR.getData());
+        });
         data.put("impData", impData);
         data.put("auditData", auditData);
+        data.put("auditParentData", auditParentData);
         return new R().setData(data);
     }
 
@@ -637,7 +644,7 @@ public class PlanManagementController {
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e));
         JSONObject jsonObject = new JSONObject();
-        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId");
+        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId","auditObjectIdNew");
         AtomicBoolean isGroupByDept = new AtomicBoolean(false);
         AtomicBoolean noAll = new AtomicBoolean(false);
         StringJoiner joiner = new StringJoiner("-");

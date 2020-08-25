@@ -94,10 +94,9 @@ public class PlanOutTimeSchedule {
     /**
      * 频次统计定时任务 10分钟一次
      */
-    @Scheduled(cron = "0/10 * * * * ?")
+//    @Scheduled(cron = "0/10 * * * * ?")
     @Transactional(rollbackFor = Exception.class)
     public void sequencyOvertimeTip() {
-        System.out.println("hehehehehhehe");
         Map<String, Object> params = Maps.newHashMap();
         //未归档 且超时的项目
         List<PlanCheckListDTO> deadLineList = planManagementService.findDeadlinePlanList();

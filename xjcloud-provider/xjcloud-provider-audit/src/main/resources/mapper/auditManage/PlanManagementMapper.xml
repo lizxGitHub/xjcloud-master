@@ -442,6 +442,9 @@
         <if test="params.auditObjectId!=null and params.auditObjectId=='all'">
             ,a.audit_object_id `name`
         </if>
+        <if test="params.auditObjectIdNew!=null and params.auditObjectIdNew=='all'">
+            ,a.audit_object_id_new `name`
+        </if>
         <if test="params.rectifySituationId!=null and params.rectifySituationId=='all'">
             ,a.rectify_Situation_Id `name`
         </if>
@@ -474,6 +477,9 @@
         </if>
         <if test="params.auditObjectId!=null  and params.auditObjectId!=''and params.auditObjectId!='all'">
             and a.audit_Object_Id = #{params.auditObjectId}
+        </if>
+        <if test="params.auditObjectIdNew!=null  and params.auditObjectIdNew!=''and params.auditObjectIdNew!='all'">
+            and a.audit_Object_Id_new = #{params.auditObjectIdNew}
         </if>
         <if test="params.questionEntryId!=null  and params.questionEntryId!=''and params.questionEntryId!='all'">
             and a.question_Entry_Id = #{params.questionEntryId}
@@ -639,6 +645,9 @@
         </if>
         <if test='query.auditObjectId !=null and query.auditObjectId !="" '>
             and (pcl.audit_object_id = #{query.auditObjectId})
+        </if>
+        <if test='query.auditObjectIdNew !=null and query.auditObjectIdNew !="" '>
+            and (pcl.audit_object_id_new = #{query.auditObjectIdNew})
         </if>
         <if test='query.projectType !=null and query.projectType !="" '>
             and (pcl.project_Type = #{query.projectType})

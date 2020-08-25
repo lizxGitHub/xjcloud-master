@@ -89,6 +89,14 @@ public class PlanStatisticController {
                 groupFieldFilters.add("pcl.audit_object_id");
                 subtitles.add("审计对象");
             }
+            if (StringUtils.equals(query.getAuditObjectIdNew(), "all")) {
+                hasDept.set(true);
+                query.setAuditObjectId("");
+                groupFilters.add("audit_object_id_new");
+//                groupFieldFilters.add("audit_entry.name");
+                groupFieldFilters.add("pcl.audit_object_id_new");
+                subtitles.add("审计对象中支");
+            }
             if (StringUtils.equals(query.getProblemSeverityId(), "all")) {
                 query.setProblemSeverityId("");
                 groupFilters.add("problem_severity_id");
@@ -283,7 +291,8 @@ public class PlanStatisticController {
                         resultList.add(data);
                     }
                 }
-                if(BooleanUtil.isTrue(isSuperAdmin)){
+                // 如若不是超管，则只显示自己所在的审计单位的报告
+                if(BooleanUtil.isFalse(isSuperAdmin)){
                     List<Map<String, Object>> collect = resultList.stream().filter(e -> e.get("implementingAgencyId").equals(deptId)).collect(Collectors.toList());
                     resultList = collect;
                 }
