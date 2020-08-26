@@ -2,6 +2,7 @@ package gov.pbc.xjcloud.provider.contract.service.impl.auditManage;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import gov.pbc.xjcloud.provider.contract.dto.PlanCheckListDTO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip;
@@ -9,18 +10,15 @@ import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.enumutils.PlanStatusEnum;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.mapper.auditManage.PlanManagementMapper;
-import gov.pbc.xjcloud.provider.contract.service.IBaseService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.service.impl.IBaseServiceImpl;
 import gov.pbc.xjcloud.provider.contract.utils.IdGenUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -227,6 +225,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     @Override
     public Map<String, Object> selectProNumAndOverTime(int implementingAgencyId, String auditYear) {
         return planManagementMapper.selectProNumAndOverTime(implementingAgencyId, auditYear);
+    }
+
+    @Override
+    public Boolean delOverTips() {
+        return SqlHelper.retBool(planManagementMapper.delOverTips());
     }
 
     /**

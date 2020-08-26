@@ -1,7 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.schedule;
 
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import gov.pbc.xjcloud.provider.contract.aop.AopTip;
@@ -15,9 +15,8 @@ import gov.pbc.xjcloud.provider.contract.exceptions.AppException;
 import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
-import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.utils.R;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +30,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class PlanOutTimeSchedule {
 
     @Resource
-    private PlanManagementServiceImpl planManagementService;
+    private PlanManagementService planManagementService;
     @Resource
     private RemoteDeptService deptService;
     @Resource
@@ -94,12 +94,20 @@ public class PlanOutTimeSchedule {
     /**
      * 频次统计定时任务 10分钟一次
      */
-//    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     @Transactional(rollbackFor = Exception.class)
     public void sequencyOvertimeTip() {
         Map<String, Object> params = Maps.newHashMap();
         //未归档 且超时的项目
         List<PlanCheckListDTO> deadLineList = planManagementService.findDeadlinePlanList();
+        AtomicReference<PlanCheckList> planCheckList = null;
+        //更新延期状态
+        deadLineList.stream().filter(e-> StrUtil.isNotBlank(e.getPlanId())).forEach(e->{
+            planCheckList.set(new PlanCheckList());
+            planCheckList.get().setStatus("1005");
+            planCheckList.get().setId(Integer.parseInt(e.getPlanId());
+            planManagementService.updateById(planCheckList.get())
+        });
         deadLineList.stream().filter(Objects::nonNull).forEach(e -> {
             int days = e.getDays();
             // TODO #苗 暂时不计算真实天数
@@ -115,6 +123,16 @@ public class PlanOutTimeSchedule {
                 submitTask(e, OverTimeConstants.TYPE_3);
             }
         });
+    }
+
+    /**
+     * 频次统计定时任务 10分钟一次
+     */
+    @Scheduled(cron = "0/10 * * * * ?")
+    @Transactional(rollbackFor = Exception.class)
+    public void sequencyDelOvertimeTip() {
+        Boolean del = planManagementService.delOverTips();
+        log.info("删除超时已完成的记录");
     }
 
     private void submitTask(PlanCheckListDTO e, int overType) {
@@ -195,6 +213,7 @@ public class PlanOutTimeSchedule {
         log.info(JSONObject.toJSONString(tip));
         aopTip.after();
     }
+
 
     /**
      * 获取被审计部门的行长

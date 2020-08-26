@@ -44,6 +44,13 @@
             #{checkId}
         </foreach>
     </delete>
+    <delete id="delOverTips">
+        DELETE
+        FROM
+            plan_overtime_tip
+        WHERE
+	EXISTS ( SELECT 1 FROM plan_check_list WHERE plan_overtime_tip.plan_id = plan_check_list.id AND plan_check_list.`status` = '1013' )
+    </delete>
     <!--机构汇总报告start-->
     <insert id="addDeptYearReport">
         insert into dept_year_report(dept_id,audit_year,content)
@@ -831,6 +838,10 @@
         insert into plan_overtime_tip(over_type,tip_assignee,del_flag,plan_id)
         values(#{overType},#{tipAssignee},#{delFlag},#{planId})
     </insert>
+
+    <update id="delTip" useGeneratedKeys="true" parameterType="gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip">
+        delete from plan_overtime_tip where plan_id=#{planId}
+    </update>
 
     <select id="selectProNumAndOverTime" resultType="java.util.Map" parameterType="map">
         SELECT t2.projectSum from

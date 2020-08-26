@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import gov.pbc.xjcloud.provider.contract.dto.PlanCheckListDTO;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -64,4 +63,10 @@ public interface PlanManagementService extends IService<PlanCheckList> {
     int insertTip(PlanOverTimeTip tip);
 
     Map<String, Object> selectProNumAndOverTime(int implementingAgencyId, String auditYear);
+
+    /**
+     * 查找超时记录
+     * @return
+     */
+    Boolean delOverTips();
 }

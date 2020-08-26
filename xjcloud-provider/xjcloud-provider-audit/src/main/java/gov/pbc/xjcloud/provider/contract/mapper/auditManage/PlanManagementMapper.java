@@ -282,5 +282,19 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
      */
     int insertTip(PlanOverTimeTip tip);
 
+
+    /**
+     * 插入提醒记录
+     * @param tip
+     * @return
+     */
+    int delTip(PlanOverTimeTip tip);
+
     Map<String, Object> selectProNumAndOverTime(@Param("implementingAgencyId")int implementingAgencyId, @Param("auditYear")String auditYear);
+
+    /**
+     * 删除已归档的提醒
+     * @return
+     */
+    Integer delOverTips();
 }
