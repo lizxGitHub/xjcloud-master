@@ -43,8 +43,8 @@ public class PlanOverTimeTip {
 
     public void setTipAssignee(Integer tipAssignee) throws AppException {
         if (null == tipAssignee) {
-            log.error("设置代理人失败");
-            throw new AppException("设置代理人失败");
+            log.error("设置代理人失败，未找到相关代理人");
+            throw new AppException("设置代理人失败，未找到相关代理人");
         }
         this.tipAssignee = tipAssignee;
     }
