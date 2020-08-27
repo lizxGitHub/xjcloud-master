@@ -100,13 +100,13 @@ public class PlanOutTimeSchedule {
         Map<String, Object> params = Maps.newHashMap();
         //未归档 且超时的项目
         List<PlanCheckListDTO> deadLineList = planManagementService.findDeadlinePlanList();
-        AtomicReference<PlanCheckList> planCheckList = null;
+        AtomicReference<PlanCheckList> planCheckList = new AtomicReference();
         //更新延期状态
         deadLineList.stream().filter(e-> StrUtil.isNotBlank(e.getPlanId())).forEach(e->{
             planCheckList.set(new PlanCheckList());
             planCheckList.get().setStatus("1005");
-            planCheckList.get().setId(Integer.parseInt(e.getPlanId());
-            planManagementService.updateById(planCheckList.get())
+            planCheckList.get().setId(Integer.parseInt(e.getPlanId()));
+            planManagementService.updateById(planCheckList.get());
         });
         deadLineList.stream().filter(Objects::nonNull).forEach(e -> {
             int days = e.getDays();
