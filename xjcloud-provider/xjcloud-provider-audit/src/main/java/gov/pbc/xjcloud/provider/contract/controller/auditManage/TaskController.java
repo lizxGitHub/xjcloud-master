@@ -260,6 +260,8 @@ public class TaskController {
             PlanTimeTemp planTimeTemp = planTimeTempService.getByPlanId(plan.getId());
             R<List> auditLeaderAssigneeListR = activitiService.getTaskVariable(taskId, "auditLeaderAssigneeList");
             List auditLeaderAssigneeList = auditLeaderAssigneeListR.getData();
+            R<List> auditUserInnerListR = activitiService.getTaskVariable(taskId, "auditUserInnerList");
+            List auditUserInnerList = auditUserInnerListR.getData();
             if (PlanStatusEnum.PLAN_IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //审计对象管理员
                 for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
@@ -301,10 +303,20 @@ public class TaskController {
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 }
             } else if (PlanStatusEnum.RECTIFY_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
-                planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
+                if ("4".equals(mark)) {
+                    for (int i = 0; i < auditUserInnerList.size(); i++) {
+                        planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), opinion);
+                    }
+                } else {
+                    planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
+                }
                 endTimePartOne = new Date();
                 daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartOne(), endTimePartOne);
                 planTimeTemp.setDays(daysPart);
+                //内审人员
+                for (int i = 0; i < auditUserInnerList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), "1003");
+                }
                 //审计对象员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1003");
                 //实施部门员工
@@ -346,6 +358,27 @@ public class TaskController {
                     planTimeTemp.setDays(daysPart);
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
+                    //实施机构员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1002");
+                    //实施机构领导
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpAdminId()), "1002");
+                } else if ("4".equals(mark)) { //内审人员
+                    for (int i = 0; i < auditUserInnerList.size(); i++) {
+                        planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), opinion);
+                    }
+                    endTimePartTwo = new Date();
+                    daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
+                    planTimeTemp.setDays(daysPart);
+                    //内审人员
+                    for (int i = 0; i < auditUserInnerList.size(); i++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), "1003");
+                    }
+                    //审计对象员工
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
+                    //审计对象管理员
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1005");
+                    }
                     //实施机构员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1002");
                     //实施机构领导
