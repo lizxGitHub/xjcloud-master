@@ -168,6 +168,11 @@ public class PlanManagementServiceImpl extends IBaseServiceImpl<PlanManagementMa
     }
 
     @Override
+    public List<Map<String, Object>> groupCountProName(String auditYear, String deptId) {
+        return planManagementMapper.groupCountProName(auditYear, deptId);
+    }
+
+    @Override
     public List<Map<String, Object>> countPlan(String agencyId, String auditYear) {
         return planManagementMapper.countPlan(agencyId, auditYear);
     }

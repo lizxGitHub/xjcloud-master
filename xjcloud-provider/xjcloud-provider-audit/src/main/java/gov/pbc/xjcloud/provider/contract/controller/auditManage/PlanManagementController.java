@@ -1,9 +1,9 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
@@ -262,9 +262,13 @@ public class PlanManagementController {
      */
     @ApiOperation("审计查询")
     @GetMapping(value = {"/search/planList", ""})
-    public R searchPlanList(PlanCheckList query, Page<Map<String, Object>> page) {
+    public R searchPlanList(PlanCheckList query, boolean isSuperAdmin, Page<Map<String, Object>> page) {
         List<Map<String, Object>> planList = new ArrayList<>();
         try {
+            //不是超管那就只看自己的
+            if (!BooleanUtil.isTrue(query.getIsSuperAdmin()) && StringUtils.isNotBlank(query.getImplementingAgencyIdCurr())) {
+                query.setImplementingAgencyId(query.getImplementingAgencyIdCurr());
+            }
             List<Map<String, Object>> planListold = planManagementService.selectEntryByQuery(query, page.getCurrent() - 1, page.getSize());
             List<EntryInfo> list = entryService.listAll();
             Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
@@ -325,7 +329,7 @@ public class PlanManagementController {
     }
 
     @GetMapping("/selectEntryByLevel")
-    public R selectEntryByLevel(@RequestParam Map<String,String> params) {
+    public R selectEntryByLevel(@RequestParam Map<String, String> params) {
 
         List<Map<String, Object>> maps = planManagementService.selectEntryByKeyAndLevel(params);
         return R.ok(maps);
@@ -512,7 +516,7 @@ public class PlanManagementController {
                 return r.failed("参数错误，请检查");
             }
             List<EntryInfo> list = entryService.listAll();
-            Map<String, EntryInfo> entryMap = list.stream().filter(Objects::nonNull).collect(Collectors.toMap(e -> e.getId(), e -> e,(e1,e2)->e1));
+            Map<String, EntryInfo> entryMap = list.stream().filter(Objects::nonNull).collect(Collectors.toMap(e -> e.getId(), e -> e, (e1, e2) -> e1));
             PlanCheckList planOne = planManagementService.getById(id);
             PlanCheckListVO planCheckListDTO = changeToDTO(planOne);
             Field[] declaredFields = planCheckListDTO.getClass().getDeclaredFields();
@@ -556,7 +560,7 @@ public class PlanManagementController {
             String rectifySituationId = planCheckListDTO.getRectifySituationId();
             if (StringUtils.isNotBlank(rectifySituationId)) {
                 EntryInfo info = entryMap.get(rectifySituationId);
-                planCheckListDTO.setRectifySituationName(null!=info?info.getConcatName():"");
+                planCheckListDTO.setRectifySituationName(null != info ? info.getConcatName() : "");
             }
             r.setData(planCheckListDTO);
         } catch (Exception e) {
@@ -652,7 +656,7 @@ public class PlanManagementController {
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e));
         JSONObject jsonObject = new JSONObject();
-        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId","auditObjectIdNew");
+        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId", "auditObjectIdNew");
         AtomicBoolean isGroupByDept = new AtomicBoolean(false);
         AtomicBoolean noAll = new AtomicBoolean(false);
         StringJoiner joiner = new StringJoiner("-");

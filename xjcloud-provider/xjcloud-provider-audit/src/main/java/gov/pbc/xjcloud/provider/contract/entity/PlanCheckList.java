@@ -275,6 +275,10 @@ public class PlanCheckList extends Model<PlanCheckList> implements Serializable,
     private String functionType;
 
     private String auditSuggestions;
+    @TableField(exist = false)
+    private String implementingAgencyIdCurr;
+    @TableField(exist = false)
+    private Boolean isSuperAdmin;
 
     public String generateSetterMethod(String column,String type) {
         String[] splits = column.split("_");

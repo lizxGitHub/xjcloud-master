@@ -169,6 +169,27 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
             "</script>"})
     List<Map<String, Object>> groupCountProType(@Param("auditYear")String auditYear, @Param("deptId")String deptId);
 
+    @Select({"<script>",
+            "SELECT\n" +
+                    "	tb1.status,\n" +
+                    "	tb1.`name`\n" +
+                    "FROM\n" +
+                    "	(\n" +
+                    "		SELECT\n" +
+                    "			a.status,\n" +
+                    "			a.project_name name\n" +
+                    "		FROM\n" +
+                    "			plan_check_list a\n" +
+                    "		WHERE\n" +
+                    "			a.del_flag = 0\n" +
+                    "		AND a.audit_year = '${auditYear}'\n" +
+                    "		AND a.implementing_agency_id = '${deptId}'\n" +
+                    "       and a.`status`!='0' " +
+                    "	) tb1\n" +
+                    "",
+            "</script>"})
+    List<Map<String, Object>> groupCountProName(@Param("auditYear")String auditYear, @Param("deptId")String deptId);
+
 
     List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId, @Param("auditYear")String auditYear);
 
