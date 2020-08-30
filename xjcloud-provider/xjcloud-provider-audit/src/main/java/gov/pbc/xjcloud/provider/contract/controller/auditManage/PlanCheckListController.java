@@ -369,7 +369,7 @@ public class PlanCheckListController {
                     }
                     JSONObject varsJSONObject = new JSONObject();
                     int auditStatus = 1004;
-                    if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
+                    if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyNewId()))) {
                         auditStatus = 1018;
                         int nsDeptId = 0;
                         List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(plan.getAuditObjectIdNew()), "内审科");
