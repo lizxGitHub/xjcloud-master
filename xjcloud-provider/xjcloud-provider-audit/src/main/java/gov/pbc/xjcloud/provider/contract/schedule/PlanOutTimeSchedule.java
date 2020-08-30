@@ -17,6 +17,9 @@ import gov.pbc.xjcloud.provider.contract.feign.dept.RemoteDeptService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
 import gov.pbc.xjcloud.provider.contract.utils.R;
+import gov.pbc.xjcloud.provider.mission.api.feign.RemoteMissionService;
+import gov.pbc.xjcloud.provider.mission.api.vo.MissionMemberVO;
+import gov.pbc.xjcloud.provider.mission.api.vo.MissionVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +30,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -135,6 +137,9 @@ public class PlanOutTimeSchedule {
         log.info("删除超时已完成的记录");
     }
 
+    @Autowired
+    private RemoteMissionService remoteMissionService;
+
     private void submitTask(PlanCheckListDTO e, int overType) {
         PlanOverTimeTip dtoObj = new PlanOverTimeTip();
         dtoObj.setPlanId(e.getPlanId());
@@ -209,7 +214,24 @@ public class PlanOutTimeSchedule {
         }
         missionMap.put("createrId",tip.getTipAssignee());
         planManagementService.insertTip(tip);
-        auditActivitiService.start(tipKey, tip.getId(), JSONObject.toJSONString(tip.getProcessParam()));
+        MissionVO missionVO = new MissionVO();
+        MissionMemberVO missionMemberVO = new MissionMemberVO();
+        missionVO.setMembers(Arrays.asList(missionMemberVO));
+        // 任务成员
+        missionMemberVO.setUserId(timeTip.getTipAssignee());
+        missionMemberVO.setUserName(timeTip.getTipAssigneeName());
+        // 任务基本信息
+        missionVO.setBasicTitle((String) missionMap.get("basicTitle"));
+        missionVO.setBasicDescription("任务已超时，请及时处理");
+        missionVO.setStatus("待分发");
+        missionVO.setCreaterId(1);
+        missionVO.setCreaterName("admin");
+        missionVO.setBeginDate(new Date());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,30);
+        missionVO.setEndDate(calendar.getTime());
+        remoteMissionService.deploy(missionVO);
+//        auditActivitiService.start(tipKey, tip.getId(), JSONObject.toJSONString(tip.getProcessParam()));
         log.info(JSONObject.toJSONString(tip));
         aopTip.after();
     }
