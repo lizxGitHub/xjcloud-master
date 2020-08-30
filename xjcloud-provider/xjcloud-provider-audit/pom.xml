@@ -217,13 +217,13 @@
                     <systemPath>${project.basedir}/src/lib/xjcloud-provider-activiti-api.jar</systemPath>
                     <scope>system</scope>
                 </dependency>
-                <dependency>
-                    <groupId>gov.pbc.xjcloud.provider.api</groupId>
-                    <artifactId>xjcloud-provider-missioncenter-api</artifactId>
-                    <version>0.0.1</version>
-                    <systemPath>${project.basedir}/src/lib/xjcloud-provider-missioncenter-api.jar</systemPath>
-                    <scope>system</scope>
-                </dependency>
+<!--                <dependency>-->
+<!--                    <groupId>gov.pbc.xjcloud.provider.api</groupId>-->
+<!--                    <artifactId>xjcloud-provider-missioncenter-api</artifactId>-->
+<!--                    <version>0.0.1</version>-->
+<!--                    <systemPath>${project.basedir}/src/lib/xjcloud-provider-missioncenter-api.jar</systemPath>-->
+<!--                    <scope>system</scope>-->
+<!--                </dependency>-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
