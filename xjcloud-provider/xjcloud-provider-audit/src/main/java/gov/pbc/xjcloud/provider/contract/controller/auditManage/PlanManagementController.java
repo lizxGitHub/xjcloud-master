@@ -530,13 +530,21 @@ public class PlanManagementController {
                 }
             }
             try {
-                gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getImplementingAgencyId()));
+                int implementingAgency = Integer.parseInt(planCheckListDTO.getImplementingAgencyId());
+                if (planCheckListDTO.getImplementingAgencyNewId() != null) {
+                    implementingAgency = Integer.parseInt(planCheckListDTO.getImplementingAgencyNewId());
+                }
+                gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(implementingAgency);
                 JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
                 if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
                     JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
                     planCheckListDTO.setImplementingAgencyName(deptData.get("name").toString());
                 }
-                gov.pbc.xjcloud.provider.contract.utils.R adept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getAuditObjectId()));
+                int auditObjectId = Integer.parseInt(planCheckListDTO.getAuditObjectId());
+                if (planCheckListDTO.getAuditObjectIdNew() != null) {
+                    auditObjectId = Integer.parseInt(planCheckListDTO.getAuditObjectIdNew());
+                }
+                gov.pbc.xjcloud.provider.contract.utils.R adept = userCenterService.dept(auditObjectId);
                 JSONObject adeptJSON = (JSONObject) JSONObject.toJSON(adept);
                 if (null != adeptJSON && "0".equals(adeptJSON.get("code").toString())) {
                     JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
