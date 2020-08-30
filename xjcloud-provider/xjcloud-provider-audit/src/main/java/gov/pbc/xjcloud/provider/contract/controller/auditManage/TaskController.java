@@ -291,28 +291,30 @@ public class TaskController {
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1019);
+                    //内审人员
+                    for (int j = 0; j < auditUserInnerList.size(); j++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1002");
+                    }
                 } else {
                     if (StringUtils.isBlank(plan.getRectifyWay())) {
                         return complete.setData(false);
                     }
-                    startTimePartOne = new Date();
-                    planTimeTemp.setStartTimePartOne(startTimePartOne);
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
                     //实施部门员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                 }
+                startTimePartOne = new Date();
+                planTimeTemp.setStartTimePartOne(startTimePartOne);
             } else if (PlanStatusEnum.RECTIFY_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if ("4".equals(mark)) {
                     planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1003");
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1007");
                     }
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
-                    //实施部门员工
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1001");
                 } else {
                     planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
                     //审计对象员工
@@ -371,7 +373,7 @@ public class TaskController {
                     planTimeTemp.setDays(daysPart);
                     //内审人员
                     for (int i = 0; i < auditUserInnerList.size(); i++) {
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), "1003");
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), "1007");
                     }
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
@@ -415,9 +417,11 @@ public class TaskController {
 //                }
                 if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1020);
+                    //内审人员
+                    for (int j = 0; j < auditUserInnerList.size(); j++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1002");
+                    }
                 } else {
-                    startTimePartTwo = new Date();
-                    planTimeTemp.setStartTimePartTwo(startTimePartTwo);
                     //实施部门一般员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
                     //审计对象一般员工
@@ -428,6 +432,8 @@ public class TaskController {
                     }
 //                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
                 }
+                startTimePartTwo = new Date();
+                planTimeTemp.setStartTimePartTwo(startTimePartTwo);
             } else if (PlanStatusEnum.IMP_REJECT.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //实施部门一般员工
                 planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1004");
@@ -478,6 +484,10 @@ public class TaskController {
             } else if (PlanStatusEnum.DELAY_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1021);
+                    //内审人员
+                    for (int j = 0; j < auditUserInnerList.size(); j++) {
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1002");
+                    }
                 } else {
                     //实施部门一般员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getImpUserId()), "1003");
