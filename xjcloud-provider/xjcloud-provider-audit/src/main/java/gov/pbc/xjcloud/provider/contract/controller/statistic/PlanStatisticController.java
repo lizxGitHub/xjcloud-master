@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Maps;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.auditManage.PlanManagementService;
@@ -228,6 +229,39 @@ public class PlanStatisticController {
         }
         return r;
     }
+
+    /**
+     * 项目类型
+     * @return
+     */
+    @ApiOperation("项目名称")
+    @RequestMapping("/questionStatisticProName")
+    public R questionStatisticProName(String auditYear, String deptId) {
+        R<JSONObject> r = new R<>();
+        try {
+            JSONObject data = new JSONObject();
+            List<Map<String, Object>> list = planManagementService.groupCountProName(auditYear, deptId);
+            List<Map<String,Object>> result = new ArrayList<>();
+            Map<Object, List<Map<String, Object>>> all = list.stream().collect(Collectors.groupingBy(e -> e.get("name")));
+            all.keySet().stream().forEach(key->{
+                List<Map<String, Object>> mapList = all.get(key);
+                Map<String,Object> dataMap = Maps.newHashMap();
+                dataMap.put("name",key);
+                long wzg =mapList.stream().filter(e1 -> !"1003".equals(e1.get("status"))).count();
+                long cs = mapList.stream().filter(e1 -> "1005".equals(e1.get("status"))).count();
+                dataMap.put("wts",mapList.size());
+                dataMap.put("wzg",wzg);
+                dataMap.put("cs",cs);
+                result.add(dataMap);
+            });
+            data.put("statisticData", result);
+//            data.put("statisticData", list);
+            r.setData(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
     /**
      * 不同状态审计统计个数
      * @return
@@ -256,7 +290,7 @@ public class PlanStatisticController {
         Long resultCount = 0L;
         try {
             if (deptId != 0 && deptId != 10000) {
-                List<Map<String, Object>> resultListOld =  planManagementService.statisticPlanReportByDeptId(page.getCurrent()-1, page.getSize(), auditYear, deptId);
+                List<Map<String, Object>> resultListOld =  planManagementService.statisticPlanReportByDeptId(null, null, auditYear, deptId);
                 for (int i = 0; i < resultListOld.size(); i++) {
                     Map<String, Object> data = resultListOld.get(i);
                     Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(data.get("implementingAgencyId"))), auditYear);
@@ -268,7 +302,7 @@ public class PlanStatisticController {
                 //获取机构
                 //按dept查询问题数 key
                 List<DeptVO> deptChild = deptUtil.findChildBank(0, "中支");
-                List<Map<String, Object>> resultListStatis = planManagementService.statisticPlanReport(page.getCurrent() - 1, page.getSize(), auditYear);
+                List<Map<String, Object>> resultListStatis = planManagementService.statisticPlanReport(null, null, auditYear);
                 Map<Integer, Map<String, Object>> datagroup = new HashMap<>();
                 for (Map<String, Object> statisData : resultListStatis) {
                     Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(statisData.get("implementingAgencyId"))), auditYear);

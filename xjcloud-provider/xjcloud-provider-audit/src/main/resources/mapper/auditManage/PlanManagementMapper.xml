@@ -285,19 +285,22 @@
             <when test="query.type=='overTime'">
                 and a.`status`='1005'
             </when>
+            <when test="query.type=='overTimeNum'">
+                and a.`status`='1005'
+            </when>
 
         </choose>
 
     </select>
     <select id="countPlan" resultType="java.util.Map">
-        SELECT t2.projectSum,pcl.planSum,pcl.finishCount,pcl.nofinishCount,pcl.overTimeCount,pcl.timeoutCount from
+        SELECT t2.projectSum,pcl.planSum,pcl.finishCount,pcl.nofinishCount,pcl.overTimeNum,pcl.timeoutCount from
         (select
 
         IFNULL(sum(case when status!= '0' then 1 else 0 end),0) planSum,
         IFNULL(sum(case when status='1003' then 1 else 0 end),0) finishCount,
         IFNULL(sum(case when STATUS != '1003' and STATUS != '0' then 1 else 0 end),0) nofinishCount,
         IFNULL(sum(case when status='1004' then 1 else 0 end),0) timeoutCount,
-        IFNULL(sum(case when status='1005' then 1 else 0 end),0) overTimeCount
+        IFNULL(sum(case when status='1005' then 1 else 0 end),0) overTimeNum
         from
         plan_check_list where del_flag='0'
             <if test='agencyId!=null and agencyId!=""'>

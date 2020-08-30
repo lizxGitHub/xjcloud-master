@@ -48,4 +48,10 @@ public class PlanOverTimeTip {
         }
         this.tipAssignee = tipAssignee;
     }
+
+    /**
+     * 代理人名字
+     */
+    @TableField(exist = false)
+    private String tipAssigneeName;
 }
