@@ -71,8 +71,8 @@ public class PlanStatisticController {
             AtomicBoolean hasDept = new AtomicBoolean(false);
             if (StringUtils.contains(query.getImplementingAgencyId(), "all")) {
                 query.setImplementingAgencyId("");
-                groupFilters.add("implementing_agency_id");
-                groupFieldFilters.add("pcl.implementing_agency_id");
+                groupFilters.add("implementing_agency_new_id");
+                groupFieldFilters.add("pcl.implementing_agency_new_id");
                 subtitles.add("实施机构");
                 hasDept.set(true);
             }
@@ -203,7 +203,8 @@ public class PlanStatisticController {
         R<JSONObject> r = new R<>();
         try {
             JSONObject data = new JSONObject();
-            List<Map<String, Object>> list = planManagementService.groupCountEntry(auditYear);
+//            List<Map<String, Object>> list = planManagementService.groupCountEntry(auditYear);
+            List<Map<String, Object>> list = new ArrayList<>();
             data.put("statisticData", list);
             r.setData(data);
         } catch (Exception e) {
@@ -293,8 +294,9 @@ public class PlanStatisticController {
                 List<Map<String, Object>> resultListOld =  planManagementService.statisticPlanReportByDeptId(null, null, auditYear, deptId);
                 for (int i = 0; i < resultListOld.size(); i++) {
                     Map<String, Object> data = resultListOld.get(i);
-                    Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(data.get("implementingAgencyId"))), auditYear);
+                    Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(data.get("implementingAgencyNewId"))), auditYear);
                     data.put("projectSum", String.valueOf(m.get("projectSum")));
+                    data.put("implementingAgencyId", data.get("implementingAgencyNewId").toString());
                     resultList.add(data);
                 }
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
@@ -305,9 +307,10 @@ public class PlanStatisticController {
                 List<Map<String, Object>> resultListStatis = planManagementService.statisticPlanReport(null, null, auditYear);
                 Map<Integer, Map<String, Object>> datagroup = new HashMap<>();
                 for (Map<String, Object> statisData : resultListStatis) {
-                    Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(statisData.get("implementingAgencyId"))), auditYear);
+                    Map<String, Object> m = planManagementService.selectProNumAndOverTime(Integer.valueOf(String.valueOf(statisData.get("implementingAgencyNewId"))), auditYear);
                     statisData.put("projectSum", String.valueOf(m.get("projectSum")));
-                    datagroup.put(Integer.valueOf(statisData.get("implementingAgencyId").toString()), statisData);
+                    statisData.put("implementingAgencyId", statisData.get("implementingAgencyNewId").toString());
+                    datagroup.put(Integer.valueOf(statisData.get("implementingAgencyNewId").toString()), statisData);
                 }
                 for (DeptVO deptVO : deptChild) {
                     Map<String, Object> data = new HashMap<>();
@@ -327,7 +330,7 @@ public class PlanStatisticController {
                 }
                 // 如若不是超管，则只显示自己所在的审计单位的报告
                 if(BooleanUtil.isFalse(isSuperAdmin)){
-                    List<Map<String, Object>> collect = resultList.stream().filter(e -> e.get("implementingAgencyId").equals(deptId)).collect(Collectors.toList());
+                    List<Map<String, Object>> collect = resultList.stream().filter(e -> e.get("implementingAgencyNewId").equals(deptId)).collect(Collectors.toList());
                     resultList = collect;
                 }
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReport());

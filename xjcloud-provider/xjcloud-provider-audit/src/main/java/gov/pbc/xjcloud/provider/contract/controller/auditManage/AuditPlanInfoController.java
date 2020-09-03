@@ -235,12 +235,11 @@ public class AuditPlanInfoController {
             int rectifieding = 0; //正在整改问题个数
             for (Map<String, Object> shortPlan : shortPlans) {
                 int status = Integer.valueOf(shortPlan.get("status").toString());
-                String rsName = (String) shortPlan.get("rsName");
                 if (0 != status) {
                     total += 1;
-                    if ("未整改".equals(rsName)) {
+                    if (1004 == status) { //未整改
                         notRectified += 1;
-                    } else if ("正在整改".equals(rsName)) {
+                    } else if (1001 == status) { //正在整改
                         rectifieding += 1;
                     }
                 }

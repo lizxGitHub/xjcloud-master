@@ -289,7 +289,7 @@ public class TaskController {
                 }
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(userId), "1006");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
-                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyNewId()))) {
+                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1019);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
@@ -415,7 +415,7 @@ public class TaskController {
 //                if (StringUtils.isBlank(plan.getRectifyResult())) {
 //                    return complete.setData(false);
 //                }
-                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyNewId()))) {
+                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1020);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
@@ -482,7 +482,7 @@ public class TaskController {
                 }
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1001");
             } else if (PlanStatusEnum.DELAY_AUDIT_PASS.getCode() == status && StringUtils.isNotBlank(planId)) {
-                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyNewId()))) {
+                if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1021);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
@@ -560,7 +560,7 @@ public class TaskController {
     public ResponseEntity taskView(@RequestParam(name = "processDefKey", required = true) String processDefKey, @RequestParam(name = "businessId", required = true) String businessId) {
         processDefKey = auditFlowDefKey;
         PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(businessId));
-        if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyNewId()))) {
+        if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
             processDefKey = auditFlowDefKey + "_1";
         }
         return activitiService.getTaskView(processDefKey, businessId);
@@ -608,7 +608,7 @@ public class TaskController {
         try {
             processDefKey = auditFlowDefKey;
             PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(businessId));
-            if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyNewId()))) {
+            if (plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                 processDefKey = auditFlowDefKey + "_1";
             }
             R<List<Map<String,Object>>> history = activitiService.history(processDefKey, businessId);

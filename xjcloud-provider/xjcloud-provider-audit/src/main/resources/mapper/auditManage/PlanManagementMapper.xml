@@ -9,6 +9,7 @@
         <result column="project_type" property="projectType"/>
         <result column="implementing_agency_new_id" property="implementingAgencyNewId"/>
         <result column="implementing_agency_id" property="implementingAgencyId"/>
+        <result column="implementing_agency_name" property="implementingAgencyName"/>
         <result column="audit_object_id" property="auditObjectId"/>
         <result column="audit_object_id_new" property="auditObjectIdNew"/>
         <result column="audit_nature_id" property="auditNatureId"/>
@@ -85,6 +86,7 @@
         a.project_name,
         a.project_type,
         a.implementing_agency_id,
+        a.implementing_agency_name,
         a.audit_object_id,
         a.audit_object_id_new,
         en3.`name` audit_nature_id,
@@ -212,8 +214,7 @@
         </choose>
     </select>
     <select id="getShortPlansNew" resultType="java.util.HashMap">
-        SELECT a.id, a.status,b.`name` rsName FROM `plan_check_list` a
-        LEFT JOIN entry_info b on a.rectify_situation_id = b.id
+        SELECT a.id, a.status FROM `plan_check_list` a
         where a.del_flag='0'
         <if test="status!=null and status!=''">
             and a.status =#{status}
@@ -222,7 +223,7 @@
             and a.audit_year like concat('%',concat(#{auditYear},'%'))
         </if>
         <if test="implementingAgencyId!=null and implementingAgencyId!=''">
-            and implementing_agency_id='${implementingAgencyId}'
+            and a.implementing_agency_new_id='${implementingAgencyId}'
         </if>
     </select>
     <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
@@ -249,7 +250,7 @@
             a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
         <if test="query.deptId!=null and query.deptId.length>0">
-            and a.implementing_agency_id in
+            and a.implementing_agency_new_id in
             <foreach collection="query.deptId" close=")" open="(" item="dept">
                 #{dept}
             </foreach>
@@ -264,7 +265,7 @@
             </foreach>
         </if>
         <if test="query.deptId != null and query.deptId!=''">
-            and a.implementing_agency_id in
+            and a.implementing_agency_new_id in
             <foreach collection="query.deptId" separator="," open="(" close=")" item="deptId">
                 #{deptId}
             </foreach>
@@ -298,14 +299,14 @@
 
         IFNULL(sum(case when status!= '0' then 1 else 0 end),0) planSum,
         IFNULL(sum(case when status='1003' then 1 else 0 end),0) finishCount,
-        IFNULL(sum(case when STATUS != '1003' and STATUS != '0' then 1 else 0 end),0) nofinishCount,
+        IFNULL(sum(case when STATUS = '1004' or STATUS = '1005'  then 1 else 0 end),0) nofinishCount,
         IFNULL(sum(case when status='1004' then 1 else 0 end),0) timeoutCount,
         IFNULL(sum(case when status='1005' then 1 else 0 end),0) overTimeNum,
         IFNULL(sum(case when status='1001' then 1 else 0 end),0) rectifyNum
         from
         plan_check_list where del_flag='0'
             <if test='agencyId!=null and agencyId!=""'>
-                and implementing_agency_id='${agencyId}'
+                and implementing_agency_new_id='${agencyId}'
             </if>
             <if test='auditYear!=null and auditYear!=""'>
                 and audit_year='${auditYear}'
@@ -315,7 +316,7 @@
             del_flag='0'
             and status!= '0'
             <if test='agencyId!=null and agencyId!=""'>
-                and implementing_agency_id='${agencyId}'
+                and implementing_agency_new_id='${agencyId}'
             </if>
             <if test='auditYear!=null and auditYear!=""'>
                 and audit_year='${auditYear}'
@@ -328,6 +329,7 @@
         a.project_code,
         a.project_name,
         a.implementing_agency_id,
+        a.implementing_agency_name,
         a.audit_object_id,
         a.audit_nature_id,
         a.audit_year,
@@ -851,7 +853,7 @@
         SELECT t2.projectSum from
         (SELECT COUNT(t1.xm) projectSum from (select COUNT(project_name) xm from plan_check_list where del_flag='0' and STATUS != '0'
         <if test='implementingAgencyId!=null and implementingAgencyId!=""'>
-            and implementing_agency_id='${implementingAgencyId}'
+            and implementing_agency_new_id='${implementingAgencyId}'
         </if>
         <if test='auditYear!=null and auditYear!=""'>
             and audit_year='${auditYear}'
