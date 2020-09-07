@@ -223,7 +223,7 @@
             and a.audit_year like concat('%',concat(#{auditYear},'%'))
         </if>
         <if test="implementingAgencyId!=null and implementingAgencyId!=''">
-            and a.implementing_agency_new_id='${implementingAgencyId}'
+            and a.implementing_agency_id='${implementingAgencyId}'
         </if>
     </select>
     <select id="selectTypePage" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanCheckList">
@@ -250,7 +250,7 @@
             a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
         <if test="query.deptId!=null and query.deptId.length>0">
-            and a.implementing_agency_new_id in
+            and a.implementing_agency_id in
             <foreach collection="query.deptId" close=")" open="(" item="dept">
                 #{dept}
             </foreach>
@@ -265,7 +265,7 @@
             </foreach>
         </if>
         <if test="query.deptId != null and query.deptId!=''">
-            and a.implementing_agency_new_id in
+            and a.implementing_agency_id in
             <foreach collection="query.deptId" separator="," open="(" close=")" item="deptId">
                 #{deptId}
             </foreach>
@@ -275,7 +275,10 @@
                 and STATUS != '0'
             </when>
             <when test="query.type=='todo'">
-                and STATUS != '1003' and STATUS != '0'
+                and (STATUS = '1004' or STATUS = '1005')  and STATUS != '0'
+            </when>
+            <when test="query.type=='doing'">
+                and (STATUS = '1001' or STATUS = '1002')  and STATUS != '0'
             </when>
             <when test="query.type=='done'">
                 AND a.`status`='1003' and a.`status`!='0'
@@ -302,11 +305,11 @@
         IFNULL(sum(case when STATUS = '1004' or STATUS = '1005'  then 1 else 0 end),0) nofinishCount,
         IFNULL(sum(case when status='1004' then 1 else 0 end),0) timeoutCount,
         IFNULL(sum(case when status='1005' then 1 else 0 end),0) overTimeNum,
-        IFNULL(sum(case when status='1001' then 1 else 0 end),0) rectifyNum
+        IFNULL(sum(case when status='1001' or STATUS = '1002' then 1 else 0 end),0) rectifyNum
         from
         plan_check_list where del_flag='0'
             <if test='agencyId!=null and agencyId!=""'>
-                and implementing_agency_new_id='${agencyId}'
+                and implementing_agency_id='${agencyId}'
             </if>
             <if test='auditYear!=null and auditYear!=""'>
                 and audit_year='${auditYear}'
@@ -316,7 +319,7 @@
             del_flag='0'
             and status!= '0'
             <if test='agencyId!=null and agencyId!=""'>
-                and implementing_agency_new_id='${agencyId}'
+                and implementing_agency_id='${agencyId}'
             </if>
             <if test='auditYear!=null and auditYear!=""'>
                 and audit_year='${auditYear}'
@@ -853,7 +856,7 @@
         SELECT t2.projectSum from
         (SELECT COUNT(t1.xm) projectSum from (select COUNT(project_name) xm from plan_check_list where del_flag='0' and STATUS != '0'
         <if test='implementingAgencyId!=null and implementingAgencyId!=""'>
-            and implementing_agency_new_id='${implementingAgencyId}'
+            and implementing_agency_id='${implementingAgencyId}'
         </if>
         <if test='auditYear!=null and auditYear!=""'>
             and audit_year='${auditYear}'

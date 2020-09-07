@@ -97,7 +97,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + " <if test='query.problemDescription!=null and query.problemDescription!=\"\"'> and (pcl.problem_characterization like '%${query.problemDescription}%' or pcl.problem_description like '%${query.problemDescription}%')</if>"
                     + " <if test='query.questionEntryId!=null and query.questionEntryId!=\"\"'> and (pcl.question_Entry_Id like '%#{query.questionEntryId}%')</if>"
                     + " <if test='query.auditYear!=null and query.auditYear!=\"\"'> and (pcl.audit_year like '%${query.auditYear}%')</if>"
-                    + " <if test='query.implementingAgencyId!=null and query.implementingAgencyId!=\"\"'> and (pcl.implementing_agency_new_id = '${query.implementingAgencyId}')</if>"
+                    + " <if test='query.implementingAgencyId!=null and query.implementingAgencyId!=\"\"'> and (pcl.implementing_agency_id = '${query.implementingAgencyId}')</if>"
                     + " <if test='query.auditNatureId!=null and query.auditNatureId!=\"\"'> and (pcl.audit_nature_id = '${query.auditNatureId}')</if>"
                     + " <if test='query.auditObjectId!=null and query.auditObjectId!=\"\"'> and (pcl.audit_object_id = '${query.auditObjectId}')</if>"
                     + " <if test='query.problemSeverityId!=null and query.problemSeverityId!=\"\"'> and (pcl.problem_severity_id = '${query.problemSeverityId}')</if>"
@@ -183,7 +183,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "		WHERE\n" +
                     "			a.del_flag = 0\n" +
                     "		AND a.audit_year = '${auditYear}'\n" +
-                    "		AND a.implementing_agency_new_id = '${deptId}'\n" +
+                    "		AND a.implementing_agency_id = '${deptId}'\n" +
                     "       and a.`status`!='0' " +
                     "	) tb1\n" +
                     "",
@@ -195,22 +195,22 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
 
     @Select({"<script>",
-            "select pcl.implementing_agency_new_id implementingAgencyNewId,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
+            "select pcl.implementing_agency_id implementingAgencyId,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
                     +"IFNULL(sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount,IFNULL(sum(case when pcl.status='1005' then 1 else 0 end),0) overTimeNum"
                     +" from plan_check_list pcl "
                     +" where pcl.del_flag='0'" +
                      " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"+
-                    " group by pcl.implementing_agency_new_id "
+                    " group by pcl.implementing_agency_id "
                     +" <if test='pageStart!=null and pageNo!=null'> limit ${pageStart},${pageNo}</if>",
             "</script>"})
     List<Map<String, Object>> statisticPlanReport( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear);
     @Select({"<script>",
-            "select IFNULL(pcl.implementing_agency_new_id,'${deptId}') implementingAgencyNewId,IFNULL(sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END),0) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
-                    +"IFNULL(sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount,IFNULL(sum(case when pcl.status='1005' then 1 else 0 end),0) overTimeNum"
+            "select IFNULL(pcl.implementing_agency_id,'${deptId}') implementingAgencyId,IFNULL(sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END),0) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
+                    +"IFNULL(sum(case when (pcl. STATUS != '1004' or pcl. STATUS != '1005') and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount,IFNULL(sum(case when pcl.status='1005' then 1 else 0 end),0) overTimeNum"
                     +" from plan_check_list pcl "
                     +" where pcl.del_flag='0'" +
                      " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"+
-                    " and pcl.implementing_agency_new_id = '${deptId}' "
+                    " and pcl.implementing_agency_id = '${deptId}' "
                     +" <if test='pageStart!=null and pageNo!=null'> limit ${pageStart},${pageNo}</if>",
             "</script>"})
     List<Map<String, Object>> statisticPlanReportByDeptId( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear, @Param("deptId")int deptId);

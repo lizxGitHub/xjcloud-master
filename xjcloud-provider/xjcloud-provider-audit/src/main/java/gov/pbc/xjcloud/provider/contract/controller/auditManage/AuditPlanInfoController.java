@@ -237,9 +237,9 @@ public class AuditPlanInfoController {
                 int status = Integer.valueOf(shortPlan.get("status").toString());
                 if (0 != status) {
                     total += 1;
-                    if (1004 == status) { //未整改
+                    if (1004 == status || 1005 == status) { //未整改
                         notRectified += 1;
-                    } else if (1001 == status) { //正在整改
+                    } else if (1001 == status || 1002 == status) { //正在整改
                         rectifieding += 1;
                     }
                 }
