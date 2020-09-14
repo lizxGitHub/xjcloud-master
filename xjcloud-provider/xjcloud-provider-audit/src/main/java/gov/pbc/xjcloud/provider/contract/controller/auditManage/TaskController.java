@@ -289,6 +289,9 @@ public class TaskController {
                 }
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(userId), "1006");
             } else if (PlanStatusEnum.RECTIFY_INCOMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
+                if (StringUtils.isBlank(plan.getRectifyWay())) {
+                    return complete.setData(false);
+                }
                 if (status != Integer.valueOf(plan.getAuditStatus1()) && plan.getAuditObjectIdNew() != null && !(plan.getAuditObjectIdNew().equals(plan.getImplementingAgencyId()))) {
                     params.put("auditStatus", 1019);
                     //内审人员
@@ -296,9 +299,6 @@ public class TaskController {
                         planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1001");
                     }
                 } else {
-                    if (StringUtils.isBlank(plan.getRectifyWay())) {
-                        return complete.setData(false);
-                    }
                     //审计对象员工
                     planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1002");
                     //实施部门员工
@@ -941,6 +941,13 @@ public class TaskController {
                     auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
                 }
                 map.put("auditLeaderAssigneeList", auditLeaderAssigneeList);
+            } else {
+                //内审人员
+                R<List> auditUserInnerListR = activitiService.getTaskVariable(taskId, "auditUserInnerList");
+                List auditUserInnerList = auditUserInnerListR.getData();
+                for (int i = 0; i < auditUserInnerList.size(); i++) {
+                    planInfoService.updateProjectByPlanUserId(String.valueOf(Integer.valueOf(id)), String.valueOf(auditUserInnerList.get(i)), "1004");
+                }
             }
             map.put("auditStatus", Integer.valueOf(auditStatus));
             //流程
