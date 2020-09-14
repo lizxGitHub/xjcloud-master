@@ -293,7 +293,7 @@ public class TaskController {
                     params.put("auditStatus", 1019);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1002");
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1001");
                     }
                 } else {
                     if (StringUtils.isBlank(plan.getRectifyWay())) {
@@ -419,7 +419,7 @@ public class TaskController {
                     params.put("auditStatus", 1020);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1002");
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1001");
                     }
                 } else {
                     //实施部门一般员工
@@ -486,7 +486,7 @@ public class TaskController {
                     params.put("auditStatus", 1021);
                     //内审人员
                     for (int j = 0; j < auditUserInnerList.size(); j++) {
-                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1002");
+                        planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(j)), "1001");
                     }
                 } else {
                     //实施部门一般员工
