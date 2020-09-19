@@ -235,9 +235,9 @@ public class PlanCheckListController {
                 } else if (StringUtils.isBlank(plan.getImplementingAgencyId()) || plan.getImpAdminId() == 0) {
                     r.setCode(1002);
                     r.setMsg(msg);
-                } else if (StringUtils.isBlank(plan.getAuditObjectId())) {
-                    r.setCode(1002);
-                    r.setMsg(msg);
+//                } else if (StringUtils.isBlank(plan.getAuditObjectId())) {
+//                    r.setCode(1002);
+//                    r.setMsg(msg);
                 } else if (StringUtils.isBlank(plan.getAuditNatureId())) {
                     r.setCode(1002);
                     r.setMsg(msg);
@@ -279,10 +279,23 @@ public class PlanCheckListController {
                 }
                 if (userId == plan.getImpAdminId()) {
                     if (statusUser.equals("1002")) { //确认
-                        List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
-                        if (list.size() < 1) {
-                            return r.setData(false);
+                        if (plan.getAuditObjectId() != null) {
+                            List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+                            if (list.size() < 1) {
+                                return r.setData(false);
+                            }
+                            //审计对象管理员
+                            for (int i = 0; i < list.size(); i++) {
+                                Map m = (Map) list.get(i);
+                                PlanInfo planInfo3 = new PlanInfo();
+                                planInfo3.setUserId(Integer.valueOf(String.valueOf(m.get("userId"))));
+                                planInfo3.setStatusUser("1004"); //待完善
+                                planInfo3.setPlanId(plan.getId());
+                                planInfo3.setType(1);
+                                planInfoService.save(planInfo3);
+                            }
                         }
+
                         planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpUserId()), "1003");
 
                         //实施一般员工
@@ -299,16 +312,6 @@ public class PlanCheckListController {
                         planInfo2.setPlanId(plan.getId());
                         planInfo2.setType(1);
                         planInfoService.save(planInfo2);
-                        //审计对象管理员
-                        for (int i = 0; i < list.size(); i++) {
-                            Map m = (Map) list.get(i);
-                            PlanInfo planInfo3 = new PlanInfo();
-                            planInfo3.setUserId(Integer.valueOf(String.valueOf(m.get("userId"))));
-                            planInfo3.setStatusUser("1004"); //待完善
-                            planInfo3.setPlanId(plan.getId());
-                            planInfo3.setType(1);
-                            planInfoService.save(planInfo3);
-                        }
 
                         //项目启动时间
                         plan.setStartTime(new Date());
@@ -362,10 +365,12 @@ public class PlanCheckListController {
 
                     List<String> auditLeaderAssigneeList = new ArrayList<>();
                     List<String> auditUserInnerList = new ArrayList<>();
-                    List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
-                    for (int i = 0; i < list.size(); i++) {
-                        Map m = (Map)list.get(i);
-                        auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
+                    if (plan.getAuditObjectId() != null) {
+                        List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+                        for (int i = 0; i < list.size(); i++) {
+                            Map m = (Map)list.get(i);
+                            auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
+                        }
                     }
                     JSONObject varsJSONObject = new JSONObject();
                     int auditStatus = 1004;

@@ -142,7 +142,7 @@ public class TaskController {
             // 当前登录用户的流程数据
             Map<Integer, Map<String, String>> collect = resultList.stream().filter(e -> StringUtils.isNotBlank(e.get("bizKey"))).collect(Collectors.toMap(e -> Integer.parseInt(e.get("bizKey")), e -> e,(e1,e2)->e1));
             page = planCheckListService.selectAll(page, query, type, userId, status);
-            page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
+            page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null).forEach(e -> {
                 if (null != collect.get(e.getId())) {
                     Map<String, String> taskInfo = collect.get(e.getId());
                     String taskId = taskInfo.get("taskId");
@@ -907,15 +907,15 @@ public class TaskController {
 
             PlanCheckListNew plan = planCheckListService.selectById(Integer.valueOf(id));
             if (!auditObjectId.equals(plan.getAuditObjectId())) {
-                //删除之前的审计对象管理员
-                List listOld = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
-                if (listOld.size() < 1) {
-                    return r.setData(false);
-                }
-                for (int i = 0; i < listOld.size(); i++) {
-                    Map m = (Map) listOld.get(i);
-                    planInfoService.deleteProjectByPlanUserId(id, String.valueOf(m.get("userId")));
-                }
+//                //删除之前的审计对象管理员
+//                List listOld = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+//                if (listOld.size() < 1) {
+//                    return r.setData(false);
+//                }
+//                for (int i = 0; i < listOld.size(); i++) {
+//                    Map m = (Map) listOld.get(i);
+//                    planInfoService.deleteProjectByPlanUserId(id, String.valueOf(m.get("userId")));
+//                }
 
                 plan.setAuditObjectId(auditObjectId);
                 //更新计划
