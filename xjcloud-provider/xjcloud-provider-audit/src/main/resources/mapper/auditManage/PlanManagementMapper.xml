@@ -308,7 +308,7 @@
         IFNULL(sum(case when status='1001' or STATUS = '1002' then 1 else 0 end),0) rectifyNum
         from
         plan_check_list where del_flag='0'
-            <if test='agencyId!=null and agencyId!=""'>
+            <if test='agencyId!=null and agencyId!="-1"'>
                 and implementing_agency_id='${agencyId}'
             </if>
             <if test='auditYear!=null and auditYear!=""'>
@@ -318,7 +318,7 @@
         (SELECT COUNT(t1.xm) projectSum from (select COUNT(project_name) xm from plan_check_list where
             del_flag='0'
             and status!= '0'
-            <if test='agencyId!=null and agencyId!=""'>
+            <if test='agencyId!=null and agencyId!="-1"'>
                 and implementing_agency_id='${agencyId}'
             </if>
             <if test='auditYear!=null and auditYear!=""'>
@@ -367,7 +367,7 @@
             and (a.problem_description like concat('%',concat(#{query.problemDescription},'%')) or
             a.problem_characterization like concat('%',concat(#{query.problemCharacterization},'%')))
         </if>
-        <if test="query.deptId!=null and query.deptId!=''">
+        <if test="query.deptId!=null and query.deptId!='-1'">
             and a.implementing_agency_id =#{query.deptId}
         </if>
         <if test="query.normalStatus!=null and query.normalStatus!=''">
@@ -855,7 +855,7 @@
     <select id="selectProNumAndOverTime" resultType="java.util.Map" parameterType="map">
         SELECT t2.projectSum from
         (SELECT COUNT(t1.xm) projectSum from (select COUNT(project_name) xm from plan_check_list where del_flag='0' and STATUS != '0'
-        <if test='implementingAgencyId!=null and implementingAgencyId!=""'>
+        <if test='implementingAgencyId!=null and implementingAgencyId!=-1'>
             and implementing_agency_id='${implementingAgencyId}'
         </if>
         <if test='auditYear!=null and auditYear!=""'>

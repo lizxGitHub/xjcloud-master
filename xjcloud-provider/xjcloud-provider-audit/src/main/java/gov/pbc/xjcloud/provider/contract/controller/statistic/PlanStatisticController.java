@@ -203,8 +203,8 @@ public class PlanStatisticController {
         R<JSONObject> r = new R<>();
         try {
             JSONObject data = new JSONObject();
-//            List<Map<String, Object>> list = planManagementService.groupCountEntry(auditYear);
-            List<Map<String, Object>> list = new ArrayList<>();
+            List<Map<String, Object>> list = planManagementService.groupCountEntry(auditYear);
+//            List<Map<String, Object>> list = new ArrayList<>();
             data.put("statisticData", list);
             r.setData(data);
         } catch (Exception e) {
@@ -290,6 +290,13 @@ public class PlanStatisticController {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         Long resultCount = 0L;
         try {
+            //总的汇总报告
+            List<Map<String, Object>> resultListStatisAll = planManagementService.statisticPlanReportAll(null, null, auditYear);
+            Map<String, Object> allData = resultListStatisAll.get(0);
+            Map<String, Object> m1 = planManagementService.selectProNumAndOverTime(-1, auditYear);
+            allData.put("projectSum", String.valueOf(m1.get("projectSum")));
+            resultList.add(allData);
+
             if (deptId != 0 && deptId != 10000) {
                 List<Map<String, Object>> resultListOld =  planManagementService.statisticPlanReportByDeptId(null, null, auditYear, deptId);
                 for (int i = 0; i < resultListOld.size(); i++) {

@@ -97,7 +97,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     + " <if test='query.problemDescription!=null and query.problemDescription!=\"\"'> and (pcl.problem_characterization like '%${query.problemDescription}%' or pcl.problem_description like '%${query.problemDescription}%')</if>"
                     + " <if test='query.questionEntryId!=null and query.questionEntryId!=\"\"'> and (pcl.question_Entry_Id like '%#{query.questionEntryId}%')</if>"
                     + " <if test='query.auditYear!=null and query.auditYear!=\"\"'> and (pcl.audit_year like '%${query.auditYear}%')</if>"
-                    + " <if test='query.implementingAgencyId!=null and query.implementingAgencyId!=\"\"'> and (pcl.implementing_agency_id = '${query.implementingAgencyId}')</if>"
+                    + " <if test='query.implementingAgencyId!=null and query.implementingAgencyId!=\"-1\"'> and (pcl.implementing_agency_id = '${query.implementingAgencyId}')</if>"
                     + " <if test='query.auditNatureId!=null and query.auditNatureId!=\"\"'> and (pcl.audit_nature_id = '${query.auditNatureId}')</if>"
                     + " <if test='query.auditObjectId!=null and query.auditObjectId!=\"\"'> and (pcl.audit_object_id = '${query.auditObjectId}')</if>"
                     + " <if test='query.problemSeverityId!=null and query.problemSeverityId!=\"\"'> and (pcl.problem_severity_id = '${query.problemSeverityId}')</if>"
@@ -108,37 +108,37 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
 
     @Select({"<script>",
             "SELECT\n" +
-                    "	tb2.deptId,\n" +
-                    "	COUNT(tb2.deptId) proNum,\n" +
-                    "	SUM(tb2.num) errorNum\n" +
+                    "	pcl1.implementing_agency_id deptId,\n" +
+                    "	COUNT( pcl1.project_name ) proNum,\n" +
+                    "	SUM( pcl1.error ) errorNum \n" +
                     "FROM\n" +
                     "	(\n" +
+                    "	SELECT\n" +
+                    "		pcl.implementing_agency_id,\n" +
+                    "		pcl.project_name,\n" +
+                    "		SUM( pcl.error ) error \n" +
+                    "	FROM\n" +
+                    "		(\n" +
                     "		SELECT\n" +
-                    "			tb1.deptId,\n" +
-                    "			COUNT(tb1.`NAME`) num\n" +
+                    "			p1.implementing_agency_id,\n" +
+                    "			p1.project_name,\n" +
+                    "		CASE\n" +
+                    "				\n" +
+                    "				WHEN p1.`status` IN ( 1001, 1004, 1005 ) THEN\n" +
+                    "				1 ELSE 0 \n" +
+                    "			END AS error \n" +
                     "		FROM\n" +
-                    "			(\n" +
-                    "				SELECT\n" +
-                    "					a.implementing_agency_new_id deptId,\n" +
-                    "					a.project_name NAME,\n" +
-                    "					CASE\n" +
-                    "				WHEN a.`status` IN (1001, 1002, 1003, 1004) THEN\n" +
-                    "					1\n" +
-                    "				ELSE\n" +
-                    "					0\n" +
-                    "				END AS error\n" +
-                    "				FROM\n" +
-                    "					plan_check_list a\n" +
-                    "				WHERE\n" +
-                    "					a.del_flag = 0\n" +
-                    "				AND a.audit_year = '${auditYear}'\n" +
-                    "				AND a.`status` IN (1001, 1002, 1003, 1004)\n" +
-                    "			) tb1\n" +
-                    "		GROUP BY\n" +
-                    "			tb1.`NAME`\n" +
-                    "	) tb2\n" +
+                    "			plan_check_list p1 \n" +
+                    "		WHERE\n" +
+                    "			p1.del_flag = 0 \n" +
+                    "			AND p1.audit_year = '${auditYear}' \n" +
+                    "		AND p1.`status` IN ( 1001, 1002, 1003, 1004, 1005 )) pcl \n" +
+                    "	GROUP BY\n" +
+                    "		pcl.implementing_agency_id,\n" +
+                    "		pcl.project_name \n" +
+                    "	) pcl1 \n" +
                     "GROUP BY\n" +
-                    "	tb2.deptId",
+                    "	pcl1.implementing_agency_id",
             "</script>"})
     List<Map<String, Object>> groupCountEntry(@Param("auditYear")String auditYear);
 
@@ -194,6 +194,22 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
     List<Map<String, Object>> countPlan(@Param("agencyId")String agencyId, @Param("auditYear")String auditYear);
 
 
+    @Select({"<script>",
+            "SELECT\n" +
+                    "	-1 implementingAgencyId,\n" +
+                    "	sum( CASE WHEN pcl.STATUS != '0' THEN 1 ELSE 0 END ) projectCount,\n" +
+                    "	IFNULL( sum( CASE WHEN pcl.STATUS = '1003' THEN 1 ELSE 0 END ), 0 ) finishCount,\n" +
+                    "	IFNULL( sum( CASE WHEN pcl.STATUS != '1003' AND pcl.STATUS != '0' THEN 1 ELSE 0 END ), 0 ) noFinishCount,\n" +
+                    "	IFNULL( sum( CASE WHEN pcl.STATUS = '1004' THEN 1 ELSE 0 END ), 0 ) timeoutCount,\n" +
+                    "	IFNULL( sum( CASE WHEN pcl.STATUS = '1005' THEN 1 ELSE 0 END ), 0 ) overTimeNum \n" +
+                    "FROM\n" +
+                    "	plan_check_list pcl \n" +
+                    "WHERE\n" +
+                    "	pcl.del_flag = '0' " +
+                    " <if test='auditYear!=null and auditYear!=\"\"'> and pcl.audit_year like '%${auditYear}%' </if>"
+                    +" <if test='pageStart!=null and pageNo!=null'> limit ${pageStart},${pageNo}</if>",
+            "</script>"})
+    List<Map<String, Object>> statisticPlanReportAll( @Param("pageStart") Long pageStart, @Param("pageNo") Long pageNo, @Param("auditYear")String auditYear);
     @Select({"<script>",
             "select pcl.implementing_agency_id implementingAgencyId,sum(CASE WHEN pcl. STATUS != '0' THEN 1 ELSE 0 END) projectCount,IFNULL(sum(case when pcl.status='1003' then 1 else 0 end),0) finishCount,"
                     +"IFNULL(sum(case when pcl. STATUS != '1003' and pcl. STATUS != '0' then 1 else 0 end),0) noFinishCount,IFNULL(sum(case when pcl.status='1004' then 1 else 0 end),0) timeoutCount,IFNULL(sum(case when pcl.status='1005' then 1 else 0 end),0) overTimeNum"
