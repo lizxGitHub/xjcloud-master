@@ -4,11 +4,10 @@ import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.mapper.IBaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+import java.util.Map;
+
 public interface AuditPlanInfoMapper extends IBaseMapper<AuditPlanInfo> {
 
-    AuditPlanInfo getByPlanUserId(@Param("planId") String planId, @Param("userId") String userId);
-
-    void updateById(@Param("id") String id, @Param("status") String status);
-
-    void updateByPlanUserId(@Param("planId") String planId, @Param("userId") String userId, @Param("status") String status);
+    List<Map<String, Object>> getByPlanUserId(@Param("planId") int planId, @Param("userId") int userId);
 }

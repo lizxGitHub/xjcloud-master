@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackFor = {Exception.class})
@@ -17,18 +19,8 @@ public class AuditPlanInfoServiceImpl extends IBaseServiceImpl<AuditPlanInfoMapp
     private AuditPlanInfoMapper auditPlanInfoMapper;
 
     @Override
-    public AuditPlanInfo getByPlanUserId(String planId, String userId) {
+    public List<Map<String, Object>> getByPlanUserId(int planId, int userId) {
         return auditPlanInfoMapper.getByPlanUserId(planId, userId);
-    }
-
-    @Override
-    public void updateById(String id, String status) {
-        auditPlanInfoMapper.updateById(id, status);
-    }
-
-    @Override
-    public void updateByPlanUserId(String planId, String userId, String status) {
-        auditPlanInfoMapper.updateByPlanUserId(planId, userId, status);
     }
 
 }

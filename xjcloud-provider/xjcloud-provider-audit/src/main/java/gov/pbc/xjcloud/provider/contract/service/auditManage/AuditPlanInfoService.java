@@ -3,11 +3,10 @@ package gov.pbc.xjcloud.provider.contract.service.auditManage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 
+import java.util.List;
+import java.util.Map;
+
 public interface AuditPlanInfoService extends IService<AuditPlanInfo> {
 
-    AuditPlanInfo getByPlanUserId(String planId, String userId);
-
-    void updateById(String id, String status);
-
-    void updateByPlanUserId(String planId, String userId, String status);
+    List<Map<String, Object>> getByPlanUserId(int planId, int userId);
 }

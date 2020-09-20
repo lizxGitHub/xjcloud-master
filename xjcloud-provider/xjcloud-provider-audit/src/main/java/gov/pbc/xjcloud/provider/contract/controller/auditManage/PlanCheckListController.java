@@ -12,6 +12,7 @@ import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckListNew;
 import gov.pbc.xjcloud.provider.contract.entity.PlanTimeTemp;
+import gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanFile;
 import gov.pbc.xjcloud.provider.contract.entity.auditManage.PlanInfo;
 import gov.pbc.xjcloud.provider.contract.entity.entry.EntryInfo;
@@ -22,6 +23,7 @@ import gov.pbc.xjcloud.provider.contract.feign.activiti.AuditActivitiService;
 import gov.pbc.xjcloud.provider.contract.feign.user.UserCenterService;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanCheckListServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.PlanTimeTempServiceImpl;
+import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.AuditPlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanInfoServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.auditManage.PlanManagementServiceImpl;
 import gov.pbc.xjcloud.provider.contract.service.impl.entry.EntryCategoryServiceImpl;
@@ -59,6 +61,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/audit-api/planCheckList")
 @Slf4j
 public class PlanCheckListController {
+
+    @Resource
+    private AuditPlanInfoServiceImpl auditPlanInfoServiceImpl;
 
     @Resource
     private PlanCheckListServiceImpl planCheckListService;
@@ -334,6 +339,20 @@ public class PlanCheckListController {
                         }
                         planInfo.setStatusUser("1004");
                         planInfoService.updateById(planInfo);
+
+                        //新驳回逻辑
+                        if (request.getParameter("opinion") != null) {
+                            Date time = new Date();
+                            AuditPlanInfo auditPlanInfo = new AuditPlanInfo();
+                            auditPlanInfo.setPlanId(plan.getId());
+                            auditPlanInfo.setUserId(plan.getImpUserId());
+                            auditPlanInfo.setOpinion(request.getParameter("opinion"));
+                            auditPlanInfo.setNextUserId(plan.getImpAdminId());
+                            auditPlanInfo.setCreateTime(time);
+                            auditPlanInfo.setTaskName("项目初始审核");
+                            auditPlanInfoServiceImpl.save(auditPlanInfo);
+                        }
+
                     }
                     planInfoService.updatePlanByPlanUserId(String.valueOf(plan.getId()), String.valueOf(plan.getImpAdminId()), statusUser);
                 } else if (userId == plan.getImpUserId()) {

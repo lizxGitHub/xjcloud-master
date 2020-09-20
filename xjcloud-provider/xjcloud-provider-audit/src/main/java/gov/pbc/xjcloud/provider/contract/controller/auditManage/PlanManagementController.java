@@ -329,6 +329,13 @@ public class PlanManagementController {
         return R.ok(maps);
     }
 
+    @GetMapping("/getUserById")
+    public R<Map<String, Object>> selectEntryById(@RequestParam(name = "id", required = true) int id) {
+        gov.pbc.xjcloud.provider.contract.utils.R user = userCenterService.user(id);
+        Map<String, Object> maps = (Map<String, Object>) user.getData();
+        return R.ok(maps);
+    }
+
     @GetMapping("/selectEntryByLevel")
     public R selectEntryByLevel(@RequestParam Map<String, String> params) {
 
