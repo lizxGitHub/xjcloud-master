@@ -10,4 +10,6 @@ import java.util.Map;
 public interface AuditPlanInfoMapper extends IBaseMapper<AuditPlanInfo> {
 
     List<Map<String, Object>> getByPlanUserId(@Param("planId") int planId, @Param("userId") int userId);
+
+    List<Map<String, Object>> getByPlanId(@Param("planId") int planId);
 }
