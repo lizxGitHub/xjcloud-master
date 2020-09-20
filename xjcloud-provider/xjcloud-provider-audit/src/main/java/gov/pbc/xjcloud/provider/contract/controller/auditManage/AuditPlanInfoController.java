@@ -205,7 +205,8 @@ public class AuditPlanInfoController {
      */
     @GetMapping("/getByPlanUserId")
     public gov.pbc.xjcloud.provider.contract.utils.R<Map<String, Object>> getByPlanUserId(@RequestParam(name = "planId", required = true) int planId, @RequestParam(name = "userId", required = true) int userId) {
-        List<Map<String, Object>> auditPlanInfo = auditPlanInfoServiceImpl.getByPlanUserId(planId, userId);
+//        List<Map<String, Object>> auditPlanInfo = auditPlanInfoServiceImpl.getByPlanUserId(planId, userId);
+        List<Map<String, Object>> auditPlanInfo = auditPlanInfoServiceImpl.getByPlanId(planId);
         return new gov.pbc.xjcloud.provider.contract.utils.R().setData(auditPlanInfo);
     }
 

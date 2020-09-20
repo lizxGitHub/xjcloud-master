@@ -18,6 +18,21 @@
         a.plan_id= #{planId}
         and a.user_id= #{userId}
     </select>
+    <select id="getByPlanId" resultType="java.util.Map">
+        SELECT
+            a.id,
+            a.user_id,
+            a.plan_id,
+            a.opinion,
+            a.next_user_id,
+            a.next_user_name,
+            DATE_FORMAT(a.create_time,'%Y-%m-%d') create_time,
+            a.task_code,
+            a.task_name
+        from  audit_plan_info a
+        where
+        a.plan_id= #{planId}
+    </select>
 
     <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
     <resultMap type="gov.pbc.xjcloud.provider.contract.entity.auditManage.AuditPlanInfo" id="AuditPlanInfoMap">

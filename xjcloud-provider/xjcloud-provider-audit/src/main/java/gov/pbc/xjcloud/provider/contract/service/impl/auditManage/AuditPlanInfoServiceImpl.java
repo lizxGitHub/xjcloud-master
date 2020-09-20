@@ -23,4 +23,9 @@ public class AuditPlanInfoServiceImpl extends IBaseServiceImpl<AuditPlanInfoMapp
         return auditPlanInfoMapper.getByPlanUserId(planId, userId);
     }
 
+    @Override
+    public List<Map<String, Object>> getByPlanId(int planId) {
+        return auditPlanInfoMapper.getByPlanId(planId);
+    }
+
 }
