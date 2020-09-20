@@ -1,6 +1,7 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
 import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -648,7 +649,7 @@ public class PlanManagementController {
         Map<String, EntryInfo> entryMap = list.stream().filter(e -> StringUtils.isNotBlank((String) e.getConcatName()))
                 .collect(Collectors.toMap(e -> e.getId(), e -> e));
         JSONObject jsonObject = new JSONObject();
-        List<String> deptKey = Arrays.asList("implementingAgencyId", "auditObjectId", "auditObjectIdNew");
+        List<String> deptKey = Arrays.asList("implementingAgencyNewId","implementingAgencyId", "auditObjectId", "auditObjectIdNew");
         AtomicBoolean isGroupByDept = new AtomicBoolean(false);
         AtomicBoolean noAll = new AtomicBoolean(false);
         StringJoiner joiner = new StringJoiner("-");
@@ -662,7 +663,7 @@ public class PlanManagementController {
         if (null != mapList && !mapList.isEmpty()) {
 
             mapList.stream().forEach(e -> {
-                if (null == e.get("name")) {
+                if (StrUtil.isBlank((String)e.get("name"))) {
                     noAll.set(true);
                     e.put("name", "未选择");
                     return;
@@ -985,7 +986,7 @@ public class PlanManagementController {
         params.keySet().stream().forEach(e -> {
             String key = e;
             Object value = params.get(key);
-            if (StringUtils.isBlank((String) value)) {
+            if (StringUtils.isBlank((String) value) || "all".equals(value)) {
                 return;
             }
             KeyValue keyValue = new KeyValue();
