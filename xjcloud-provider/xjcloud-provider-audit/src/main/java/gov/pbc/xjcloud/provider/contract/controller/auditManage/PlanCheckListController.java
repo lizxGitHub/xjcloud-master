@@ -382,13 +382,13 @@ public class PlanCheckListController {
                     int auditUserAssignee = plan.getAuditUserId(); //
                     int auditLeaderAssignee = plan.getAuditAdminId(); //
 
-                    List<String> auditLeaderAssigneeList = new ArrayList<>();
-                    List<String> auditUserInnerList = new ArrayList<>();
+                    List<Integer> auditLeaderAssigneeList = new ArrayList<>();
+                    List<Integer> auditUserInnerList = new ArrayList<>();
                     if (plan.getAuditObjectId() != null) {
                         List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
                         for (int i = 0; i < list.size(); i++) {
                             Map m = (Map)list.get(i);
-                            auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
+                            auditLeaderAssigneeList.add(Integer.valueOf(String.valueOf(m.get("userId"))));
                         }
                     }
                     JSONObject varsJSONObject = new JSONObject();
@@ -405,7 +405,7 @@ public class PlanCheckListController {
                         List listns = (List)userCenterService.getUsersByRoleNameAndDept(nsDeptId, "内审管理员").getData();
                         for (int i = 0; i < listns.size(); i++) {
                             Map m = (Map)listns.get(i);
-                            auditUserInnerList.add(String.valueOf(m.get("userId")));
+                            auditUserInnerList.add(Integer.valueOf(String.valueOf(m.get("userId"))));
                             //内审人员
                             PlanInfo planInfo1 = new PlanInfo();
                             planInfo1.setUserId(Integer.valueOf(String.valueOf(m.get("userId"))));

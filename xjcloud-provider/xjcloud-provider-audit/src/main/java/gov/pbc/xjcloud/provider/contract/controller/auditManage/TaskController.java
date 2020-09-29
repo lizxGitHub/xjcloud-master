@@ -965,7 +965,7 @@ public class TaskController {
                     return r.setData(false);
                 }
                 //流程中人员更改
-                List<String> auditLeaderAssigneeList = new ArrayList<>();
+                List<Integer> auditLeaderAssigneeList = new ArrayList<>();
                 //审计对象管理员
                 for (int i = 0; i < list.size(); i++) {
                     Map m = (Map) list.get(i);
@@ -975,7 +975,7 @@ public class TaskController {
                     planInfo3.setPlanId(plan.getId());
                     planInfo3.setType(1);
                     planInfoService.save(planInfo3);
-                    auditLeaderAssigneeList.add(String.valueOf(m.get("userId")));
+                    auditLeaderAssigneeList.add(Integer.valueOf(String.valueOf(m.get("userId"))));
                 }
                 map.put("auditLeaderAssigneeList", auditLeaderAssigneeList);
             } else {
