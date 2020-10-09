@@ -114,23 +114,25 @@ public class PlanManagementController {
             query.put("type", type);
             String deptIds = query.get("deptId").toString();
             query.remove("deptId");
-            if (StringUtils.isNotBlank(deptIds)) {
-                String[] deptIdArray = deptIds.split(",");
-                query.put("deptId", deptIdArray);
-                List deptChild = new ArrayList();
-                for (String deptId : deptIdArray) {
-                    if ("10000".equals(deptId)) {
-                        R<List<DeptVO>> r_list = this.getAuditAndImpObject(10000, "");
-                        List<DeptVO> list = r_list.getData();
-                        for (int i = 0; i < list.size(); i++) {
-                            DeptVO d = list.get(i);
-                            deptChild.addAll(deptUtil.findChildBank(d.getDeptId(), ""));
+            if (!"-1".equals(deptIds)) {
+                if (StringUtils.isNotBlank(deptIds)) {
+                    String[] deptIdArray = deptIds.split(",");
+                    query.put("deptId", deptIdArray);
+                    List deptChild = new ArrayList();
+                    for (String deptId : deptIdArray) {
+                        if ("10000".equals(deptId)) {
+                            R<List<DeptVO>> r_list = this.getAuditAndImpObject(10000, "");
+                            List<DeptVO> list = r_list.getData();
+                            for (int i = 0; i < list.size(); i++) {
+                                DeptVO d = list.get(i);
+                                deptChild.addAll(deptUtil.findChildBank(d.getDeptId(), ""));
+                            }
+                        } else {
+                            deptChild.addAll(deptUtil.findChildBank(Integer.parseInt(deptId), ""));
                         }
-                    } else {
-                        deptChild.addAll(deptUtil.findChildBank(Integer.parseInt(deptId), ""));
                     }
+                    query.put("auditObj", deptChild);
                 }
-                query.put("auditObj", deptChild);
             }
 
             page = planManagementService.selectTypePage(page, query);
