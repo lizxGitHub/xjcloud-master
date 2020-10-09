@@ -94,7 +94,7 @@
         a.status,
         a.question_entry_id,
         a.problem_severity_id,
-        a.rectify_situation_id,
+        en4.`name` as rectify_situation_id,
         a.rectify_way,
         a.problem_characterization,
         a.problem_description,
@@ -114,6 +114,8 @@
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
+        LEFT JOIN entry_info en4 on a.rectify_situation_id=en4.id and
+        en4.del_flag=0 and en4.category_fk=6
         where a.del_flag='0' and a.`status` != '1001'
         and a.implementing_agency_id like concat('%',concat(#{query.implementingAgencyId},'%'))
         <if test="query.projectName!=null and query.projectName!=''">
@@ -140,6 +142,8 @@
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
+        LEFT JOIN entry_info en4 on a.rectify_situation_id=en4.id and
+        en4.del_flag=0 and en4.category_fk=6
         where a.del_flag='0'
         and a.created_by like concat('%',concat(#{query.createdBy},'%'))
         <if test="query.projectName!=null and query.projectName!=''">
@@ -232,6 +236,8 @@
         FROM
         `plan_check_list` a
         LEFT JOIN entry_info en3 on a.audit_nature_id = en3.id
+        LEFT JOIN entry_info en4 on a.rectify_situation_id=en4.id and
+        en4.del_flag=0 and en4.category_fk=6
         where a.del_flag='0'
         <if test="query.auditYear!=null and query.auditYear!=''">
             and a.audit_year like concat('%',concat(#{query.auditYear},'%'))

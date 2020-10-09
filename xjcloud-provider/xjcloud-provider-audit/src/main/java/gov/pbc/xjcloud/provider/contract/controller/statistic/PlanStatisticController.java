@@ -290,13 +290,6 @@ public class PlanStatisticController {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         Long resultCount = 0L;
         try {
-            //总的汇总报告
-            List<Map<String, Object>> resultListStatisAll = planManagementService.statisticPlanReportAll(null, null, auditYear);
-            Map<String, Object> allData = resultListStatisAll.get(0);
-            Map<String, Object> m1 = planManagementService.selectProNumAndOverTime(-1, auditYear);
-            allData.put("projectSum", String.valueOf(m1.get("projectSum")));
-            resultList.add(allData);
-
             if (deptId != 0 && deptId != 10000) {
                 List<Map<String, Object>> resultListOld =  planManagementService.statisticPlanReportByDeptId(null, null, auditYear, deptId);
                 for (int i = 0; i < resultListOld.size(); i++) {
@@ -308,6 +301,13 @@ public class PlanStatisticController {
                 }
                 resultCount = Long.valueOf(planManagementService.countStatisticPlanReportByDeptId(deptId));
             } else {
+                //总的汇总报告
+                List<Map<String, Object>> resultListStatisAll = planManagementService.statisticPlanReportAll(null, null, auditYear);
+                Map<String, Object> allData = resultListStatisAll.get(0);
+                Map<String, Object> m1 = planManagementService.selectProNumAndOverTime(-1, auditYear);
+                allData.put("projectSum", String.valueOf(m1.get("projectSum")));
+                resultList.add(allData);
+
                 //获取机构
                 //按dept查询问题数 key
                 List<DeptVO> deptChild = deptUtil.findChildBank(0, "中支");
