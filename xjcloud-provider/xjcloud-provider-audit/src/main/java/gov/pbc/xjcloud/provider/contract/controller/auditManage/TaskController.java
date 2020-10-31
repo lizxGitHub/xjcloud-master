@@ -853,9 +853,19 @@ public class TaskController {
             planInfo.setPlanId(plan.getId());
             planInfo.setType(1);
             planInfoService.save(planInfo);
-            //审计对象管理员
-            planInfoService.updateProjectByPlanUserId(id, String.valueOf(plan.getAuditAdminId()), "1006");
 
+            if (plan.getAuditObjectId() != null) {
+                List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+                if (list.size() < 1) {
+                    return r.setData(false);
+                }
+                //审计对象管理员
+                for (int i = 0; i < list.size(); i++) {
+                    Map m = (Map) list.get(i);
+                    //审计对象管理员
+                    planInfoService.updateProjectByPlanUserId(id, String.valueOf(m.get("userId")), "1006");
+                }
+            }
 
             map.put("auditStatus", 1005);
             map.put("auditUserAssignee", plan.getAuditUserId());
