@@ -465,6 +465,17 @@ public class PlanManagementController {
         return r.setData(b);
     }
 
+
+    @DeleteMapping("deleteIds")
+    public R<Boolean> deleteIds(@RequestParam(name = "ids", required = true) String ids) {
+        R<Boolean> r = new R<>();
+        Boolean b;
+        String[] idArrays = ids.split(",");
+        List<String> list=Arrays.asList(idArrays);
+        b = planManagementService.removeByIds(list);
+        return r.setData(b);
+    }
+
     /**
      * 用户行为：删除问题
      *

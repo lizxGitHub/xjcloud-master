@@ -194,7 +194,7 @@ public class EntryController {
             entryService.validate(entryFlow, r);
 
             EntryInfo beforeFlow = entryService.getById(entryFlow.getId());
-            EntryCategory category = categoryService.getById(entryFlow.getId());
+            EntryCategory category = categoryService.getById(entryFlow.getCategoryFk());
             if (null == beforeFlow) {
                 r.setData(false);
                 r.setMsg("该数据已被删除");
