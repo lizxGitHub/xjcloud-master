@@ -77,7 +77,7 @@
             and a.audit_object_id like concat('%',concat(#{query.auditObjectId},'%'))
         </if>
         <if test="query.implementingAgencyId!=null and query.implementingAgencyId!=''">
-            and a.implementing_agency_id like concat('%',concat(#{query.implementingAgencyId},'%'))
+            and a.implementing_agency_id like concat('',concat(#{query.implementingAgencyId},''))
         </if>
         <if test="query.auditNatureId!=null and query.auditNatureId!=''">
             and a.audit_nature_id like concat('%',concat(#{query.auditNatureId},'%'))
