@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import gov.pbc.xjcloud.provider.contract.constants.CommonConstants;
 import gov.pbc.xjcloud.provider.contract.constants.DelConstants;
 import gov.pbc.xjcloud.provider.contract.entity.PlanCheckList;
@@ -131,19 +132,19 @@ public class PlanCheckListController {
     }
 
     @PostMapping("/saveOrEditPlan")
-    public R<Boolean> saveOrEditPlan( @RequestBody PlanCheckListNew planCheckList) {
+    public R<Boolean> saveOrEditPlan(@RequestBody PlanCheckListNew planCheckList) {
         R<Boolean> r = new R<>();
         try {
             String fileUri = planCheckList.getFileUri();
 //            planCheckListService.validate(planCheckList, r);//  此处没有对字段添加约束，所以不会生效
-            if (null==planCheckList.getId()||planCheckList.getId() == 0) {
+            if (null == planCheckList.getId() || planCheckList.getId() == 0) {
                 planCheckList.setProjectCode(new PlanCheckList().generateProjectCode());
                 planCheckList.setDelFlag(DelConstants.EXITED);
                 planCheckList.setStatus("0");
                 planCheckList.setCreatedTime(new Date());
                 planCheckListService.save(planCheckList);
                 QueryWrapper<PlanCheckListNew> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("project_code",planCheckList.getProjectCode());
+                queryWrapper.eq("project_code", planCheckList.getProjectCode());
                 int planId = 0;
                 try {
                     planId = planCheckListService.getOne(queryWrapper).getId();
@@ -160,7 +161,7 @@ public class PlanCheckListController {
                 planInfoService.saveBatch(planInfoList);
             } else {
 //                planCheckListService.updatePlanById(planCheckList);
-                planCheckListService.updateBatchById(Arrays.asList(planCheckList),1);
+                planCheckListService.updateBatchById(Arrays.asList(planCheckList), 1);
             }
             if (StringUtils.isNotBlank(fileUri)) {
                 PlanFile planFile = new PlanFile();
@@ -285,7 +286,7 @@ public class PlanCheckListController {
                 if (userId == plan.getImpAdminId()) {
                     if (statusUser.equals("1002")) { //确认
                         if (plan.getAuditObjectId() != null) {
-                            List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+                            List list = (List) userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
                             if (list.size() < 1) {
                                 return r.setData(false);
                             }
@@ -385,9 +386,9 @@ public class PlanCheckListController {
                     List<Integer> auditLeaderAssigneeList = new ArrayList<>();
                     List<Integer> auditUserInnerList = new ArrayList<>();
                     if (plan.getAuditObjectId() != null) {
-                        List list = (List)userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
+                        List list = (List) userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
                         for (int i = 0; i < list.size(); i++) {
-                            Map m = (Map)list.get(i);
+                            Map m = (Map) list.get(i);
                             auditLeaderAssigneeList.add(Integer.valueOf(String.valueOf(m.get("userId"))));
                         }
                     }
@@ -402,9 +403,9 @@ public class PlanCheckListController {
                             nsDeptId = deptVO.getDeptId();
                             break;
                         }
-                        List listns = (List)userCenterService.getUsersByRoleNameAndDept(nsDeptId, "内审管理员").getData();
+                        List listns = (List) userCenterService.getUsersByRoleNameAndDept(nsDeptId, "内审管理员").getData();
                         for (int i = 0; i < listns.size(); i++) {
-                            Map m = (Map)listns.get(i);
+                            Map m = (Map) listns.get(i);
                             auditUserInnerList.add(Integer.valueOf(String.valueOf(m.get("userId"))));
                             //内审人员
                             PlanInfo planInfo1 = new PlanInfo();
@@ -476,10 +477,10 @@ public class PlanCheckListController {
                     Integer cateFk = cateNameMap.get(header.getName());
                     List<EntryInfo> entryInfos = entryGroup.get(cateFk);
                     String[] objects = null;
-                    if(null==entryInfos){
+                    if (null == entryInfos) {
                         continue;
                     }
-                    objects=entryInfos.stream().filter(Objects::nonNull).map(e -> e.getConcatName()).toArray(String[]::new);
+                    objects = entryInfos.stream().filter(Objects::nonNull).map(e -> e.getConcatName()).toArray(String[]::new);
                     creatDropDownList(sheet, helper, objects, rowIndex.get() + 1, (1 << 16) - 1, colIndex.get() - 1, colIndex.get() - 1);
                 }
             }
@@ -537,16 +538,20 @@ public class PlanCheckListController {
     private ConcurrentHashMap<String, Integer> deptNameValue = new ConcurrentHashMap<>();
 
     @PostMapping("import")
-    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file,  @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId, @RequestParam("implementingAgencyNewId") String implementingAgencyNewId) {
+    public R<Boolean> importEntry(@RequestParam("file") MultipartFile file, @RequestParam("createdBy") Integer createdBy, @RequestParam("implementingAgencyId") String implementingAgencyId, @RequestParam("implementingAgencyNewId") String implementingAgencyNewId) {
         Sheet planSheet;
         if (null == file) {
             return R.failed("上传文件不能为空");
         }
         boolean result = false;
-        List<DeptVO> deptList = deptUtil.findChildBank(Integer.valueOf(implementingAgencyId),"");
-        List<DeptVO> deptList1 = deptUtil.findChildBank(Integer.valueOf(implementingAgencyNewId),"");
-        deptList.addAll(deptList1);
-        Map<String, Integer> tempMap = deptList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
+        List<DeptVO> finalList = Lists.newArrayList();
+        List<DeptVO> bank = deptUtil.findChildBank(0, "");
+        bank.forEach(e->{
+            finalList.add(e);
+            List<DeptVO> tempList = deptUtil.findChildBank(e.getDeptId(), "");
+            finalList.addAll(tempList);
+        });
+        Map<String, Integer> tempMap = finalList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
         deptNameValue.clear();
         deptNameValue.putAll(tempMap);
         List<PlanCheckList> planList = null;
@@ -582,13 +587,22 @@ public class PlanCheckListController {
                 plan = new PlanCheckList();
                 initPlanProperty(plan, row, colIndex, startRow, entryNameValue, error);
                 String auditObjectId = plan.getAuditObjectId();
-                if(null!= auditObjectId&&deptNameValue.containsKey(auditObjectId)){
+                String auditObjectIdNew = plan.getAuditObjectIdNew();
+                if(StrUtil.isBlank(auditObjectId) || !deptNameValue.containsKey(auditObjectId)){
+                    throw new RuntimeException(String.format("不存在的审计对象中支：%s",auditObjectId));
+                } else {
                     plan.setAuditObjectId(deptNameValue.get(auditObjectId).toString());
+                }
+                if(StrUtil.isBlank(auditObjectIdNew) || !deptNameValue.containsKey(auditObjectIdNew)){
+                    throw new RuntimeException(String.format("不存在的审计对象部门：%s",auditObjectIdNew));
+                }
+                else {
+                    plan.setAuditObjectIdNew(deptNameValue.get(auditObjectIdNew).toString());
                 }
                 plan.setConcatQuestionEntry();
                 int code = (int) ((Math.random() * 9 + 1) * 1000);
                 plan.setImplementingAgencyId(implementingAgencyId);
-                if(StrUtil.isNotBlank(implementingAgencyNewId)&&implementingAgencyNewId.equals("10000")){
+                if (StrUtil.isNotBlank(implementingAgencyNewId) && implementingAgencyNewId.equals("10000")) {
                     plan.setImplementingAgencyNewId(implementingAgencyNewId);
                     plan.setImplementingAgencyName("乌鲁木齐中支");
                 }
@@ -600,7 +614,7 @@ public class PlanCheckListController {
                 prjCode.add(plan.getProjectCode());
                 planList.add(plan);
             }
-            if(error.length()>0){
+            if (error.length() > 0) {
                 throw new AppException(error.toString());
             }
             QueryWrapper<PlanCheckList> queryWrapper = new QueryWrapper<>();
@@ -629,13 +643,13 @@ public class PlanCheckListController {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-        }catch (AppException e) {
+        } catch (AppException e) {
             e.printStackTrace();
             return R.failed(e.getMessage());
-        }catch (Exception e){
-            if(e instanceof NestedServletException){
+        } catch (Exception e) {
+            if (e instanceof NestedServletException) {
                 return R.failed("登录信息过期，请重新登录");
-            }else {
+            } else {
                 return R.failed("上传失败，请稍后重试");
             }
         }
@@ -647,17 +661,17 @@ public class PlanCheckListController {
         for (int i = 0; i < headerEnums.length; i++) {
             ExportPlanHeaderEnum header = headerEnums[i];
             String column = header.getColumn();
-            String settterMethod = plan.generateSetterMethod(column,"set");
+            String settterMethod = plan.generateSetterMethod(column, "set");
             Method method = plan.getClass().getMethod(settterMethod, String.class);
             method.setAccessible(true);
             int i1 = colIndex.getAndIncrement();
             Cell cell = row.getCell(i1);
-            if(header.isRequired()&&null==cell){
-                error.add("第"+(i1+1)+"列"+",第"+(startRow+1)+"行【"+header.getName()+"】数据不能为空");
+            if (header.isRequired() && null == cell) {
+                error.add("第" + (i1 + 1) + "列" + ",第" + (startRow + 1) + "行【" + header.getName() + "】数据不能为空");
                 continue;
             }
             String value = DrExcelUtil.getStringVal(cell);
-            if(entryNameValue.containsKey(value)){
+            if (entryNameValue.containsKey(value)) {
                 value = entryNameValue.get(value);
             }
             method.invoke(plan, new Object[]{value});
