@@ -65,7 +65,7 @@ server:
 eureka:
   instance:
     prefer-ip-address: true
-    ip-address: xjcloud-audit
+    ip-address: xjcloud-audit.wlq.pbc.gov
   client:
     fetch-registry: true
     service-url:
@@ -82,8 +82,8 @@ mybatis-plus:
 audit:
   custom-header-prefix: auditHeader
   gate-way:
-    service-id: xjcloud-gateway
-    url: http://xjcloud-gateway:9999
+    service-id: xjcloud-gateway.wlq.pbc.gov
+    url: http://xjcloud-gateway.wlq.pbc.gov:9999
   auth-url: ${audit.gate-way.url}/auth/oauth/token
   user-url: ${audit.gate-way.url}/admin/users/info
   users-url: ${audit.gate-way.url}/admin/users
