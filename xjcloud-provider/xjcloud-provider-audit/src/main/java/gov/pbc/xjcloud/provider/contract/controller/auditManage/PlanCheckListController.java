@@ -1,6 +1,5 @@
 package gov.pbc.xjcloud.provider.contract.controller.auditManage;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -550,13 +549,14 @@ public class PlanCheckListController {
         boolean result = false;
         List<DeptVO> finalList = Lists.newArrayList();
         List<DeptVO> bank = deptUtil.findChildBank(0, "");
-        bank.forEach(e->{
+        bank.forEach(e -> {
             finalList.add(e);
             List<DeptVO> tempList = deptUtil.findChildBank(e.getDeptId(), "");
             finalList.addAll(tempList);
         });
         Map<String, Integer> tempMap = finalList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
-        Map<String, String>  deptMap = finalList.stream().collect(Collectors.toMap(e -> String.valueOf(e.getDeptId()),e -> e.getName(),  (e1, e2) -> e1));
+        Map<String, DeptVO> deptDict = finalList.stream().collect(Collectors.toMap(e -> String.valueOf(e.getDeptId()), e -> e, (e1, e2) -> e1));
+        Map<String, String> deptMap = finalList.stream().collect(Collectors.toMap(e -> String.valueOf(e.getDeptId()), e -> e.getName(), (e1, e2) -> e1));
         deptNameValue.clear();
         deptNameValue.putAll(tempMap);
         List<PlanCheckList> planList = null;
@@ -593,15 +593,14 @@ public class PlanCheckListController {
                 initPlanProperty(plan, row, colIndex, startRow, entryNameValue, error);
                 String auditObjectId = plan.getAuditObjectId();
                 String auditObjectIdNew = plan.getAuditObjectIdNew();
-                if(StrUtil.isBlank(auditObjectId) || !deptNameValue.containsKey(auditObjectId)){
+                if (StrUtil.isBlank(auditObjectId) || !deptNameValue.containsKey(auditObjectId)) {
 //                    throw new RuntimeException(String.format("不存在的审计对象中支：%s",auditObjectId));
                 } else {
                     plan.setAuditObjectId(deptNameValue.get(auditObjectId).toString());
                 }
-                if(StrUtil.isBlank(auditObjectIdNew) || !deptNameValue.containsKey(auditObjectIdNew)){
+                if (StrUtil.isBlank(auditObjectIdNew) || !deptNameValue.containsKey(auditObjectIdNew)) {
 //                    throw new RuntimeException(String.format("不存在的审计对象部门：%s",auditObjectIdNew));
-                }
-                else {
+                } else {
                     plan.setAuditObjectIdNew(deptNameValue.get(auditObjectIdNew).toString());
                 }
                 plan.setConcatQuestionEntry();
@@ -612,7 +611,13 @@ public class PlanCheckListController {
 //                    plan.setImplementingAgencyName("乌鲁木齐中支");
 //                }
                 plan.setImplementingAgencyNewId(implementingAgencyNewId);
-                plan.setImplementingAgencyName(deptMap.get(implementingAgencyId));
+                // 看他是不是中支，中支的上级机构id是0
+                int parentId = deptDict.get(implementingAgencyId).getParentId();
+                if (parentId == 0) {
+                    plan.setImplementingAgencyName(deptMap.get(implementingAgencyId));
+                } else {
+                    plan.setImplementingAgencyName(deptMap.get(parentId));
+                }
                 plan.setImpUserId(createdBy);
                 plan.setCreatedBy(createdBy);
                 plan.setStatus("0");
