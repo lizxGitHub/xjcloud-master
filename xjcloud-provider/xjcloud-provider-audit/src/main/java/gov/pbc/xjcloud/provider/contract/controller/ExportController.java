@@ -45,7 +45,7 @@ public class ExportController {
                     "实施机构名称","审计对象", "审计性质", "审计依据",
                     "审计分类", "审计经验", "年度","整改情况",
                     "风险评估","整改开始时间","出现频次","整改时长",
-                    "超时时长","整改结果","归档评估","整改评估","风险评估"
+                    "超时时长","整改结果","归档评估","整改评估"
             };
             String[] keys = new String[] {
                     "project_name", "project_type","status","question_entry_id",
@@ -53,7 +53,7 @@ public class ExportController {
                     "implementing_agency_id", "audit_object_id", "audit_nature_id","audit_basis",
                     "audit_classification_id","auditing_experience", "audit_year","rectify_situation_name",
                     "risk_assessment_id","start_time_all","frequency","days",
-                    "over_days","rectify_result","rectify_evaluation","evaluation","risk_assessment_id"
+                    "over_days","rectify_result","rectify_evaluation","evaluation"
             };
             List<Map<String, Object>> list = planManagementService.selectEntryByQuery(query, null, null);
             Map<String, String> entryNameValue = entryService.listAll().stream().filter(e -> org.apache.commons.lang3.StringUtils.isNotBlank(e.getConcatName())).
