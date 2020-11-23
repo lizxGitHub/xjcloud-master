@@ -586,10 +586,20 @@ public class PlanCheckListController {
             List<String> prjCode = new ArrayList<>(maxRow);
             planList = new ArrayList<>(maxRow - 1);
             StringJoiner error = new StringJoiner("\n");
+            ExportPlanHeaderEnum[] headerEnums = ExportPlanHeaderEnum.values();
+            Row headRow = planSheet.getRow(0);
+            colIndex = new AtomicInteger(0);
+            for (ExportPlanHeaderEnum headerEnum : headerEnums) {
+                Cell cell = headRow.getCell(colIndex.getAndIncrement());
+                if(cell==null || !headerEnum.getName().equals(cell.getStringCellValue())){
+                    throw new AppException("您的模板不正确，请下载最新的模板导入数据");
+                }
+            }
             for (int startRow = 1; startRow <= maxRow; startRow++) {
                 colIndex = new AtomicInteger();
                 Row row = planSheet.getRow(startRow);
                 plan = new PlanCheckList();
+                // 枚举类字段反射
                 initPlanProperty(plan, row, colIndex, startRow, entryNameValue, error);
                 String auditObjectId = plan.getAuditObjectId();
                 String auditObjectIdNew = plan.getAuditObjectIdNew();
@@ -604,7 +614,7 @@ public class PlanCheckListController {
                     plan.setAuditObjectIdNew(deptNameValue.get(auditObjectIdNew).toString());
                 }
                 plan.setConcatQuestionEntry();
-                int code = (int) ((Math.random() * 9 + 1) * 1000);
+//                int code = (int) ((Math.random() * 9 + 1) * 1000);
                 plan.setImplementingAgencyId(implementingAgencyId);
 //                if (StrUtil.isNotBlank(implementingAgencyNewId) && implementingAgencyNewId.equals("10000")) {
 //                    plan.setImplementingAgencyNewId(implementingAgencyNewId);
@@ -678,7 +688,7 @@ public class PlanCheckListController {
             method.setAccessible(true);
             int i1 = colIndex.getAndIncrement();
             Cell cell = row.getCell(i1);
-            if (header.isRequired() && null == cell) {
+            if (header.isRequired() && (null == cell || StrUtil.isBlank(DrExcelUtil.getStringVal(cell)))) {
                 error.add("第" + (i1 + 1) + "列" + ",第" + (startRow + 1) + "行【" + header.getName() + "】数据不能为空");
                 continue;
             }

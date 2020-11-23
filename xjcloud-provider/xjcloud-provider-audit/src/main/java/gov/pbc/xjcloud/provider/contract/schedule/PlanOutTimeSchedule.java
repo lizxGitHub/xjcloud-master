@@ -96,7 +96,7 @@ public class PlanOutTimeSchedule {
     /**
      * 频次统计定时任务 10分钟一次
      */
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
     @Transactional(rollbackFor = Exception.class)
     public void sequencyOvertimeTip() {
         Map<String, Object> params = Maps.newHashMap();
@@ -128,9 +128,9 @@ public class PlanOutTimeSchedule {
     }
 
     /**
-     * 频次统计定时任务 10分钟一次
+     * 频次统计定时任务 一小时一次
      */
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 0/1 * * ?")
     @Transactional(rollbackFor = Exception.class)
     public void sequencyDelOvertimeTip() {
         Boolean del = planManagementService.delOverTips();
