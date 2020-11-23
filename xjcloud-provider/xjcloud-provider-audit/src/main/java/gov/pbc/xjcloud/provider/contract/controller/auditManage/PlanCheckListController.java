@@ -557,7 +557,7 @@ public class PlanCheckListController {
         Map<String, Integer> tempMap = finalList.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getDeptId(), (e1, e2) -> e1));
         Map<String, DeptVO> deptDict = finalList.stream().collect(Collectors.toMap(e -> String.valueOf(e.getDeptId()), e -> e, (e1, e2) -> e1));
         Map<String, String> deptMap = finalList.stream().collect(Collectors.toMap(e -> String.valueOf(e.getDeptId()), e -> e.getName(), (e1, e2) -> e1));
-        deptNameValue.clear();
+            deptNameValue.clear();
         deptNameValue.putAll(tempMap);
         List<PlanCheckList> planList = null;
         String fileName = file.getOriginalFilename();
@@ -578,7 +578,7 @@ public class PlanCheckListController {
                 throw new RuntimeException("请使用模板导入!");
             }
             if (planSheet.getLastRowNum() < 1) {
-                throw new RuntimeException("文档中没有工作表!");
+                throw new RuntimeException("工作表数据为空!");
             }
             int maxRow = planSheet.getLastRowNum();
             AtomicInteger colIndex = null;
@@ -672,7 +672,7 @@ public class PlanCheckListController {
             if (e instanceof NestedServletException) {
                 return R.failed("登录信息过期，请重新登录");
             } else {
-                return R.failed("上传失败，请稍后重试");
+                return R.failed("上传失败，错误信息如下："+e.getMessage());
             }
         }
         return new R<Boolean>().setData(result).setMsg(result ? "成功导入" + planList.size() + "条数据" : "导入失败");
