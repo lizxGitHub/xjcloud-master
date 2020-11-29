@@ -693,9 +693,15 @@ public class PlanCheckListController {
                 continue;
             }
             String value = DrExcelUtil.getStringVal(cell);
-            if (entryNameValue.containsKey(value)) {
-                value = entryNameValue.get(value);
+            if(header.getIsEntry()){
+                if (entryNameValue.containsKey(value)) {
+                    value = entryNameValue.get(value);
+                }else{
+                    error.add("第" + (i1 + 1) + "列" + ",第" + (startRow + 1) + "行【" + header.getName() + "】使用了不存在的模板数据");
+                    continue;
+                }
             }
+
             method.invoke(plan, new Object[]{value});
         }
 //        Cell cellprojectName = row.getCell(colIndex.getAndIncrement());

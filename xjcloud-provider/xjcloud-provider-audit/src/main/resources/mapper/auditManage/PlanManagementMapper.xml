@@ -700,7 +700,7 @@
         id
         ,
         <if test="level==1">
-            name
+            `name`
         </if>
         <if test="level==2">
             name1
@@ -715,7 +715,7 @@
         from entry_info
         where category_fk in (select id from entry_category where def_key=#{defKey})
         <if test=" name!=null and name!='' ">
-            and name =#{name}
+            and `name` =#{name}
         </if>
         <if test="name1!=null and name1!=''">
             and name1 =#{name1}
