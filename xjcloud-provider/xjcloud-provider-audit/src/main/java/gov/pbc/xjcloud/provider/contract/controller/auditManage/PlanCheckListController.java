@@ -605,11 +605,13 @@ public class PlanCheckListController {
                 String auditObjectIdNew = plan.getAuditObjectIdNew();
                 if (StrUtil.isBlank(auditObjectId) || !deptNameValue.containsKey(auditObjectId)) {
 //                    throw new RuntimeException(String.format("不存在的审计对象中支：%s",auditObjectId));
+                    plan.setAuditObjectId("");
                 } else {
                     plan.setAuditObjectId(deptNameValue.get(auditObjectId).toString());
                 }
                 if (StrUtil.isBlank(auditObjectIdNew) || !deptNameValue.containsKey(auditObjectIdNew)) {
 //                    throw new RuntimeException(String.format("不存在的审计对象部门：%s",auditObjectIdNew));
+                    plan.setAuditObjectIdNew("");
                 } else {
                     plan.setAuditObjectIdNew(deptNameValue.get(auditObjectIdNew).toString());
                 }
