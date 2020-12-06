@@ -342,7 +342,6 @@ public class TaskController {
             } else if (PlanStatusEnum.RECTIFY_COMPLETE.getCode() == status && StringUtils.isNotBlank(planId)) {
                 if ("1".equals(mark)) { //整改领导
                     atUser = plan.getAuditUserId();
-                    atNextUser = plan.getAuditAdminId();
                     planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), opinion);
 //                    endTimePartTwo = new Date();
 //                    daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
@@ -352,13 +351,14 @@ public class TaskController {
                     //审计对象管理员
                     for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
                         planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1002");
+                        atNextUser = Integer.valueOf(String.valueOf(auditLeaderAssigneeList.get(i)));
                     }
 //                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1002");
                 } else if ("2".equals(mark)) { //实施员工
-                    atUser = plan.getAuditAdminId();
                     atNextUser = plan.getImpUserId();
                     for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
                         planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), opinion);
+                        atUser = Integer.valueOf(String.valueOf(auditLeaderAssigneeList.get(i)));
                     }
 //                    planInfoService.updateProjectOpinionByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), opinion);
                     endTimePartTwo = new Date();
@@ -392,7 +392,9 @@ public class TaskController {
                     daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
                     planTimeTemp.setDays(daysPart);
                     //内审人员
-                    atUser = plan.getAuditAdminId();
+                    for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                        atUser = Integer.valueOf(String.valueOf(auditLeaderAssigneeList.get(i)));
+                    }
                     for (int i = 0; i < auditUserInnerList.size(); i++) {
                         atNextUser = Integer.valueOf(String.valueOf(auditUserInnerList.get(i)));
                         planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditUserInnerList.get(i)), "1007");
@@ -483,7 +485,9 @@ public class TaskController {
                 }
 //                planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditAdminId()), "1006");
             } else if (PlanStatusEnum.FILE.getCode() == status && StringUtils.isNotBlank(planId)) {
-                atUser = plan.getAuditAdminId();
+                for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
+                    atUser = Integer.valueOf(String.valueOf(auditLeaderAssigneeList.get(i)));
+                }
                 atNextUser = plan.getImpUserId();
                 plan.setRectifyEvaluation(opinion);
                 days = daysOfTwo(planTimeTemp.getStartTimeAll(), planTimeTemp.getEndTimeAll()) - planTimeTemp.getDays();

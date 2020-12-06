@@ -86,7 +86,7 @@
             and a.status like concat('%',concat(#{query.status},'%'))
         </if>
         and a.del_flag = 0
-        ORDER BY a.created_time desc
+        order by a.created_time desc
     </select>
 
     <update id="updatePlanById">
