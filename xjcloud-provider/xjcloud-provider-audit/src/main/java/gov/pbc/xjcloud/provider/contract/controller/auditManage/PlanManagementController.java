@@ -555,17 +555,19 @@ public class PlanManagementController {
                 }
             }
             try {
-                gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getImplementingAgencyId()));
-                JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
-                if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
-                    JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
-                    planCheckListDTO.setImplementingAgencyName(deptData.get("name").toString());
-                }
-                gov.pbc.xjcloud.provider.contract.utils.R adept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getAuditObjectId()));
-                JSONObject adeptJSON = (JSONObject) JSONObject.toJSON(adept);
-                if (null != adeptJSON && "0".equals(adeptJSON.get("code").toString())) {
-                    JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
-                    planCheckListDTO.setAuditObjectName(adeptData.get("name").toString());
+                if (StringUtils.isNotBlank(planCheckListDTO.getImplementingAgencyId()) && StringUtils.isNotBlank(planCheckListDTO.getAuditObjectId())) {
+                    gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getImplementingAgencyId()));
+                    JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                    if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                        JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                        planCheckListDTO.setImplementingAgencyName(deptData.get("name").toString());
+                    }
+                    gov.pbc.xjcloud.provider.contract.utils.R adept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getAuditObjectId()));
+                    JSONObject adeptJSON = (JSONObject) JSONObject.toJSON(adept);
+                    if (null != adeptJSON && "0".equals(adeptJSON.get("code").toString())) {
+                        JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
+                        planCheckListDTO.setAuditObjectName(adeptData.get("region").toString()+adeptData.get("name").toString());
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
