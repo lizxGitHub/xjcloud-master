@@ -14,6 +14,6 @@ public interface RemoteDeptService {
     @GetMapping({"/depts/parent/{parentId}/recursive/{recursive}"})
     R children(@PathVariable("parentId") Integer var1, @PathVariable("recursive") boolean var2);
 
-    @GetMapping("/depts/tree/0")
+    @GetMapping("/depts/tree")
     R tree();
 }

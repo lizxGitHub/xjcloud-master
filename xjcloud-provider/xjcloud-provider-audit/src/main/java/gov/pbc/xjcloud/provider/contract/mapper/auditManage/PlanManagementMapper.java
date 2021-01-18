@@ -131,7 +131,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "			plan_check_list p1 \n" +
                     "		WHERE\n" +
                     "			p1.del_flag = 0 \n" +
-                    "			AND p1.audit_year = '${auditYear}' \n" +
+                    " <if test='auditYear!=null and auditYear!=\"\"'> AND p1.audit_year = '${auditYear}' </if>"+
                     "		AND p1.`status` IN ( 1001, 1002, 1003, 1004, 1005 )) pcl \n" +
                     "	GROUP BY\n" +
                     "		pcl.implementing_agency_id,\n" +
@@ -156,7 +156,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "			plan_check_list a\n" +
                     "		WHERE\n" +
                     "			a.del_flag = 0\n" +
-                    "		AND a.audit_year = '${auditYear}'\n" +
+                    " <if test='auditYear!=null and auditYear!=\"\"'> AND a.audit_year = '${auditYear}' </if>"+
                     "		AND a.implementing_agency_id = '${deptId}'\n" +
                     "		AND a.`status` IN (1001, 1002, 1003, 1004)\n" +
                     "		GROUP BY\n" +
@@ -182,7 +182,7 @@ public interface PlanManagementMapper extends IBaseMapper<PlanCheckList> {
                     "			plan_check_list a\n" +
                     "		WHERE\n" +
                     "			a.del_flag = 0\n" +
-                    "		AND a.audit_year = '${auditYear}'\n" +
+                    " <if test='auditYear!=null and auditYear!=\"\"'> AND a.audit_year = '${auditYear}' </if>"+
                     "		AND a.implementing_agency_id = '${deptId}'\n" +
                     "       and a.`status`!='0' " +
                     "	) tb1\n" +

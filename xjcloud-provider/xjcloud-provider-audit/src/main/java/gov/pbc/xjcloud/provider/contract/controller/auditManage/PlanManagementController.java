@@ -153,7 +153,7 @@ public class PlanManagementController {
             page.setSize(Long.parseLong(size));
             Map<Integer, TreeVO> deptMap = deptUtil.getDeptMap();
             page = planManagementService.selectAttentionPage(page, query);
-            page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null && e.getAuditObjectId() != null).forEach(e -> {
+            page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null).forEach(e -> {
                 e.setImplementingAgencyId(deptMap.get(Integer.valueOf(e.getImplementingAgencyId())).getLabel());
                 e.setAuditObjectId(deptMap.get(Integer.parseInt(e.getAuditObjectId())).getLabel());
             });
