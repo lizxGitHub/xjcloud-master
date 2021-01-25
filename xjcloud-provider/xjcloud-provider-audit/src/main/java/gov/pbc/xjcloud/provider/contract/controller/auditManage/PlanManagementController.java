@@ -555,18 +555,27 @@ public class PlanManagementController {
                 }
             }
             try {
-                if (StringUtils.isNotBlank(planCheckListDTO.getImplementingAgencyId()) && StringUtils.isNotBlank(planCheckListDTO.getAuditObjectId())) {
+                if (StringUtils.isNotBlank(planCheckListDTO.getImplementingAgencyId())) {
                     gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getImplementingAgencyId()));
                     JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
                     if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
                         JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
                         planCheckListDTO.setImplementingAgencyName(deptData.get("name").toString());
                     }
+                }
+                if (StringUtils.isNotBlank(planCheckListDTO.getAuditObjectId())) {
                     gov.pbc.xjcloud.provider.contract.utils.R adept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getAuditObjectId()));
                     JSONObject adeptJSON = (JSONObject) JSONObject.toJSON(adept);
                     if (null != adeptJSON && "0".equals(adeptJSON.get("code").toString())) {
                         JSONObject adeptData = (JSONObject) JSONObject.toJSON(adeptJSON.get("data"));
                         planCheckListDTO.setAuditObjectName(adeptData.get("region").toString()+adeptData.get("name").toString());
+                    }
+                } else {
+                    gov.pbc.xjcloud.provider.contract.utils.R rdept = userCenterService.dept(Integer.parseInt(planCheckListDTO.getAuditObjectIdNew()));
+                    JSONObject deptJSON = (JSONObject) JSONObject.toJSON(rdept);
+                    if (null != deptJSON && "0".equals(deptJSON.get("code").toString())) {
+                        JSONObject deptData = (JSONObject) JSONObject.toJSON(deptJSON.get("data"));
+                        planCheckListDTO.setAuditObjectName(deptData.get("name").toString()+"内审科");
                     }
                 }
             } catch (Exception e) {

@@ -29,7 +29,7 @@ spring:
     #    url: jdbc:mysql://xjcloud.wlq.pbc.gov:7089/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     #    username: lrst
     #    password: lrst7089
-    url: jdbc:mysql://xjcloud.wlq.pbc.gov:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://xjcloud-mysql.wlq.pbc.gov:3306/xjcloud_audit?useUnicode=true&characterEncoding=UTF8&useSSL=true&serverTimezone=GMT%2B8
     username: root
     password: Lrst123456
     type: com.alibaba.druid.pool.DruidDataSource
