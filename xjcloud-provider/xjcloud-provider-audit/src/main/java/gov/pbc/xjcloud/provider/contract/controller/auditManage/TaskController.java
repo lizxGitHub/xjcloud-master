@@ -251,6 +251,10 @@ public class TaskController {
             if (params.get("delayDate") != null) {
                 delayDate = (String) params.get("delayDate");
             }
+            String delayRemarks = ""; //延迟天数
+            if (params.get("delayRemarks") != null) {
+                delayRemarks = (String) params.get("delayRemarks");
+            }
             int userId = 0;
             if (params.get("userId") != null) {
                 userId = (int) params.get("userId");
@@ -499,7 +503,7 @@ public class TaskController {
             } else if (PlanStatusEnum.DELAY_APPLY.getCode() == status && StringUtils.isNotBlank(planId)) {
                 //更新延迟时间与说明
                 plan.setDelayDate(delayDate);
-                plan.setDelayRemarks(opinion);
+                plan.setDelayRemarks(delayRemarks);
                 startTimePartTwo = new Date();
                 planTimeTemp.setStartTimePartTwo(startTimePartTwo);
                 //审计对象员工
