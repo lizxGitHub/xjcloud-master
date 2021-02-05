@@ -134,7 +134,7 @@
             and a.project_type like concat('%',concat(#{query.projectType},'%'))
         </if>
 
-        order by a.created_time desc,a.project_name asc
+        order by a.project_code desc,a.project_name asc
     </select>
 
     <select id="selectPlanCheckList" resultMap="PlanCheckListMapper">
@@ -187,7 +187,7 @@
             and a.audit_admin_id like concat('%',concat(#{query.auditAdminId},'%'))
         </if>
 
-        order by a.created_time desc,a.project_name asc
+        order by a.project_code desc,a.project_name asc
 
     </select>
 
@@ -304,7 +304,7 @@
 
         </choose>
 
-        order by a.created_time desc,a.project_name asc
+        order by a.project_code desc,a.project_name asc
     </select>
     <select id="countPlan" resultType="java.util.Map">
         SELECT t2.projectSum,pcl.planSum,pcl.finishCount,pcl.nofinishCount,pcl.overTimeNum,pcl.timeoutCount,pcl.rectifyNum from
@@ -450,7 +450,7 @@
         and (imp_user_id=#{query.userId} or imp_admin_id=#{query.userId} or audit_user_id=#{query.userId}
         or audit_admin_id=#{query.userId})
         and status!=#{query.status}
-        order by a.created_time desc,a.project_name asc
+        order by a.project_code desc,a.project_name asc
     </select>
     <select id="findFilesByBizKey" resultType="gov.pbc.xjcloud.provider.contract.vo.PlanFileVO">
         select

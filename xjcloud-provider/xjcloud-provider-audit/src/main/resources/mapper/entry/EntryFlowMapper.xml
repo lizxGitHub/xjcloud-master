@@ -64,7 +64,7 @@
             and DATE_FORMAT(a.created_time,'%Y-%m-%d')  &lt;= #{query.createdEnd}
         </if>
 
-        order by a.created_time desc,a.project_name asc
+        order by a.project_code desc,a.project_name asc
 
     </select>
 </mapper>
