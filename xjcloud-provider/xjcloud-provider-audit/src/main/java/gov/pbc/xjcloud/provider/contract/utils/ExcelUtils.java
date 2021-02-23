@@ -202,7 +202,7 @@ public class ExcelUtils {
             for (int j = 0; j < keys.length; j++) {
                 org.apache.poi.ss.usermodel.Cell cell = row1.createCell(j);
                 Object obj = list.get(i).get(keys[j]);
-                if(keys[j].equals("implementing_agency_id")||keys[j].equals("audit_object_id")){
+                if(keys[j].equals("implementing_agency_id")||keys[j].equals("audit_object_id")||keys[j].equals("audit_object_id_new")){
                     if(null!=deptMap.get(obj)){
                         obj=deptMap.get(obj);
                     }else  if(StringUtils.isNotBlank((String) obj)){

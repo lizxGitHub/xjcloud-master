@@ -580,6 +580,8 @@
         pcl.implementing_agency_new_id,
         pcl.audit_object_id auditObjectId,
         pcl.audit_object_id ,
+        pcl.audit_object_id_new auditObjectIdNew,
+        pcl.audit_object_id_new ,
         pcl.audit_nature_id ,
         pcl.risk_assessment_id ,
         pcl.evaluation ,
