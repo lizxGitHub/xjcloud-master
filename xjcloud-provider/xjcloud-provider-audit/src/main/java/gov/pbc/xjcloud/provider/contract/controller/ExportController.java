@@ -39,22 +39,42 @@ public class ExportController {
     public void exportExcel(PlanCheckList query, HttpServletResponse response) {
         try {
             String fileName = "审计查询";
+//            String[] columns = new String[] {
+//                    "项目名称","项目类型","项目状态","问题词条",
+//                    "问题严重程度", "问题定性", "问题描述", "严重程度",
+//                    "实施机构名称","审计对象", "审计性质", "审计依据",
+//                    "审计分类", "审计经验", "年度","整改情况",
+//                    "风险评估","整改开始时间","出现频次","整改时长",
+//                    "超时时长","整改结果","归档评估","整改评估"
+//            };
             String[] columns = new String[] {
-                    "项目名称","项目类型","项目状态","问题词条",
-                    "问题严重程度", "问题定性", "问题描述", "严重程度",
-                    "实施机构名称","审计对象", "审计性质", "审计依据",
-                    "审计分类", "审计经验", "年度","整改情况",
-                    "风险评估","整改开始时间","出现频次","整改时长",
-                    "超时时长","整改结果","归档评估","整改评估"
+                    "审计年度","机构层级","实施机构","进点时间",
+                    "项目类型", "审计性质", "审计对象", "整改部门",
+                    "组织形式","项目名称", "问题定性", "问题类型",
+                    "问题描述", "问题词条一级", "问题词条二级","问题词条三级",
+                    "问题词条四级","主要负责人责任类型","整改情况","问题严重程度",
+                    "风险类别","所属职能","可能影响","整改意见", "审计建议", "出现频次", "整改时长", "整改措施",
+                    "整改结果", "整改评估", "归档评估", "审计分类",
+                    "审计依据", "审计经验"
             };
             String[] keys = new String[] {
-                    "project_name", "project_type","status","question_entry_id",
-                    "problem_severity_id", "problem_characterization", "problem_description","problem_severity_name",
-                    "implementing_agency_id", "audit_object_id", "audit_nature_id","audit_basis",
-                    "audit_classification_id","auditing_experience", "audit_year","rectify_situation_name",
-                    "risk_assessment_id","start_time_all","frequency","days",
-                    "over_days","rectify_result","rectify_evaluation","evaluation"
+                    "audit_year", "agency_level", "implementing_agency_id", "enter_time",
+                    "project_type", "audit_nature_id", "audit_object_id_new", "audit_object_id",
+                    "org_type", "project_name", "problem_characterization", "question_type",
+                    "problem_description", "question_entry_id1", "question_entry_id2", "question_entry_id3",
+                    "question_entry_id4", "manager_duty_type", "rectify_situation_id", "problem_severity_id",
+                    "risk_type", "function_type", "may_affect", "rectification_suggestions", "audit_suggestions", "frequency", "days", "rectify_way",
+                    "rectify_result", "evaluation", "rectify_evaluation", "audit_classification_id",
+                    "audit_basis", "auditing_experience"
             };
+//            String[] keys = new String[] {
+//                    "project_name", "project_type","status","question_entry_id",
+//                    "problem_severity_id", "problem_characterization", "problem_description","problem_severity_name",
+//                    "implementing_agency_id", "audit_object_id", "audit_nature_id","audit_basis",
+//                    "audit_classification_id","auditing_experience", "audit_year","rectify_situation_name",
+//                    "risk_assessment_id","start_time_all","frequency","days",
+//                    "over_days","rectify_result","rectify_evaluation","evaluation"
+//            };
             List<Map<String, Object>> list = planManagementService.selectEntryByQuery(query, null, null);
             Map<String, String> entryNameValue = entryService.listAll().stream().filter(e -> org.apache.commons.lang3.StringUtils.isNotBlank(e.getConcatName())).
                     collect(Collectors.toMap(e -> e.getId(), e -> e.getConcatName(), (e1, e2) -> e1));
