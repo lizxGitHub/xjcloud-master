@@ -155,7 +155,11 @@ public class PlanManagementController {
             page = planManagementService.selectAttentionPage(page, query);
             page.getRecords().stream().filter(e -> e.getImplementingAgencyId() != null).forEach(e -> {
                 e.setImplementingAgencyId(deptMap.get(Integer.valueOf(e.getImplementingAgencyId())).getLabel());
-                e.setAuditObjectId(deptMap.get(Integer.parseInt(e.getAuditObjectId())).getLabel());
+                String AuditObjectName = "内审科";
+                if (e.getAuditObjectId() != null && !"null".equals(e.getAuditObjectId()) && e.getAuditObjectId() != "0") {
+                    AuditObjectName = deptMap.get(Integer.parseInt(e.getAuditObjectId())).getLabel();
+                }
+                e.setAuditObjectId(AuditObjectName);
             });
         } catch (Exception e) {
             e.printStackTrace();
