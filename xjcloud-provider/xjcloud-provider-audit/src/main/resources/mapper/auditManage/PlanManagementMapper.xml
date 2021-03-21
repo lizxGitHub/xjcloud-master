@@ -39,7 +39,7 @@
         </foreach>
     </insert>
     <delete id="cancelCheckAttention">
-        delete from user_attention_check where user_id=#{userId}
+        delete from user_attention_check where 1=1
         and check_id in
         <foreach collection="checkArr" close=")" item="checkId" separator="," open="(">
             #{checkId}
