@@ -66,7 +66,13 @@ public class FileController {
         try {
             //返回给前端的访问地址
             String filePath = appUrl + "/" + uploadPrefix + "/" + bizKey + "/" + newFileName;
+//            String fileUri = uploadPrefix + "/" + bizKey + "/" + newFileName;
+
             String fileUri = uploadPrefix + "/" + bizKey + "/" + newFileName;
+            if(StringUtils.isNotBlank(appUrl)){
+                fileUri=appUrl+"/"+fileUri;
+            }
+
             File upload = new File(uploadFolder + File.separator + bizKey + File.separator + newFileName);
             if (!upload.exists()) {
                 upload.getParentFile().mkdirs();
