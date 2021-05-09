@@ -351,7 +351,7 @@ public class TaskController {
 //                    daysPart = planTimeTemp.getDays() + daysOfTwo(planTimeTemp.getStartTimePartTwo(), endTimePartTwo);
 //                    planTimeTemp.setDays(daysPart);
                     //审计对象员工
-                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1003");
+                    planInfoService.updateProjectByPlanUserId(planId, String.valueOf(plan.getAuditUserId()), "1001");
                     //审计对象管理员
                     for (int i = 0; i < auditLeaderAssigneeList.size(); i++) {
                         planInfoService.updateProjectByPlanUserId(planId, String.valueOf(auditLeaderAssigneeList.get(i)), "1002");
