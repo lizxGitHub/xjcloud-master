@@ -734,7 +734,7 @@
         </if>
         <if test="name3!=null and name3!=''">
             and name3 =#{name3}
-        </if>) t group by name
+        </if>) t group by id
     </select>
     <select id="findCheckListTip" resultType="gov.pbc.xjcloud.provider.contract.entity.PlanOverTimeTip">
         select id,tip_Assignee tipAssignee

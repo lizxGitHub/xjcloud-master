@@ -285,7 +285,7 @@ public class PlanCheckListController {
                 }
                 if (userId == plan.getImpAdminId()) {
                     if (statusUser.equals("1002")) { //确认
-                        if (plan.getAuditObjectId() != null) {
+                        if (plan.getAuditObjectId() != null && !"-1".equals(plan.getAuditObjectId())) {
                             List list = (List) userCenterService.getUsersByRoleNameAndDept(Integer.valueOf(plan.getAuditObjectId()), "审计对象负责人员角色").getData();
                             if (list.size() < 1) {
                                 return r.setData(false);
