@@ -26,7 +26,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
-		<spring-boot.version>2.1.3.RELEASE</spring-boot.version>
+		<spring-boot.version>2.5.12</spring-boot.version>
 		<xjcloud.version>0.0.1</xjcloud.version>
 		<spring-platform.version>Cairo-SR7</spring-platform.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
